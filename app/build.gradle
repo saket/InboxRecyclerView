@@ -8,10 +8,10 @@ ext.versions = [
     autoValue     : '1.4',
     autoValueMoshi: '0.4.3',
     retrofit      : '2.2.0',
-    rxBindings    : '2.0.0',
+    rxBindings    : '2.1.0',
     dagger        : '2.10',
     butterKnife   : '8.8.1',
-    timber        : '4.6.0',
+    timber        : '4.7.0',
 ]
 
 android {
@@ -61,7 +61,7 @@ dependencies {
   implementation "com.jakewharton:butterknife:$versions.butterKnife"
   annotationProcessor "com.jakewharton:butterknife-compiler:$versions.butterKnife"
 
-  implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
+  implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
   implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
   implementation "com.jakewharton.rxbinding2:rxbinding:$versions.rxBindings"
   implementation "com.jakewharton.rxrelay2:rxrelay:2.0.0"
