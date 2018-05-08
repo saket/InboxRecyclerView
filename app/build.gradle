@@ -3,8 +3,7 @@ apply plugin: 'com.android.application'
 ext.versions = [
     minSdk        : 21,
     compileSdk    : 26,
-    androidTools  : '26.0.2',
-    supportLib    : '27.0.2',
+    supportLib    : '27.1.1',
     autoValue     : '1.4',
     autoValueMoshi: '0.4.3',
     retrofit      : '2.2.0',
