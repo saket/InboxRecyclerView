@@ -1,17 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
-ext.versions = [
-    minSdk        : 21,
-    compileSdk    : 26,
-    supportLib    : '27.1.1',
-    autoValue     : '1.4',
-    autoValueMoshi: '0.4.3',
-    retrofit      : '2.2.0',
-    rxBindings    : '2.1.0',
-    dagger        : '2.10',
-    butterKnife   : '8.8.1',
-    timber        : '4.7.0',
-]
+repositories {
+  maven { url "https://jitpack.io" }
+}
 
 android {
   compileSdkVersion versions.compileSdk
@@ -40,26 +34,19 @@ android {
 dependencies {
   implementation "com.android.support:appcompat-v7:$versions.supportLib"
   implementation "com.android.support:recyclerview-v7:$versions.supportLib"
-
-  annotationProcessor "com.google.auto.value:auto-value:$versions.autoValue"
-  provided "com.jakewharton.auto.value:auto-value-annotations:$versions.autoValue"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 
   implementation "com.google.dagger:dagger:$versions.dagger"
-  annotationProcessor "com.google.dagger:dagger-compiler:$versions.dagger"
-
+  kapt "com.google.dagger:dagger-compiler:$versions.dagger"
   implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
   implementation "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit"
   implementation "com.squareup.retrofit2:converter-moshi:$versions.retrofit"
-
   implementation 'com.squareup.moshi:moshi:1.5.0'
-  annotationProcessor "com.ryanharter.auto.value:auto-value-moshi:$versions.autoValueMoshi"
-  provided "com.ryanharter.auto.value:auto-value-moshi-annotations:$versions.autoValueMoshi"
-
+  kapt "com.squareup.moshi:moshi-kotlin-codegen:$versions.moshi"
   implementation "com.jakewharton.timber:timber:$versions.timber"
-
-  implementation "com.jakewharton:butterknife:$versions.butterKnife"
-  annotationProcessor "com.jakewharton:butterknife-compiler:$versions.butterKnife"
-
+  implementation('com.github.JakeWharton:kotterknife:e157638df1') {
+    exclude group: 'com.android.support'
+  }
   implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
   implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
   implementation "com.jakewharton.rxbinding2:rxbinding:$versions.rxBindings"

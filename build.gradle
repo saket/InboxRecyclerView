@@ -1,13 +1,29 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+  ext.versions = [
+      minSdk        : 21,
+      compileSdk    : 27,
+      supportLib    : '27.1.1',
+      autoValue     : '1.4',
+      autoValueMoshi: '0.4.3',
+      retrofit      : '2.2.0',
+      rxBindings    : '2.1.0',
+      dagger        : '2.10',
+      butterKnife   : '8.8.1',
+      timber        : '4.7.0',
+      kotlin        : '1.2.50',
+      moshi         : '1.6.0',
+  ]
+
   repositories {
     google()
     jcenter()
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.2'
+    classpath 'com.android.tools.build:gradle:3.1.3'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
   }
 }
 
