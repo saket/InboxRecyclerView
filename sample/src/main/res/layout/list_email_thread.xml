@@ -1,18 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:orientation="vertical">
+  android:layout_marginBottom="@dimen/emailthread_item_vertical_margin"
+  android:layout_marginEnd="4dp"
+  android:layout_marginStart="4dp"
+  android:layout_marginTop="@dimen/emailthread_item_vertical_margin"
+  android:background="@color/white"
+  android:foreground="?attr/selectableItemBackgroundBorderless"
+  android:padding="16dp">
 
-  <RelativeLayout
+  <TextView
+    android:id="@+id/emailthread_byline"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    android:background="@color/white">
+    android:fontFamily="@font/worksans_regular"
+    android:textColor="#3C4D54"
+    android:textSize="12sp"
+    tools:text="Google Express - 15 mins ago" />
 
-    <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="Email" />
-  </RelativeLayout>
-</FrameLayout>
+  <TextView
+    android:id="@+id/emailthread_subject"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/emailthread_byline"
+    android:layout_marginTop="4dp"
+    android:fontFamily="@font/worksans_bold"
+    android:textColor="#1D2C2F"
+    android:textSize="18sp"
+    tools:text="Package shipped!" />
+
+  <TextView
+    android:id="@+id/emailthread_body"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/emailthread_subject"
+    android:layout_marginTop="8dp"
+    android:ellipsize="end"
+    android:fontFamily="@font/worksans_regular"
+    android:maxLines="1"
+    android:textColor="#3A4A51"
+    tools:text="I'll be in your neighborhood doing errands..." />
+</RelativeLayout>

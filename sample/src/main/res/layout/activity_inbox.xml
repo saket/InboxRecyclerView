@@ -8,7 +8,10 @@
   <me.saket.expand.InboxRecyclerView
     android:id="@+id/inbox_recyclerview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:paddingBottom="@dimen/emailthread_item_vertical_margin"
+    android:paddingTop="@dimen/emailthread_item_vertical_margin" />
 
   <me.saket.expand.ExpandablePageLayout
     android:id="@+id/inbox_email_thread_page"

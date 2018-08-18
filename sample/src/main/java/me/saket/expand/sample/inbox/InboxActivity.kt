@@ -24,7 +24,7 @@ class InboxActivity : AppCompatActivity() {
     recyclerView.layoutManager = recyclerView.createLayoutManager()
     recyclerView.setExpandablePage(emailPageLayout)
 
-    val adapter = ThreadsAdapter()
+    val adapter = ThreadsAdapter(clickListener = { emailThread -> })
     adapter.submitList(EmailRepository.threads())
     recyclerView.adapter = adapter
   }
