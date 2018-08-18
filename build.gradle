@@ -9,10 +9,9 @@ buildscript {
       autoValueMoshi: '0.4.3',
       retrofit      : '2.2.0',
       rxBindings    : '2.1.0',
-      dagger        : '2.10',
       butterKnife   : '8.8.1',
       timber        : '4.7.0',
-      kotlin        : '1.2.50',
+      kotlin        : '1.2.60',
       moshi         : '1.6.0',
   ]
 
@@ -22,7 +21,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.3'
+    classpath 'com.android.tools.build:gradle:3.1.4'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
   }
 }
@@ -30,6 +29,7 @@ buildscript {
 allprojects {
   repositories {
     google()
+    mavenCentral()
     jcenter()
   }
 }

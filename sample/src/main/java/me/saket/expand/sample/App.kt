@@ -1,4 +1,4 @@
-package me.saket.baseandroidproject
+package me.saket.expand.sample
 
 import android.app.Application
 import timber.log.Timber

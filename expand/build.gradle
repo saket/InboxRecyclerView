@@ -1,0 +1,28 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+  compileSdkVersion versions.compileSdk
+
+  defaultConfig {
+    minSdkVersion versions.minSdk
+    targetSdkVersion versions.compileSdk
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+
+  androidExtensions {
+    experimental = true
+  }
+}
+
+dependencies {
+  implementation "com.android.support:appcompat-v7:$versions.supportLib"
+  implementation "com.android.support:recyclerview-v7:$versions.supportLib"
+  compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
+}

@@ -11,7 +11,7 @@ android {
   compileSdkVersion versions.compileSdk
 
   defaultConfig {
-    applicationId "me.saket.baseandroidproject"
+    applicationId "me.saket.expand.sample"
     minSdkVersion versions.minSdk
     targetSdkVersion versions.compileSdk
     versionCode 1
@@ -21,13 +21,7 @@ android {
   buildTypes {
     release {
       minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
-  }
-
-  compileOptions {
-    targetCompatibility 1.8
-    sourceCompatibility 1.8
   }
 }
 
@@ -36,8 +30,6 @@ dependencies {
   implementation "com.android.support:recyclerview-v7:$versions.supportLib"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 
-  implementation "com.google.dagger:dagger:$versions.dagger"
-  kapt "com.google.dagger:dagger-compiler:$versions.dagger"
   implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
   implementation "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit"
   implementation "com.squareup.retrofit2:converter-moshi:$versions.retrofit"

@@ -1,4 +1,4 @@
-package me.saket.baseandroidproject
+package me.saket.expand.sample
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
