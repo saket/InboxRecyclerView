@@ -1,13 +1,12 @@
 package me.saket.expand.sample.inbox
 
 import android.annotation.SuppressLint
-import android.support.v7.recyclerview.extensions.ListAdapter
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import kotterknife.bindView
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import me.saket.expand.sample.EmailThread
 import me.saket.expand.sample.R
 
@@ -35,9 +34,9 @@ class EmailViewHolder(
     clickListener: (EmailThread) -> Unit
 ) : RecyclerView.ViewHolder(itemView) {
 
-  private val bylineTextView by bindView<TextView>(R.id.emailthread_byline)
-  private val subjectTextView by bindView<TextView>(R.id.emailthread_subject)
-  private val bodyTextView by bindView<TextView>(R.id.emailthread_body)
+  private val bylineTextView = itemView.findViewById<TextView>(R.id.emailthread_byline)
+  private val subjectTextView = itemView.findViewById<TextView>(R.id.emailthread_subject)
+  private val bodyTextView = itemView.findViewById<TextView>(R.id.emailthread_body)
 
   lateinit var emailThread: EmailThread
 

@@ -6,11 +6,11 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Outline
 import android.graphics.Rect
-import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.RelativeLayout
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 
 /** Animates change in dimensions by clipping bounds instead of changing the layout params. */
 abstract class BaseExpandablePageLayout : RelativeLayout {

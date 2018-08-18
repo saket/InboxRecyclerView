@@ -23,7 +23,7 @@ android {
 }
 
 dependencies {
-  implementation "com.android.support:appcompat-v7:$versions.supportLib"
-  implementation "com.android.support:recyclerview-v7:$versions.supportLib"
+  implementation "androidx.appcompat:appcompat:$versions.androidx"
+  implementation "androidx.recyclerview:recyclerview:$versions.androidx"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 }

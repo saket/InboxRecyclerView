@@ -1,7 +1,7 @@
 package me.saket.expand.sample.inbox
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import kotterknife.bindView
 import me.saket.expand.ExpandablePageLayout
 import me.saket.expand.InboxRecyclerView
