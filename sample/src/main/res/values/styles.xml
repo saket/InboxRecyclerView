@@ -1,9 +1,12 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-  <style name="AppTheme" parent="Theme.AppCompat.Light">
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
     <item name="colorPrimary">@color/color_primary</item>
     <item name="colorPrimaryDark">@color/color_primary_dark</item>
     <item name="colorAccent">@color/color_accent</item>
     <item name="android:windowBackground">@color/window_background</item>
+
+    <item name="android:statusBarColor">#D3DBDF</item>
+    <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
   </style>
 </resources>
