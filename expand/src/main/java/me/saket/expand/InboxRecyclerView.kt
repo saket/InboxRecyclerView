@@ -76,7 +76,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
    * gets pushed up when the page is expanding. It is also safe to call this method again and replace
    * the ExpandablePage or Toolbar.
    */
-  fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View) {
+  fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View?) {
     page = expandablePage
     expandablePage.setup(toolbar)
     expandablePage.setInternalStateCallbacksForList(this)

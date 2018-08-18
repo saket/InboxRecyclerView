@@ -95,12 +95,14 @@ open class ExpandablePageLayout(
     }.start()
   }
 
-  fun setup(parentActivityToolbar: View) {
+  fun setup(parentActivityToolbar: View?) {
     activityToolbar = parentActivityToolbar
 
     // NOTE: if I'm still seeing a problem where the toolbar's height is reported
     // as way too high, use a lambda instead of evaluating the toolbar's height before-hand.
-    activityToolbar!!.post { setPullToCollapseDistanceThreshold(parentActivityToolbar.height) }
+    activityToolbar?.post {
+      setPullToCollapseDistanceThreshold(activityToolbar!!.height)
+    }
   }
 
   /**
@@ -430,7 +432,6 @@ open class ExpandablePageLayout(
    * Helper method for showing / hiding the toolbar depending upon this page's current translationY.
    */
   private fun updateToolbarTranslationY(show: Boolean, pageTranslationY: Float) {
-
     val toolbarHeight = activityToolbar!!.bottom
     var targetTranslationY = pageTranslationY - toolbarHeight
 
