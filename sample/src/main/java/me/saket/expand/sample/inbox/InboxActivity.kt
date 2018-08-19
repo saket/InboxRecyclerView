@@ -24,8 +24,29 @@ class InboxActivity : AppCompatActivity() {
     recyclerView.layoutManager = recyclerView.createLayoutManager()
     recyclerView.setExpandablePage(emailPageLayout, resources.getDimensionPixelSize(R.dimen.inbox_email_page_pulltocollapse_threshold))
 
-    val adapter = ThreadsAdapter(clickListener = { emailThread -> })
+    val adapter = ThreadsAdapter(clickListener = { emailThread, itemPosition, itemId ->
+      recyclerView.expandItem(itemPosition, itemId)
+    })
     adapter.submitList(EmailRepository.threads())
+
     recyclerView.adapter = adapter
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    recyclerView.saveExpandableState(outState)
+    super.onSaveInstanceState(outState)
+  }
+
+  override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+    super.onRestoreInstanceState(savedInstanceState)
+    recyclerView.restoreExpandableState(savedInstanceState)
+  }
+
+  override fun onBackPressed() {
+    if (emailPageLayout.isExpandedOrExpanding) {
+      recyclerView.collapse()
+    } else {
+      super.onBackPressed()
+    }
   }
 }

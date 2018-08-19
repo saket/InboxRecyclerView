@@ -11,8 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import me.saket.expand.sample.EmailThread
 import me.saket.expand.sample.R
 
+typealias ItemId = Long
+typealias ItemPosition = Int
+typealias ItemClickListener = (EmailThread, ItemPosition, ItemId) -> Unit
+
 class ThreadsAdapter(
-    private val clickListener: (EmailThread) -> Unit
+    private val clickListener: ItemClickListener
 ) : ListAdapter<EmailThread, EmailViewHolder>(EmailThread.ItemDiffer()) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmailViewHolder {
@@ -32,7 +36,7 @@ class ThreadsAdapter(
 
 class EmailViewHolder(
     itemView: View,
-    clickListener: (EmailThread) -> Unit
+    clickListener: ItemClickListener
 ) : RecyclerView.ViewHolder(itemView) {
 
   private val bylineTextView = itemView.findViewById<TextView>(R.id.emailthread_byline)
@@ -42,7 +46,9 @@ class EmailViewHolder(
   lateinit var emailThread: EmailThread
 
   init {
-    itemView.setOnClickListener { clickListener(emailThread) }
+    itemView.setOnClickListener {
+      clickListener(emailThread, adapterPosition, itemId)
+    }
   }
 
   @SuppressLint("SetTextI18n")
