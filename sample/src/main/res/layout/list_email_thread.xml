@@ -23,6 +23,7 @@
       android:id="@+id/emailthread_item_byline"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_toStartOf="@+id/emailthread_item_avatar"
       android:fontFamily="@font/worksans_regular"
       android:textColor="#3C4D54"
       android:textSize="13sp"
@@ -32,12 +33,25 @@
       android:id="@+id/emailthread_item_subject"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_alignEnd="@+id/emailthread_item_byline"
+      android:layout_alignStart="@+id/emailthread_item_byline"
       android:layout_below="@+id/emailthread_item_byline"
       android:layout_marginTop="4dp"
       android:fontFamily="@font/worksans_bold"
       android:textColor="#1D2C2F"
       android:textSize="@dimen/emailthread_subject_textize_without_photo_attachments"
       tools:text="Package shipped!" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+      android:id="@+id/emailthread_item_avatar"
+      style="@style/SenderAvatar"
+      android:layout_width="40dp"
+      android:layout_height="40dp"
+      android:layout_alignParentEnd="true"
+      android:layout_marginEnd="2dp"
+      android:layout_marginStart="16dp"
+      tools:ignore="ContentDescription"
+      tools:src="@drawable/avatar_jerry_chang" />
 
     <TextView
       android:id="@+id/emailthread_item_body"

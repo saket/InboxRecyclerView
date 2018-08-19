@@ -8,7 +8,7 @@ object EmailRepository {
     return listOf(
         EmailThread(
             id = 0L,
-            sender = Person("Google Express"),
+            sender = Person("Google Express", R.drawable.avatar_googleexpress),
             subject = "Package shipped!",
             emails = listOf(
                 Email(
@@ -20,7 +20,7 @@ object EmailRepository {
 
         EmailThread(
             id = 1L,
-            sender = Person("Ali Connors"),
+            sender = Person("Ali Connors", R.drawable.avatar_ali_connors),
             subject = "Brunch this weekend?",
             emails = listOf(
                 Email(
@@ -31,7 +31,7 @@ object EmailRepository {
 
         EmailThread(
             id = 2L,
-            sender = Person("Sandra Adams"),
+            sender = Person("Sandra Adams", R.drawable.avatar_sandra),
             subject = "Bonjour from Paris",
             emails = listOf(
                 Email(
@@ -49,7 +49,7 @@ object EmailRepository {
 
         EmailThread(
             id = 3L,
-            sender = Person("Trevor Hansen"),
+            sender = Person("Trevor Hansen", R.drawable.avatar_trevor),
             subject = "High school reunion?",
             emails = listOf(
                 Email(
@@ -81,7 +81,7 @@ object EmailRepository {
 
         EmailThread(
             id = 4L,
-            sender = Person("Mom"),
+            sender = Person("Jerry Chang", R.drawable.avatar_jerry_chang),
             subject = "Visiting Town Next Thursday",
             emails = listOf(
                 Email(
@@ -92,7 +92,7 @@ object EmailRepository {
 
         EmailThread(
             id = 5L,
-            sender = Person("Mom"),
+            sender = Person("Mom", R.drawable.avatar_mom),
             subject = "Fwd: Article on Workplace Zen",
             emails = listOf(
                 Email(

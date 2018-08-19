@@ -1,3 +1,8 @@
 package me.saket.expand.sample
 
-data class Person(val name: String)
+import androidx.annotation.DrawableRes
+
+data class Person(
+    val name: String,
+    @DrawableRes val profileImageRes: Int? = null
+)

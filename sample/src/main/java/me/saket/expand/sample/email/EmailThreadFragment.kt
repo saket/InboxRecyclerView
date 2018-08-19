@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -21,6 +22,7 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
   private val subjectTextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_subject) }
   private val byline1TextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_byline1) }
   private val byline2TextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_byline2) }
+  private val avatarImageView by lazy { view!!.findViewById<ImageView>(R.id.emailthread_avatar) }
   private val bodyTextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_body) }
   private val collapseButton by lazy { view!!.findViewById<ImageButton>(R.id.emailthread_collapse) }
 
@@ -78,12 +80,17 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
     subjectTextView.text = emailThread.subject
     byline1TextView.text = "${emailThread.sender.name} — ${latestEmail.timestamp}"
 
-    val cmvRecipients = latestEmail.recipients
-        .dropLast(1)
-        .joinToString(transform = { it.name })
-        .plus(" and ${latestEmail.recipients.last().name}")
+    val cmvRecipients = if (latestEmail.recipients.size > 1) {
+      latestEmail.recipients
+          .dropLast(1)
+          .joinToString(transform = { it.name })
+          .plus(" and ${latestEmail.recipients.last().name}")
+    } else {
+      latestEmail.recipients[0].name
+    }
     byline2TextView.text = "To $cmvRecipients"
 
     bodyTextView.text = latestEmail.body
+    avatarImageView.setImageResource(emailThread.sender.profileImageRes!!)
   }
 }

@@ -30,12 +30,25 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_alignParentEnd="true"
+      android:layout_margin="16dp"
       android:background="?attr/selectableItemBackgroundBorderless"
       android:padding="8dp"
-      android:layout_margin="16dp"
       android:src="@drawable/ic_keyboard_arrow_down_24dp"
       android:tint="#516771"
       tools:ignore="ContentDescription" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+      android:id="@+id/emailthread_avatar"
+      style="@style/SenderAvatar"
+      android:layout_width="44dp"
+      android:layout_height="44dp"
+      android:layout_alignParentEnd="true"
+      android:layout_below="@+id/emailthread_subject"
+      android:layout_marginEnd="16dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="-6dp"
+      tools:ignore="ContentDescription"
+      tools:src="@drawable/avatar_trevor" />
 
     <TextView
       android:id="@+id/emailthread_byline1"
@@ -45,6 +58,7 @@
       android:layout_marginEnd="16dp"
       android:layout_marginStart="16dp"
       android:layout_marginTop="4dp"
+      android:layout_toStartOf="@+id/emailthread_avatar"
       android:fontFamily="@font/worksans_regular"
       android:textColor="#414344"
       tools:text="revor — 12 hrs ago" />
@@ -56,6 +70,7 @@
       android:layout_below="@+id/emailthread_byline1"
       android:layout_marginEnd="16dp"
       android:layout_marginStart="16dp"
+      android:layout_toStartOf="@+id/emailthread_avatar"
       android:fontFamily="@font/worksans_regular"
       android:textColor="#657D78"
       android:textSize="12sp"
@@ -68,9 +83,9 @@
       android:layout_below="@+id/emailthread_byline2"
       android:layout_marginEnd="16dp"
       android:layout_marginStart="16dp"
-      android:lineSpacingExtra="8dp"
       android:layout_marginTop="16dp"
       android:fontFamily="@font/worksans_regular"
+      android:lineSpacingExtra="8dp"
       android:textColor="#3C4242"
       android:textSize="16sp"
       tools:text="Hi friends," />

@@ -5,6 +5,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +40,7 @@ class EmailViewHolder(
   private val bylineTextView = itemView.findViewById<TextView>(R.id.emailthread_item_byline)
   private val subjectTextView = itemView.findViewById<TextView>(R.id.emailthread_item_subject)
   private val bodyTextView = itemView.findViewById<TextView>(R.id.emailthread_item_body)
+  private val avatarImageView = itemView.findViewById<ImageView>(R.id.emailthread_item_avatar)
 
   lateinit var emailThread: EmailThread
 
@@ -69,5 +71,7 @@ class EmailViewHolder(
         else -> setDrawableStart(null)
       }
     }
+
+    avatarImageView.setImageResource(emailThread.sender.profileImageRes!!)
   }
 }

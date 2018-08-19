@@ -12,4 +12,9 @@
     <item name="android:statusBarColor">#D3DBDF</item>
     <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
   </style>
+
+  <style name="SenderAvatar">
+    <item name="civ_border_color">#F0F2F4</item>
+    <item name="civ_border_width">1dp</item>
+  </style>
 </resources>
