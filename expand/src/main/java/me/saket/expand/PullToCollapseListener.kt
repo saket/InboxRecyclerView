@@ -1,5 +1,6 @@
 package me.saket.expand
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.MotionEvent
 import android.view.View
@@ -61,6 +62,7 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
     collapseDistanceThreshold = threshold
   }
 
+  @SuppressLint("ClickableViewAccessibility")
   override fun onTouch(v: View, event: MotionEvent): Boolean {
     when (event.actionMasked) {
       MotionEvent.ACTION_DOWN -> {

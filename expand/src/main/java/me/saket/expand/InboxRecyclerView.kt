@@ -74,11 +74,25 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
    * Sets the [ExpandablePageLayout] and [Toolbar] to be used with this list. The toolbar
    * gets pushed up when the page is expanding. It is also safe to call this method again and replace
    * the ExpandablePage or Toolbar.
+   *
+   * The [toolbar]'s height is also used as the pull-to-collapse distance threshold.
    */
-  @JvmOverloads
-  fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View? = null) {
+  fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View) {
     page = expandablePage
-    expandablePage.setup(toolbar)
+    expandablePage.setToolbar(toolbar)
+    expandablePage.setInternalStateCallbacksForList(this)
+
+    toolbar.post {
+      expandablePage.setPullToCollapseDistanceThreshold(toolbar.height)
+    }
+  }
+
+  /**
+   * [collapseDistanceThreshold] Minimum Y-distance the page has to be pulled to collapse.
+   */
+  fun setExpandablePage(expandablePage: ExpandablePageLayout, collapseDistanceThreshold: Int) {
+    page = expandablePage
+    expandablePage.setPullToCollapseDistanceThreshold(collapseDistanceThreshold)
     expandablePage.setInternalStateCallbacksForList(this)
   }
 

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <!-- 56dp == Toolbar's height. -->
+  <dimen name="inbox_email_page_pulltocollapse_threshold">56dp</dimen>
+
   <dimen name="emailthread_item_vertical_margin">2dp</dimen>
   <dimen name="emailthread_subject_textize_without_photo_attachments">18sp</dimen>
   <dimen name="emailthread_subject_textize_with_photo_attachments">26sp</dimen>
