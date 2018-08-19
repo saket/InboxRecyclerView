@@ -124,20 +124,27 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   // ======== EXPAND / COLLAPSE ======== //
 
   /**
-   * @param itemViewPosition Item's position in the RecyclerView. This is not the same as adapter position.
+   * @param itemPosition Item's position in the adapter.
    */
-  fun expandItem(itemViewPosition: Int, itemId: Long) {
+  fun expandItem(itemPosition: Int, itemId: Long) {
     if (page == null) {
       throw IllegalAccessError("Did you forget to call InboxRecyclerView.setup(ExpandablePage, Toolbar)")
     }
     if (!layoutManagerCreated) {
       throw IllegalAccessError("LayoutManager isn't set. #Use createLayoutManager()")
     }
+    if (adapter == null) {
+      throw AssertionError("Adapter isn't attached yet. No items to expand.")
+    }
 
     if (page!!.isExpandedOrExpanding) {
       return
     }
 
+    val itemView = (layoutManager as LinearLayoutManager).findViewByPosition(itemPosition)
+        ?: throw AssertionError("Couldn't find the View for adapter position $itemPosition")
+
+    val itemViewPosition = indexOfChild(itemView)
     val child = getChildAt(itemViewPosition)
     if (child == null) {
       // View got removed right when it was clicked to expand.
