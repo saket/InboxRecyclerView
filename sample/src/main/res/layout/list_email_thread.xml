@@ -13,7 +13,10 @@
     android:layout_marginTop="@dimen/emailthread_item_vertical_margin"
     android:background="#FEFEFE"
     android:foreground="?attr/selectableItemBackgroundBorderless"
-    android:padding="16dp"
+    android:paddingBottom="16dp"
+    android:paddingEnd="14dp"
+    android:paddingStart="14dp"
+    android:paddingTop="18dp"
     tools:ignore="UselessParent">
 
     <TextView
@@ -22,7 +25,7 @@
       android:layout_height="wrap_content"
       android:fontFamily="@font/worksans_regular"
       android:textColor="#3C4D54"
-      android:textSize="12sp"
+      android:textSize="13sp"
       tools:text="Google Express - 15 mins ago" />
 
     <TextView
@@ -41,7 +44,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_below="@+id/emailthread_item_subject"
-      android:layout_marginTop="8dp"
+      android:layout_marginTop="7dp"
       android:drawablePadding="16dp"
       android:drawableStart="@drawable/ic_attachment_24dp"
       android:drawableTint="#45676E"
