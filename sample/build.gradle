@@ -23,6 +23,10 @@ android {
       minifyEnabled false
     }
   }
+
+  androidExtensions {
+    experimental = true
+  }
 }
 
 dependencies {
@@ -38,4 +42,7 @@ dependencies {
   implementation('com.github.JakeWharton:kotterknife:e157638df1') {
     exclude group: 'com.android.support'
   }
+  implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+  implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+  implementation 'com.jakewharton.rxrelay2:rxrelay:2.0.0'
 }

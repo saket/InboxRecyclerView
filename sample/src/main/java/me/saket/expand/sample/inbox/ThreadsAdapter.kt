@@ -8,20 +8,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.jakewharton.rxrelay2.PublishRelay
 import me.saket.expand.sample.EmailThread
 import me.saket.expand.sample.R
 
-typealias ItemId = Long
-typealias ItemPosition = Int
-typealias ItemClickListener = (EmailThread, ItemPosition, ItemId) -> Unit
+class ThreadsAdapter : ListAdapter<EmailThread, EmailViewHolder>(EmailThread.ItemDiffer()) {
 
-class ThreadsAdapter(
-    private val clickListener: ItemClickListener
-) : ListAdapter<EmailThread, EmailViewHolder>(EmailThread.ItemDiffer()) {
+  val itemClicks = PublishRelay.create<EmailThreadClicked>()!!
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmailViewHolder {
     val threadLayout = LayoutInflater.from(parent.context).inflate(R.layout.list_email_thread, parent, false)
-    return EmailViewHolder(threadLayout, clickListener)
+    return EmailViewHolder(threadLayout, itemClicks)
   }
 
   override fun onBindViewHolder(holder: EmailViewHolder, position: Int) {
@@ -36,25 +33,25 @@ class ThreadsAdapter(
 
 class EmailViewHolder(
     itemView: View,
-    clickListener: ItemClickListener
+    itemClicks: PublishRelay<EmailThreadClicked>
 ) : RecyclerView.ViewHolder(itemView) {
 
-  private val bylineTextView = itemView.findViewById<TextView>(R.id.emailthread_byline)
-  private val subjectTextView = itemView.findViewById<TextView>(R.id.emailthread_subject)
-  private val bodyTextView = itemView.findViewById<TextView>(R.id.emailthread_body)
+  private val bylineTextView = itemView.findViewById<TextView>(R.id.emailthread_item_byline)
+  private val subjectTextView = itemView.findViewById<TextView>(R.id.emailthread_item_subject)
+  private val bodyTextView = itemView.findViewById<TextView>(R.id.emailthread_item_body)
 
   lateinit var emailThread: EmailThread
 
   init {
     itemView.setOnClickListener {
-      clickListener(emailThread, adapterPosition, itemId)
+      itemClicks.accept(EmailThreadClicked(emailThread, adapterPosition, itemId))
     }
   }
 
   @SuppressLint("SetTextI18n")
   fun render() {
     val latestEmail = emailThread.emails.last()
-    bylineTextView.text = "${emailThread.sender.name} \u2014 ${latestEmail.timestamp}"
+    bylineTextView.text = "${emailThread.sender.name} — ${latestEmail.timestamp}"
 
     subjectTextView.text = emailThread.subject
     val subjectTextSize = subjectTextView.resources.getDimensionPixelSize(when {
@@ -63,7 +60,7 @@ class EmailViewHolder(
     })
     subjectTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, subjectTextSize.toFloat())
 
-    bodyTextView.text = latestEmail.body
-    bodyTextView.visibility = if (latestEmail.body.isNullOrBlank()) View.GONE else View.VISIBLE
+    bodyTextView.text = latestEmail.body.replace("\n", " ")
+    bodyTextView.visibility = if (latestEmail.showBodyInThreads) View.VISIBLE else View.GONE
   }
 }

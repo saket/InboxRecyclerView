@@ -2,7 +2,10 @@ package me.saket.expand.sample
 
 import androidx.recyclerview.widget.DiffUtil
 
+typealias EmailThreadId = Long
+
 data class EmailThread(
+    val id: EmailThreadId,
     val sender: Person,
     val subject: String,
     val emails: List<Email>

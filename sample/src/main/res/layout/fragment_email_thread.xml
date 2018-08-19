@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/window_background"
+  android:elevation="20dp"
+  android:orientation="vertical">
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="4dp"
+    android:background="#FDFDFD">
+
+    <TextView
+      android:id="@+id/emailthread_subject"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="16dp"
+      android:layout_toStartOf="@+id/emailthread_collapse"
+      android:fontFamily="@font/worksans_bold"
+      android:textColor="#132629"
+      android:textSize="40sp"
+      tools:text="High school reunion" />
+
+    <ImageButton
+      android:id="@+id/emailthread_collapse"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:background="?attr/selectableItemBackgroundBorderless"
+      android:padding="8dp"
+      android:layout_margin="16dp"
+      android:src="@drawable/ic_keyboard_arrow_down_24dp"
+      android:tint="#516771"
+      tools:ignore="ContentDescription" />
+
+    <TextView
+      android:id="@+id/emailthread_byline1"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/emailthread_subject"
+      android:layout_marginEnd="16dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="4dp"
+      android:fontFamily="@font/worksans_regular"
+      android:textColor="#414344"
+      tools:text="revor — 12 hrs ago" />
+
+    <TextView
+      android:id="@+id/emailthread_byline2"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/emailthread_byline1"
+      android:layout_marginEnd="16dp"
+      android:layout_marginStart="16dp"
+      android:fontFamily="@font/worksans_regular"
+      android:textColor="#657D78"
+      android:textSize="12sp"
+      tools:text="To me" />
+
+    <TextView
+      android:id="@+id/emailthread_body"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@+id/emailthread_byline2"
+      android:layout_marginEnd="16dp"
+      android:layout_marginStart="16dp"
+      android:lineSpacingExtra="8dp"
+      android:layout_marginTop="16dp"
+      android:fontFamily="@font/worksans_regular"
+      android:textColor="#3C4242"
+      android:textSize="16sp"
+      tools:text="Hi friends," />
+  </RelativeLayout>
+</FrameLayout>

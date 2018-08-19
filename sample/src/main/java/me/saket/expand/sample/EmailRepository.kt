@@ -7,6 +7,7 @@ object EmailRepository {
 
     return listOf(
         EmailThread(
+            id = 0L,
             sender = Person("Google Express"),
             subject = "Package shipped!",
             emails = listOf(
@@ -18,6 +19,7 @@ object EmailRepository {
         ),
 
         EmailThread(
+            id = 1L,
             sender = Person("Ali Connors"),
             subject = "Brunch this weekend?",
             emails = listOf(
@@ -28,6 +30,7 @@ object EmailRepository {
         ),
 
         EmailThread(
+            id = 2L,
             sender = Person("Sandra Adams"),
             subject = "Bonjour from Paris",
             emails = listOf(
@@ -45,10 +48,30 @@ object EmailRepository {
         ),
 
         EmailThread(
+            id = 3L,
             sender = Person("Trevor Hansen"),
             subject = "High school reunion?",
             emails = listOf(
                 Email(
+                    body = """
+                      Hi friends,
+
+                      I was at the grocery store on Sunday
+                      night... when I ran into Genie Williams!
+                      I almost didn't recognize her after 20 years!
+
+                      Anyway, it turns out she is on
+                      the organizing committee for the high school
+                      reuinion this fall. I don't know if you were
+                      planning on going or not, but she could
+                      definitely use our help in trying to track
+                      down lots of missing alums. If you can make
+                      it, we're doing a llittle phone-tree party
+                      at her place next Saturday, hoping that if
+                      we can find one person, a few more will
+                      emerge. What do you say?
+                    """.trimIndent(),
+                    showBodyInThreads = false,
                     recipients = listOf(
                         user,
                         Person("Rachel"),
@@ -57,6 +80,7 @@ object EmailRepository {
         ),
 
         EmailThread(
+            id = 4L,
             sender = Person("Mom"),
             subject = "Visiting Town Next Thursday",
             emails = listOf(
@@ -67,6 +91,7 @@ object EmailRepository {
         ),
 
         EmailThread(
+            id = 5L,
             sender = Person("Mom"),
             subject = "Fwd: Article on Workplace Zen",
             emails = listOf(
@@ -77,5 +102,9 @@ object EmailRepository {
                     timestamp = "Yesterday"))
         )
     )
+  }
+
+  fun thread(id: EmailThreadId): EmailThread {
+    return threads().first { it.id == id }
   }
 }
