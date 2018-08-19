@@ -412,7 +412,18 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     super.draw(canvas)
 
     // Dimming behind the expandable page.
-    canvas.drawRect(0f, 0f, right.toFloat(), bottom.toFloat(), dimPaint)
+    if (page != null) {
+      val pageCopy = this.page!!
+      canvas.drawRect(0F, 0F, right.toFloat(), pageCopy.translationY, dimPaint)
+
+      if (pageCopy.isExpanded) {
+        canvas.drawRect(0F, (bottom + pageCopy.translationY), right.toFloat(), bottom.toFloat(), dimPaint)
+
+      } else if (pageCopy.isExpandingOrCollapsing) {
+        val pageBottom = pageCopy.translationY + pageCopy.clippedRect.height().toFloat()
+        canvas.drawRect(0F, pageBottom, right.toFloat(), bottom.toFloat(), dimPaint)
+      }
+    }
   }
 
   private fun canScroll(): Boolean {
