@@ -136,10 +136,10 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
         // If the gesture has covered a distance >= the toolbar height, mark this gesture eligible
         // for collapsible when the finger is lifted
         val collapseThresholdDistance = (collapseDistanceThreshold * COLLAPSE_THRESHOLD_DISTANCE_FACTOR).toInt()
-        eligibleForCollapse = if (upwardSwipe)
-          expandablePage.translationY <= -collapseThresholdDistance
-        else
-          expandablePage.translationY >= collapseThresholdDistance
+        eligibleForCollapse = when {
+          upwardSwipe -> expandablePage.translationY <= -collapseThresholdDistance
+          else -> expandablePage.translationY >= collapseThresholdDistance
+        }
         var resistedDeltaY = deltaY / resistanceFactor
 
         // Once it's eligible, start resisting more as an indicator that the

@@ -1,5 +1,6 @@
 package me.saket.expand
 
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
 import android.graphics.Canvas
@@ -255,20 +256,20 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
       val moveY: Float
       val above = i <= anchorPosition
 
-      if (anchorPosition == -1 || view.height <= 0) {
+      moveY = if (anchorPosition == -1 || view.height <= 0) {
         // Item to expand not present in the list. Send all Views outside the bottom edge
-        moveY = (listHeight - paddingTop).toFloat()
+        (listHeight - paddingTop).toFloat()
 
       } else {
         val positionOffset = i - anchorPosition
-        moveY = (if (above)
+        (if (above)
           -view.top + positionOffset * view.height
         else
           listHeight - view.top + view.height * (positionOffset - 1)).toFloat()
       }
 
       view.animate().cancel()
-      if (!immediate) {
+      if (immediate.not()) {
         view.animate()
             .translationY(moveY)
             .setDuration(page!!.animationDurationMillis)
@@ -279,12 +280,28 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
         }
 
       } else {
-
         view.translationY = moveY
         if (anchorPosition == i) {
           view.alpha = 0f
         }
       }
+    }
+
+    if (immediate.not()) {
+      val dimAnimator = ObjectAnimator.ofInt(dimPaint.alpha, MAX_DIM).apply {
+        duration = page!!.animationDurationMillis
+        interpolator = page!!.animationInterpolator
+        startDelay = animationStartDelay.toLong()
+      }
+      dimAnimator.addUpdateListener {
+        dimPaint.alpha = it.animatedValue as Int
+        postInvalidate()
+      }
+      dimAnimator.start()
+
+    } else {
+      dimPaint.alpha = MAX_DIM
+      postInvalidate()
     }
   }
 
@@ -302,17 +319,35 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
       // reminds me how stupid I can be at times.
       view.animate().cancel()
 
-      if (!immediate) {
+      if (immediate.not()) {
         view.animate()
             .alpha(1f)
             .translationY(0f)
             .setDuration(page!!.animationDurationMillis)
-            .setInterpolator(page!!.animationInterpolator).startDelay = animationStartDelay.toLong()
+            .setInterpolator(page!!.animationInterpolator)
+            .setStartDelay(animationStartDelay.toLong())
 
       } else {
         view.translationY = 0f
         view.alpha = 1f
       }
+    }
+
+    if (immediate.not()) {
+      val dimAnimator = ObjectAnimator.ofInt(dimPaint.alpha, MIN_DIM).apply {
+        duration = page!!.animationDurationMillis
+        interpolator = page!!.animationInterpolator
+        startDelay = animationStartDelay.toLong()
+      }
+      dimAnimator.addUpdateListener {
+        dimPaint.alpha = it.animatedValue as Int
+        postInvalidate()
+      }
+      dimAnimator.start()
+
+    } else {
+      dimPaint.alpha = MIN_DIM
+      postInvalidate()
     }
   }
 
@@ -358,12 +393,9 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     }
   }
 
-  fun onPageBackgroundVisible() {
-    val invalidate = isFullyCoveredByPage
+  private fun onPageBackgroundVisible() {
     isFullyCoveredByPage = false
-    if (invalidate) {
-      postInvalidate()
-    }
+    postInvalidate()
 
     if (activityWindow != null) {
       activityWindow!!.setBackgroundDrawable(activityWindowOrigBackground)
@@ -379,10 +411,8 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
 
     super.draw(canvas)
 
-    if (page != null && page!!.isExpanded) {
-      // Dimming behind the expandable page.
-      canvas.drawRect(0f, 0f, right.toFloat(), bottom.toFloat(), dimPaint)
-    }
+    // Dimming behind the expandable page.
+    canvas.drawRect(0f, 0f, right.toFloat(), bottom.toFloat(), dimPaint)
   }
 
   private fun canScroll(): Boolean {
@@ -473,7 +503,8 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
 
   companion object {
     private const val KEY_IS_EXPANDED = "isExpanded"
-    private const val MAX_DIM_FACTOR = 0.2f                       // [0..1]
+    private const val MIN_DIM = 0
+    private const val MAX_DIM_FACTOR = 0.2F                       // [0..1]
     private const val MAX_DIM = (255 * MAX_DIM_FACTOR).toInt()    // [0..255]
     const val animationStartDelay: Int = 0
   }
