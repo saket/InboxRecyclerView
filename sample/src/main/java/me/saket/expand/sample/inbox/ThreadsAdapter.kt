@@ -1,6 +1,7 @@
 package me.saket.expand.sample.inbox
 
 import android.annotation.SuppressLint
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,6 +51,12 @@ class EmailViewHolder(
     bylineTextView.text = "${emailThread.sender.name} \u2014 ${latestEmail.timestamp}"
 
     subjectTextView.text = emailThread.subject
+    val subjectTextSize = subjectTextView.resources.getDimensionPixelSize(when {
+      latestEmail.hasImageAttachments -> R.dimen.emailthread_subject_textize_with_photo_attachments
+      else -> R.dimen.emailthread_subject_textize_without_photo_attachments
+    })
+    subjectTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, subjectTextSize.toFloat())
+
     bodyTextView.text = latestEmail.body
     bodyTextView.visibility = if (latestEmail.body.isNullOrBlank()) View.GONE else View.VISIBLE
   }

@@ -28,7 +28,7 @@
     android:layout_marginTop="4dp"
     android:fontFamily="@font/worksans_bold"
     android:textColor="#1D2C2F"
-    android:textSize="18sp"
+    android:textSize="@dimen/emailthread_subject_textize_without_photo_attachments"
     tools:text="Package shipped!" />
 
   <TextView
