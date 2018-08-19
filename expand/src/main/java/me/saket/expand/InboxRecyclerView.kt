@@ -515,7 +515,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   companion object {
     private const val KEY_IS_EXPANDED = "isExpanded"
     private const val MIN_DIM = 0
-    private const val MAX_DIM_FACTOR = 0.2F                       // [0..1]
+    private const val MAX_DIM_FACTOR = 0.1F                       // [0..1]
     private const val MAX_DIM = (255 * MAX_DIM_FACTOR).toInt()    // [0..255]
     const val animationStartDelay: Int = 0
   }
