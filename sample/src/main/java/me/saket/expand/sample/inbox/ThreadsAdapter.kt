@@ -60,7 +60,14 @@ class EmailViewHolder(
     })
     subjectTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, subjectTextSize.toFloat())
 
-    bodyTextView.text = latestEmail.body.replace("\n", " ")
-    bodyTextView.visibility = if (latestEmail.showBodyInThreads) View.VISIBLE else View.GONE
+    bodyTextView.apply {
+      text = latestEmail.body.replace("\n", " ")
+      visibility = if (latestEmail.showBodyInThreads) View.VISIBLE else View.GONE
+
+      when {
+        latestEmail.hasNonImageAttachments -> setDrawableStart(R.drawable.ic_attachment_24dp)
+        else -> setDrawableStart(null)
+      }
+    }
   }
 }

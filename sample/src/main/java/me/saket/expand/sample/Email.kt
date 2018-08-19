@@ -9,4 +9,6 @@ data class Email(
 ) {
 
   val hasImageAttachments = attachments.any { it is Attachment.UnsplashImage }
+
+  val hasNonImageAttachments = attachments.any { it is Attachment.Pdf }
 }

@@ -42,8 +42,12 @@
       android:layout_height="wrap_content"
       android:layout_below="@+id/emailthread_item_subject"
       android:layout_marginTop="8dp"
+      android:drawablePadding="16dp"
+      android:drawableStart="@drawable/ic_attachment_24dp"
+      android:drawableTint="#45676E"
       android:ellipsize="end"
       android:fontFamily="@font/worksans_regular"
+      android:gravity="center_vertical"
       android:maxLines="1"
       android:textColor="#3A4A51"
       tools:text="I'll be in your neighborhood doing errands..." />
