@@ -35,7 +35,7 @@ object EmailRepository {
             subject = "Bonjour from Paris",
             emails = listOf(
                 Email(
-                    body = "Here are some great shots from my trip",
+                    body = "Here are some great shots from my trip to Paris this summer!",
                     attachments = listOf(
                         Attachment.Image(R.drawable.attachment_1),
                         Attachment.Image(R.drawable.attachment_2),

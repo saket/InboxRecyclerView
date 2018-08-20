@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:ignore="ContentDescription">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="160dp">
+
+    <ImageView
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="0.6"
+      android:scaleType="centerCrop"
+      android:src="@drawable/attachment_1" />
+
+    <ImageView
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_marginStart="4dp"
+      android:layout_weight="0.3"
+      android:scaleType="centerCrop"
+      android:src="@drawable/attachment_2" />
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:layout_marginTop="4dp">
+
+    <ImageView
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:scaleType="centerCrop"
+      android:src="@drawable/attachment_3" />
+
+    <ImageView
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_marginStart="4dp"
+      android:layout_weight="1"
+      android:scaleType="centerCrop"
+      android:src="@drawable/attachment_4" />
+
+    <ImageView
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_marginStart="4dp"
+      android:layout_weight="1"
+      android:scaleType="centerCrop"
+      android:src="@drawable/attachment_5" />
+  </LinearLayout>
+
+  <ImageView
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:layout_marginTop="4dp"
+    android:scaleType="centerCrop"
+    android:src="@drawable/attachment_6" />
+</LinearLayout>

@@ -3,15 +3,19 @@ package me.saket.expand.sample.email
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.functions.Consumer
+import me.saket.expand.ExpandablePageLayout
+import me.saket.expand.OnPullToCollapseInterceptor
 import me.saket.expand.sample.EmailRepository
 import me.saket.expand.sample.EmailThread
 import me.saket.expand.sample.EmailThreadId
@@ -19,12 +23,15 @@ import me.saket.expand.sample.R
 
 class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
 
+  private val emailThreadPage by lazy { view!!.parent as ExpandablePageLayout }
+  private val scrollableContainer by lazy { view!!.findViewById<ScrollView>(R.id.emailthread_scrollable_container) }
   private val subjectTextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_subject) }
   private val byline1TextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_byline1) }
   private val byline2TextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_byline2) }
   private val avatarImageView by lazy { view!!.findViewById<ImageView>(R.id.emailthread_avatar) }
   private val bodyTextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_body) }
   private val collapseButton by lazy { view!!.findViewById<ImageButton>(R.id.emailthread_collapse) }
+  private val attachmentContainer by lazy { view!!.findViewById<ViewGroup>(R.id.emailthread_attachment_container) }
 
   private val threadIds = BehaviorRelay.create<EmailThreadId>()
   private val onDestroys = PublishRelay.create<Any>()
@@ -48,6 +55,13 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
     collapseButton.setOnClickListener {
       requireActivity().onBackPressed()
     }
+
+    emailThreadPage.setPullToCollapseIntercepter(object : OnPullToCollapseInterceptor {
+      override fun onInterceptPullToCollapseGesture(event: MotionEvent, downX: Float, downY: Float, upwardPagePull: Boolean): Boolean {
+        val directionInt = if (upwardPagePull) +1 else -1
+        return scrollableContainer.canScrollVertically(directionInt)
+      }
+    })
   }
 
   override fun onDestroyView() {
@@ -92,5 +106,16 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
 
     bodyTextView.text = latestEmail.body
     avatarImageView.setImageResource(emailThread.sender.profileImageRes!!)
+
+    renderAttachments(emailThread)
+  }
+
+  private fun renderAttachments(thread: EmailThread) {
+    attachmentContainer.removeAllViews()
+
+    val latestEmail = thread.emails.last()
+    if (latestEmail.hasImageAttachments) {
+      View.inflate(context, R.layout.include_email_image_gallery, attachmentContainer)
+    }
   }
 }
