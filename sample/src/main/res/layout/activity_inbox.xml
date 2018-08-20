@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
@@ -17,4 +18,27 @@
     android:id="@+id/inbox_email_thread_page"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
+
+  <com.google.android.material.bottomappbar.BottomAppBar
+    android:id="@+id/inbox_bottomappbar"
+    style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom" />
+
+  <ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:padding="16dp"
+    android:src="@drawable/ic_search_24dp"
+    tools:ignore="ContentDescription" />
+
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/inbox_fab"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:tint="#172629"
+    app:layout_anchor="@+id/inbox_bottomappbar"
+    app:srcCompat="@drawable/ic_edit_24dp" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
