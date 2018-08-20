@@ -16,6 +16,7 @@ import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.functions.Consumer
 import me.saket.expand.ExpandablePageLayout
 import me.saket.expand.OnPullToCollapseInterceptor
+import me.saket.expand.SimpleExpandablePageStateChangeCallbacks
 import me.saket.expand.sample.EmailRepository
 import me.saket.expand.sample.EmailThread
 import me.saket.expand.sample.EmailThreadId
@@ -60,6 +61,12 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
       override fun onInterceptPullToCollapseGesture(event: MotionEvent, downX: Float, downY: Float, upwardPagePull: Boolean): Boolean {
         val directionInt = if (upwardPagePull) +1 else -1
         return scrollableContainer.canScrollVertically(directionInt)
+      }
+    })
+
+    emailThreadPage.addStateChangeCallbacks(object : SimpleExpandablePageStateChangeCallbacks() {
+      override fun onPageCollapsed() {
+        scrollableContainer.scrollTo(0, 0)
       }
     })
   }
