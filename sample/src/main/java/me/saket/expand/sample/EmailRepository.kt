@@ -37,12 +37,10 @@ object EmailRepository {
                 Email(
                     body = "Here are some great shots from my trip",
                     attachments = listOf(
-                        Attachment.UnsplashImage(id = "1476224203421-9ac39bcb3327"),
-                        Attachment.UnsplashImage(id = "1508247687564-2289326346a2"),
-                        // Eiffel Tower: 1527142253992-b076b9d7e90b, 1533294631096-58bc8d971a68, 1528989791086-a13167c02428
-                        Attachment.UnsplashImage(id = "1527142253992-b076b9d7e90b"),
-                        Attachment.UnsplashImage(id = "1513870931673-fa0ab3de2e09")
-                    ),
+                        Attachment.Image(R.drawable.attachment_1),
+                        Attachment.Image(R.drawable.attachment_2),
+                        Attachment.Image(R.drawable.attachment_3),
+                        Attachment.Image(R.drawable.attachment_4)),
                     recipients = listOf(user),
                     timestamp = "6 hrs ago"))
         ),

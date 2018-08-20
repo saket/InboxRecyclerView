@@ -8,7 +8,7 @@ data class Email(
     val timestamp: String
 ) {
 
-  val hasImageAttachments = attachments.any { it is Attachment.UnsplashImage }
+  val hasImageAttachments = attachments.any { it is Attachment.Image }
 
   val hasNonImageAttachments = attachments.any { it is Attachment.Pdf }
 }

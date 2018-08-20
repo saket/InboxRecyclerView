@@ -39,7 +39,7 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
       android:id="@+id/emailthread_avatar"
-      style="@style/SenderAvatar"
+      style="@style/Expand.SenderAvatar"
       android:layout_width="44dp"
       android:layout_height="44dp"
       android:layout_alignParentEnd="true"

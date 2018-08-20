@@ -13,7 +13,9 @@
     <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
   </style>
 
-  <style name="SenderAvatar">
+  <style name="Expand" />
+
+  <style name="Expand.SenderAvatar">
     <item name="civ_border_color">#F0F2F4</item>
     <item name="civ_border_width">1dp</item>
   </style>

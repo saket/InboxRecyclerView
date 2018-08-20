@@ -44,7 +44,7 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
       android:id="@+id/emailthread_item_avatar"
-      style="@style/SenderAvatar"
+      style="@style/Expand.SenderAvatar"
       android:layout_width="40dp"
       android:layout_height="40dp"
       android:layout_alignParentEnd="true"
@@ -58,6 +58,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_below="@+id/emailthread_item_subject"
+      android:layout_marginEnd="24dp"
       android:layout_marginTop="7dp"
       android:drawablePadding="16dp"
       android:drawableStart="@drawable/ic_attachment_24dp"
@@ -68,5 +69,14 @@
       android:maxLines="1"
       android:textColor="#3A4A51"
       tools:text="I'll be in your neighborhood doing errands..." />
+
+    <ViewStub
+      android:id="@+id/emailthread_image_attachments_stub"
+      android:layout_width="match_parent"
+      android:layout_height="100dp"
+      android:layout_below="@+id/emailthread_item_body"
+      android:layout_marginTop="16dp"
+      android:inflatedId="@+id/emailthread_image_attachments"
+      android:layout="@layout/include_thread_image_attachments" />
   </RelativeLayout>
 </FrameLayout>

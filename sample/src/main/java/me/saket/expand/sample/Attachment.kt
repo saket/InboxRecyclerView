@@ -1,10 +1,10 @@
 package me.saket.expand.sample
 
+import androidx.annotation.DrawableRes
+
 sealed class Attachment {
 
-  data class UnsplashImage(val id: String) : Attachment() {
-    fun url(width: Int): String = "https://images.unsplash.com/photo-$id?w=$width&q=80"
-  }
+  data class Image(@DrawableRes val drawableRes: Int) : Attachment()
 
   object Pdf : Attachment()
 }
