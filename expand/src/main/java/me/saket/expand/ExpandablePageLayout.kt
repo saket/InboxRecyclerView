@@ -691,8 +691,8 @@ open class ExpandablePageLayout(
     stateChangeCallbacks!!.remove(callbacks)
   }
 
-  fun setPullToCollapseIntercepter(intercepter: OnPullToCollapseInterceptor) {
-    onPullToCollapseInterceptor = intercepter
+  fun setPullToCollapseInterceptor(interceptor: OnPullToCollapseInterceptor) {
+    onPullToCollapseInterceptor = interceptor
   }
 
   /**

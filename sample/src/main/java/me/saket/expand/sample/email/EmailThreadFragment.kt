@@ -57,7 +57,7 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
       requireActivity().onBackPressed()
     }
 
-    emailThreadPage.setPullToCollapseIntercepter(object : OnPullToCollapseInterceptor {
+    emailThreadPage.setPullToCollapseInterceptor(object : OnPullToCollapseInterceptor {
       override fun onInterceptPullToCollapseGesture(event: MotionEvent, downX: Float, downY: Float, upwardPagePull: Boolean): Boolean {
         val directionInt = if (upwardPagePull) +1 else -1
         return scrollableContainer.canScrollVertically(directionInt)

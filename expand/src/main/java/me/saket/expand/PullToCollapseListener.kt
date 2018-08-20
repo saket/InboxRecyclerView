@@ -98,7 +98,7 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
         // When it's confirmed that the movement distance is > touchSlop and this is indeed a gesture,
         // we check for two things:
         // 1. Whether or not this is a horizontal swipe.
-        // 2. Whether a registered intercepter wants to intercept this gesture.
+        // 2. Whether a registered interceptor wants to intercept this gesture.
         // These two checks should only happen once per gesture, just when the gesture starts. The
         // flags will reset when the finger is lifted.
 
