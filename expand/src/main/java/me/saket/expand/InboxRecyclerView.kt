@@ -16,6 +16,7 @@ import android.view.Window
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.parcel.Parcelize
+import me.saket.expand.Views.executeOnNextLayout
 
 /**
  * Mimics the expandable layout in the Inbox app by Google. #AcheDin.
@@ -118,7 +119,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
       return
     }
 
-    Views.executeOnNextLayout(this) {
+    this.executeOnNextLayout {
       // Fix list items.
       if (page!!.isExpandedOrExpanding) {
         animateItemsOutOfTheWindow(page!!.isExpanded)

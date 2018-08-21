@@ -13,7 +13,10 @@ import android.widget.RelativeLayout
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 
 /** Animates change in dimensions by clipping bounds instead of changing the layout params. */
-abstract class BaseExpandablePageLayout : RelativeLayout {
+abstract class BaseExpandablePageLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : RelativeLayout(context, attrs) {
 
   val clippedRect = Rect()
   private var dimensionAnimator: ValueAnimator? = null
@@ -30,11 +33,7 @@ abstract class BaseExpandablePageLayout : RelativeLayout {
   val animationInterpolator: TimeInterpolator
     get() = ANIM_INTERPOLATOR
 
-  constructor(context: Context) : super(context) {
-    init()
-  }
-
-  constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+  init {
     init()
   }
 

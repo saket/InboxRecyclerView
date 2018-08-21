@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import me.saket.expand.Views.executeOnMeasure
 
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
@@ -19,9 +20,9 @@ import java.util.ArrayList
 /**
  * An expandable / collapsible layout for use with a [InboxRecyclerView].
  */
-open class ExpandablePageLayout(
+open class ExpandablePageLayout @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet? = null
 ) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener {
 
   private var activityToolbar: View? = null  // Toolbar inside the parent page, not in this page.
@@ -270,10 +271,10 @@ open class ExpandablePageLayout(
     // Hide the toolbar as soon as we have its height (as expandImmediately()
     // could have been called before the Views were drawn).
     if (activityToolbar != null) {
-      Views.executeOnMeasure(activityToolbar!!) { updateToolbarTranslationY(false, 0F) }
+      activityToolbar!!.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
     }
 
-    Views.executeOnMeasure(this) {
+    this.executeOnMeasure {
       // Cover the whole screen right away. Don't need any animations.
       alignPageToCoverScreen()
 

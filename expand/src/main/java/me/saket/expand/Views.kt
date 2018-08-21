@@ -12,10 +12,10 @@ internal object Views {
    * Execute a runnable when the next global layout happens for a `View`. Example usage includes
    * waiting for a list to draw its children just after you have updated its adapter's data-set.
    */
-  fun executeOnNextLayout(view: View, listener: () -> Unit) {
-    view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+  fun View.executeOnNextLayout(listener: () -> Unit) {
+    viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
       override fun onGlobalLayout() {
-        view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+        viewTreeObserver.removeOnGlobalLayoutListener(this)
         listener()
       }
     })
@@ -25,21 +25,21 @@ internal object Views {
    * Execute a runnable when a [view]'s dimensions get measured and is laid out on the screen.
    */
   @SuppressLint("LogNotTimber")
-  fun executeOnMeasure(view: View, listener: () -> Unit) {
-    if (view.isInEditMode || view.isLaidOut) {
+  fun View.executeOnMeasure(listener: () -> Unit) {
+    if (isInEditMode || isLaidOut) {
       listener()
       return
     }
 
-    view.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+    viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
       override fun onPreDraw(): Boolean {
-        if (view.isLaidOut) {
-          view.viewTreeObserver.removeOnPreDrawListener(this)
+        if (isLaidOut) {
+          viewTreeObserver.removeOnPreDrawListener(this)
           listener()
 
-        } else if (view.visibility == View.GONE) {
-          Log.w("Views", "View's visibility is set to Gone. It'll never be measured: $view")
-          view.viewTreeObserver.removeOnPreDrawListener(this)
+        } else if (visibility == View.GONE) {
+          Log.w("Views", "View's visibility is set to Gone. It'll never be measured: ${resources.getResourceEntryName(id)}")
+          viewTreeObserver.removeOnPreDrawListener(this)
         }
         return true
       }
