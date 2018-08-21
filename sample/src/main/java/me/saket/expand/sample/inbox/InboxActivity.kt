@@ -16,8 +16,6 @@ import me.saket.expand.sample.email.EmailThreadFragment
 import me.saket.expand.sample.widgets.ReversibleAnimatedVectorDrawable
 import java.util.concurrent.TimeUnit
 
-
-
 class InboxActivity : AppCompatActivity() {
 
   private val recyclerView by bindView<InboxRecyclerView>(R.id.inbox_recyclerview)
