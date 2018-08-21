@@ -38,7 +38,7 @@
     android:id="@+id/inbox_fab"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:src="@drawable/avd_edit_to_reply_all"
     android:tint="#172629"
-    app:layout_anchor="@+id/inbox_bottomappbar"
-    app:srcCompat="@drawable/ic_edit_24dp" />
+    app:layout_anchor="@+id/inbox_bottomappbar" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
