@@ -11,12 +11,24 @@
 
     <item name="android:statusBarColor">#D3DBDF</item>
     <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+
+    <item name="android:textViewStyle">@style/Expand.TextViewStyle</item>
   </style>
 
   <style name="Expand" />
 
+  <style name="Expand.TextViewStyle">
+    <item name="android:fontFamily">@font/worksans_regular</item>
+  </style>
+
   <style name="Expand.SenderAvatar">
     <item name="civ_border_color">#F0F2F4</item>
     <item name="civ_border_width">1dp</item>
+  </style>
+
+  <style name="Expand.FakeClickable">
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+    <item name="android:focusable">true</item>
+    <item name="android:clickable">true</item>
   </style>
 </resources>

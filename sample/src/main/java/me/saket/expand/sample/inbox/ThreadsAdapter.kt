@@ -15,6 +15,7 @@ import com.jakewharton.rxrelay2.PublishRelay
 import me.saket.expand.sample.Attachment
 import me.saket.expand.sample.EmailThread
 import me.saket.expand.sample.R
+import me.saket.expand.sample.exhaustive
 import me.saket.expand.sample.inbox.ThreadsAdapter.ViewType.NORMAL
 import me.saket.expand.sample.inbox.ThreadsAdapter.ViewType.WITH_IMAGE_ATTACHMENTS
 import me.saket.expand.sample.inbox.ThreadsAdapter.ViewType.values
@@ -85,13 +86,17 @@ open class EmailViewHolder(
     subjectTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, subjectTextSize.toFloat())
 
     bodyTextView.apply {
-      text = latestEmail.body.replace("\n", " ")
+      text = latestEmail.excerpt.replace("\n", " ")
       visibility = if (latestEmail.showBodyInThreads) View.VISIBLE else View.GONE
 
-      when {
-        latestEmail.hasNonImageAttachments -> setDrawableStart(R.drawable.ic_attachment_24dp)
-        else -> setDrawableStart(null)
-      }
+      val attachments = latestEmail.attachments
+      val attachment = attachments.firstOrNull()
+      when (attachment) {
+        is Attachment.Image -> setDrawableStart(null)
+        is Attachment.Pdf -> setDrawableStart(R.drawable.ic_attachment_24dp)
+        is Attachment.ShippingUpdate -> setDrawableStart(R.drawable.ic_attachment_24dp)
+        is Attachment.CalendarEvent, null -> setDrawableStart(null)
+      }.exhaustive()
     }
 
     avatarImageView.setImageResource(emailThread.sender.profileImageRes!!)

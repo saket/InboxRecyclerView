@@ -12,9 +12,10 @@ object EmailRepository {
             subject = "Package shipped!",
             emails = listOf(
                 Email(
-                    body = "Cucumber Mask Facial has shipped",
+                    excerpt = "Cucumber Mask Facial has shipped",
+                    body = "Cucumber Mask Facial has shipped. It is expected to arrive by 28th October.",
                     recipients = listOf(user),
-                    attachments = listOf(Attachment.Pdf),
+                    attachments = listOf(Attachment.ShippingUpdate),
                     timestamp = "15 mins ago"))
         ),
 
@@ -24,8 +25,10 @@ object EmailRepository {
             subject = "Brunch this weekend?",
             emails = listOf(
                 Email(
-                    body = "I'll be in your neighburhood doing errands",
+                    excerpt = "I'll be in your neighburhood doing errands",
+                    body = "I'll be in your neighburhood doing errands. Would you want to catch up?",
                     recipients = listOf(user),
+                    attachments = listOf(Attachment.CalendarEvent),
                     timestamp = "25 mins ago"))
         ),
 
@@ -68,6 +71,9 @@ object EmailRepository {
                       at her place next Saturday, hoping that if
                       we can find one person, a few more will
                       emerge. What do you say?
+
+                      Talk soon!
+                      Trevor
                     """.trimIndent(),
                     showBodyInThreads = false,
                     recipients = listOf(
@@ -83,7 +89,7 @@ object EmailRepository {
             subject = "Visiting Town Next Thursday",
             emails = listOf(
                 Email(
-                    body = "Hey there, I wanted to let you know I'll be visiting Wakanda on 31st August.",
+                    body = "Hey there, I wanted to let you know I'll be visiting Wakanda on 31st August. Can't wait to try out your shiny new road bike.",
                     recipients = listOf(user),
                     timestamp = "16 hrs ago"))
         ),

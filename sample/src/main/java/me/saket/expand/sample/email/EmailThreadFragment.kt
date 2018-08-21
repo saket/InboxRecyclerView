@@ -17,10 +17,15 @@ import io.reactivex.functions.Consumer
 import me.saket.expand.ExpandablePageLayout
 import me.saket.expand.OnPullToCollapseInterceptor
 import me.saket.expand.SimpleExpandablePageStateChangeCallbacks
+import me.saket.expand.sample.Attachment.CalendarEvent
+import me.saket.expand.sample.Attachment.Image
+import me.saket.expand.sample.Attachment.Pdf
+import me.saket.expand.sample.Attachment.ShippingUpdate
 import me.saket.expand.sample.EmailRepository
 import me.saket.expand.sample.EmailThread
 import me.saket.expand.sample.EmailThreadId
 import me.saket.expand.sample.R
+import me.saket.expand.sample.exhaustive
 
 class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
 
@@ -120,9 +125,32 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
   private fun renderAttachments(thread: EmailThread) {
     attachmentContainer.removeAllViews()
 
-    val latestEmail = thread.emails.last()
-    if (latestEmail.hasImageAttachments) {
-      View.inflate(context, R.layout.include_email_image_gallery, attachmentContainer)
-    }
+    val attachments = thread.emails.last().attachments
+
+    val attachment = attachments.firstOrNull()
+    when (attachment) {
+      is Image -> renderImageAttachments()
+      is Pdf -> renderPdfAttachment(attachment)
+      is CalendarEvent -> renderCalendarEvent(attachment)
+      is ShippingUpdate -> renderShippingUpdate(attachment)
+      null -> {
+      }
+    }.exhaustive()
+  }
+
+  private fun renderImageAttachments() {
+    View.inflate(context, R.layout.include_email_image_gallery, attachmentContainer)
+  }
+
+  private fun renderPdfAttachment(attachment: Pdf) {
+    View.inflate(context, R.layout.include_email_pdf_attachment, attachmentContainer)
+  }
+
+  private fun renderCalendarEvent(attachment: CalendarEvent) {
+    View.inflate(context, R.layout.include_email_calendar_invite, attachmentContainer)
+  }
+
+  private fun renderShippingUpdate(attachment: ShippingUpdate) {
+    View.inflate(context, R.layout.include_email_shipping_update, attachmentContainer)
   }
 }

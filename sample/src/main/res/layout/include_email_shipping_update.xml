@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  style="@style/Expand.FakeClickable"
+  android:orientation="horizontal">
+
+  <ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="@color/color_accent"
+    android:padding="24dp"
+    android:src="@drawable/ic_shopping_cart_24dp"
+    android:tint="#172629"
+    tools:ignore="ContentDescription" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#EEF0F2"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
+    android:paddingEnd="24dp"
+    android:paddingStart="24dp"
+    android:paddingTop="16dp">
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:fontFamily="@font/worksans_bold"
+      android:text="Cucumber Mask Facial"
+      android:textColor="@color/black_opacity_75"
+      android:textSize="16sp"
+      tools:ignore="HardcodedText" />
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:text="5 masks, 0.67 fl oz"
+      tools:ignore="HardcodedText" />
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:text="$10.99"
+      tools:ignore="HardcodedText" />
+  </LinearLayout>
+</LinearLayout>
