@@ -19,6 +19,7 @@ import me.saket.expand.sample.exhaustive
 import me.saket.expand.sample.inbox.ThreadsAdapter.ViewType.NORMAL
 import me.saket.expand.sample.inbox.ThreadsAdapter.ViewType.WITH_IMAGE_ATTACHMENTS
 import me.saket.expand.sample.inbox.ThreadsAdapter.ViewType.values
+import me.saket.expand.sample.widgets.setDrawableStart
 
 class ThreadsAdapter : ListAdapter<EmailThread, EmailViewHolder>(EmailThread.ItemDiffer()) {
 

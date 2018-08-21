@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import me.saket.expand.sample.Attachment
 import me.saket.expand.sample.R
+import me.saket.expand.sample.widgets.executeOnMeasure
 
 class ImageAttachmentAdapter(
     private val clickListener: () -> Unit

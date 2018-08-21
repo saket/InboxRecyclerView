@@ -1,4 +1,4 @@
-package me.saket.expand.sample.inbox
+package me.saket.expand.sample.widgets
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
