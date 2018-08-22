@@ -139,19 +139,23 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
 
   // ======== EXPAND / COLLAPSE ======== //
 
-  /**
-   * @param itemPosition Item's position in the adapter.
-   */
-  fun expandItem(itemPosition: Int, itemId: Long) {
+  private fun ensurePageIsSetup() {
     if (page == null) {
       throw IllegalAccessError("Did you forget to call InboxRecyclerView.setup(ExpandablePage, Toolbar)")
     }
     if (!layoutManagerCreated) {
-      throw IllegalAccessError("LayoutManager isn't set. #Use createLayoutManager()")
+      throw IllegalAccessError("LayoutManager isn't set. Use createLayoutManager()")
     }
     if (adapter == null) {
       throw AssertionError("Adapter isn't attached yet. No items to expand.")
     }
+  }
+
+  /**
+   * @param itemPosition Item's position in the adapter.
+   */
+  fun expandItem(itemPosition: Int, itemId: Long) {
+    ensurePageIsSetup()
 
     if (page!!.isExpandedOrExpanding) {
       return
@@ -189,12 +193,17 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     }
   }
 
-  /**
-   * Expands from arbitrary location. Presently the top.
-   */
+  /** Expand from the top, pushing all items out of the window towards the bottom. */
   fun expandFromTop() {
-    // TODO: This will possibly crash in expandItem(). Test before using.
-    expandItem(-1, -1)
+    ensurePageIsSetup()
+
+    expandInfo = ExpandInfo(-1, -1, Rect(left, top, right, top))
+    animateItemsOutOfTheWindow()
+    if (!isLaidOut && visibility != View.GONE) {
+      expandImmediately()
+    } else {
+      page!!.expand(getExpandInfo())
+    }
   }
 
   /**
