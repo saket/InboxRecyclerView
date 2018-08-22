@@ -5,14 +5,17 @@
     <item name="colorPrimaryDark">@color/color_primary_dark</item>
     <item name="colorAccent">@color/color_accent</item>
     <item name="android:windowBackground">@color/window_background</item>
+    <item name="android:statusBarColor">#D3DBDF</item>
+    <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+    <item name="android:textViewStyle">@style/Expand.TextViewStyle</item>
 
     <!-- Layout preview complains without this :S -->
     <item name="coordinatorLayoutStyle">@style/Widget.Support.CoordinatorLayout</item>
+  </style>
 
-    <item name="android:statusBarColor">#D3DBDF</item>
-    <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
-
-    <item name="android:textViewStyle">@style/Expand.TextViewStyle</item>
+  <style name="AppTheme.TransparentWindow">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
   </style>
 
   <style name="Expand" />

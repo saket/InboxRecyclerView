@@ -2,6 +2,7 @@ package me.saket.expand.sample.inbox
 
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxrelay2.PublishRelay
@@ -12,6 +13,7 @@ import me.saket.expand.InboxRecyclerView
 import me.saket.expand.SimpleExpandablePageStateChangeCallbacks
 import me.saket.expand.sample.EmailRepository
 import me.saket.expand.sample.R
+import me.saket.expand.sample.about.AboutActivity
 import me.saket.expand.sample.email.EmailThreadFragment
 import me.saket.expand.sample.widgets.ReversibleAnimatedVectorDrawable
 import java.util.concurrent.TimeUnit
@@ -21,6 +23,7 @@ class InboxActivity : AppCompatActivity() {
   private val recyclerView by bindView<InboxRecyclerView>(R.id.inbox_recyclerview)
   private val emailPageLayout by bindView<ExpandablePageLayout>(R.id.inbox_email_thread_page)
   private val fab by bindView<FloatingActionButton>(R.id.inbox_fab)
+  private val settingsButton by bindView<View>(R.id.inbox_settings)
 
   private val onDestroy = PublishRelay.create<Any>()
   private val threadsAdapter = ThreadsAdapter()
@@ -32,6 +35,10 @@ class InboxActivity : AppCompatActivity() {
     setupThreadList()
     setupThreadPage()
     setupFab()
+
+    settingsButton.setOnClickListener {
+      startActivity(AboutActivity.intent(this))
+    }
   }
 
   override fun onDestroy() {

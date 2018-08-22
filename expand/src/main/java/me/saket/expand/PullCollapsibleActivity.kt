@@ -13,7 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import me.saket.expand.Views.executeOnMeasure
 
-/** An Activity that can be dismissed by pulling it vertically. */
+/**
+ * An Activity that can be dismissed by pulling it vertically.
+ * Requires these these properties to be present in the Activity theme:
+ *
+ * <item name="android:windowIsTranslucent">true</item>
+ * <item name="android:colorBackgroundCacheHint">@null</item>
+ */
 abstract class PullCollapsibleActivity : AppCompatActivity() {
 
   private lateinit var activityPageLayout: StandaloneExpandablePageLayout
@@ -79,14 +85,6 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
     pageLayout.elevation = resources.getDimensionPixelSize(R.dimen.pull_collapsible_activity_elevation).toFloat()
     pageLayout.background = windowBackgroundFromTheme()
 
-    // Unexpected, but setting the window's background as transparent
-    // seems to be working perfectly fine. If I remember correctly,
-    // this used to result in the background getting rendered as a
-    // solid black color on older Android versions. If you're reading
-    // this and the background isn't transparent, try setting these
-    // in your theme:
-    // <item name="android:windowIsTranslucent">true</item>
-    // <item name="android:colorBackgroundCacheHint">@null</item>
     window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
     if (pullCollapsibleEnabled) {

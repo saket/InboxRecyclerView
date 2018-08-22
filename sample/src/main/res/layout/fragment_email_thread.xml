@@ -66,7 +66,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_toStartOf="@+id/emailthread_avatar"
-        android:fontFamily="@font/worksans_regular"
         android:textColor="#414344"
         tools:text="revor — 12 hrs ago" />
 
@@ -78,7 +77,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_toStartOf="@+id/emailthread_avatar"
-        android:fontFamily="@font/worksans_regular"
         android:textColor="#657D78"
         android:textSize="12sp"
         tools:text="To me" />
@@ -91,7 +89,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:fontFamily="@font/worksans_regular"
         android:lineSpacingExtra="8dp"
         android:textColor="#3C4242"
         android:textSize="16sp"

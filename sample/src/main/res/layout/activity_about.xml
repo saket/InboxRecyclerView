@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:layout_margin="4dp"
+  android:background="@color/white"
+  android:orientation="vertical">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:gravity="center_vertical">
+
+    <ImageButton
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/about_navigation_up"
+      android:layout_margin="8dp"
+      android:background="?attr/selectableItemBackgroundBorderless"
+      android:padding="8dp"
+      android:src="@drawable/ic_close_24dp"
+      android:tint="#506E76"
+      tools:ignore="ContentDescription" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="1dp"
+      android:fontFamily="@font/worksans_bold"
+      android:text="About"
+      android:textColor="#2E3D3B"
+      android:textSize="20sp"
+      tools:ignore="HardcodedText" />
+  </LinearLayout>
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:background="#F5F5F5" />
+
+  <LinearLayout
+    android:id="@+id/about_github"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#EEF0F2"
+    android:layout_margin="16dp"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:orientation="horizontal">
+
+    <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:background="@color/color_accent"
+      android:padding="20dp"
+      android:src="@drawable/ic_github_24dp"
+      android:tint="#172629"
+      tools:ignore="ContentDescription" />
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingBottom="16dp"
+      android:paddingEnd="24dp"
+      android:paddingStart="24dp"
+      android:paddingTop="16dp">
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/worksans_bold"
+        android:text="View on Github"
+        android:textColor="@color/black_opacity_75"
+        android:textSize="16sp"
+        tools:ignore="HardcodedText" />
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="github.com/saket/expand"
+        tools:ignore="HardcodedText" />
+    </LinearLayout>
+  </LinearLayout>
+
+  <TextView
+    android:id="@+id/about_body"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:textColorLink="@color/blue_gray_500"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:lineSpacingExtra="8dp"
+    android:textSize="16sp" />
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginBottom="16dp"
+    android:layout_weight="1"
+    android:gravity="bottom"
+    android:text="Made without any love in Bangalore"
+    android:textColor="#656D73"
+    tools:ignore="HardcodedText" />
+</LinearLayout>
+

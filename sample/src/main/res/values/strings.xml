@@ -1,3 +1,9 @@
 <resources>
   <string name="app_name">Expand</string>
+
+  <string name="about_body">
+    This sample app is a recreation of <a href="https://material.io/design/material-studies/reply.html">Reply</a>,
+    an app designed by Google as a case study for Material Design components and theming. All photos used in this
+    app were taken from <a href="https://unsplash.com/">Unsplash</a>.
+  </string>
 </resources>

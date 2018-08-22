@@ -24,15 +24,18 @@
     style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom" />
+    android:layout_gravity="bottom">
 
-  <ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom|end"
-    android:padding="16dp"
-    android:src="@drawable/ic_search_24dp"
-    tools:ignore="ContentDescription" />
+    <ImageButton
+      android:id="@+id/inbox_settings"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|end"
+      android:background="?attr/selectableItemBackgroundBorderless"
+      android:padding="16dp"
+      android:src="@drawable/ic_settings_24dp"
+      tools:ignore="ContentDescription" />
+  </com.google.android.material.bottomappbar.BottomAppBar>
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/inbox_fab"

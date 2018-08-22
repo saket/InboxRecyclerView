@@ -19,5 +19,9 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+
+    <activity
+      android:name=".about.AboutActivity"
+      android:theme="@style/AppTheme.TransparentWindow" />
   </application>
 </manifest>

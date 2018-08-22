@@ -24,7 +24,6 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_toStartOf="@+id/emailthread_item_avatar"
-      android:fontFamily="@font/worksans_regular"
       android:textColor="#3C4D54"
       android:textSize="13sp"
       tools:text="Google Express - 15 mins ago" />
@@ -64,7 +63,6 @@
       android:drawableStart="@drawable/ic_attachment_24dp"
       android:drawableTint="#45676E"
       android:ellipsize="end"
-      android:fontFamily="@font/worksans_regular"
       android:gravity="center_vertical"
       android:maxLines="1"
       android:textColor="#3A4A51"
