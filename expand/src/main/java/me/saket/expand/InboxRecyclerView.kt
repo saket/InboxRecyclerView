@@ -55,18 +55,18 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
 
   fun saveExpandableState(outState: Bundle) {
     if (page != null) {
-      outState.putBoolean(KEY_IS_EXPANDED, page!!.isExpanded)
+      outState.putParcelable(KEY_EXPAND_INFO, expandInfo)
     }
   }
 
   /** Letting Activities handle restoration manually so that the setup can happen before onRestore gets called.  */
   fun restoreExpandableState(savedInstance: Bundle) {
-    val wasExpanded = savedInstance.getBoolean(KEY_IS_EXPANDED)
-    if (wasExpanded) {
+    expandInfo = savedInstance.getParcelable(KEY_EXPAND_INFO) as ExpandInfo?
+    if (expandInfo != null) {
       if (page == null) {
-        throw NullPointerException("setExpandablePage() must be called before handleOnRetainInstance()")
+        throw NullPointerException("setExpandablePage() must be called before calling restoreExpandableState()")
       }
-      page!!.expandImmediately()
+      expandImmediately()
     }
   }
 
@@ -211,10 +211,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
    */
   fun expandImmediately() {
     page!!.expandImmediately()
-
-    // This will push all the list items to the bottom, as if the item
-    // above the 0th position was expanded
-    animateItemsOutOfTheWindow(true)
+    animateItemsOutOfTheWindow(immediate = true)
   }
 
   fun collapse() {
@@ -523,7 +520,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   }
 
   companion object {
-    private const val KEY_IS_EXPANDED = "isExpanded"
+    private const val KEY_EXPAND_INFO = "expand_info"
     private const val MIN_DIM = 0
     private const val MAX_DIM_FACTOR = 0.1F                       // [0..1]
     private const val MAX_DIM = (255 * MAX_DIM_FACTOR).toInt()    // [0..255]
