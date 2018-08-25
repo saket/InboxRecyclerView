@@ -248,11 +248,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     // Place the expandable page on top of the expanding item.
     alignPageWithExpandingItem(expandInfo)
 
-    // Animate!
-    animatePageExpandCollapse(true, width, height, expandInfo)
-
     // Callbacks, just before the animation starts.
     dispatchOnAboutToExpandCallback()
+
+    // Animate!
+    animatePageExpandCollapse(true, width, height, expandInfo)
   }
 
   /**

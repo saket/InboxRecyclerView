@@ -25,14 +25,24 @@ import me.saket.expand.page.ExpandablePageLayout
 class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(context, attrs), InternalPageCallbacks {
 
   var page: ExpandablePageLayout? = null
-    private set
+    private set(value) {
+      val oldPage = field
+      field = value!!
+
+      if (oldPage != null) {
+        itemExpandAnimator.onPageDetached(oldPage)
+      }
+      itemExpandAnimator.page = field!!
+      itemExpandAnimator.recyclerView = this
+      itemExpandAnimator.onPageAttached()
+    }
 
   private var expandInfo: ExpandInfo? = null             // Details about the currently expanded Item
   private val dimPaint: Paint
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
-  private var pendingItemsOutOfTheWindowAnimation: Boolean = false
   private var isFullyCoveredByPage: Boolean = false
+  private var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
 
   init {
     // For drawing an overlay shadow while the expandable page is fully expanded.
@@ -70,9 +80,9 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
    */
   fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View) {
     page = expandablePage
-    expandablePage.setToolbar(toolbar)
     expandablePage.setInternalStateCallbacksForList(this)
 
+    expandablePage.setToolbar(toolbar)
     toolbar.post {
       expandablePage.setPullToCollapseDistanceThreshold(toolbar.height)
     }
@@ -83,18 +93,9 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
    */
   fun setExpandablePage(expandablePage: ExpandablePageLayout, collapseDistanceThreshold: Int) {
     page = expandablePage
-    expandablePage.setPullToCollapseDistanceThreshold(collapseDistanceThreshold)
     expandablePage.setInternalStateCallbacksForList(this)
-  }
 
-  override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-    super.onLayout(changed, l, t, r, b)
-
-    // In case any expand() call was made before this list and its child Views were measured, perform it now.
-    if (pendingItemsOutOfTheWindowAnimation) {
-      pendingItemsOutOfTheWindowAnimation = false
-      animateItemsOutOfTheWindow(true)
-    }
+    expandablePage.setPullToCollapseDistanceThreshold(collapseDistanceThreshold)
   }
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -110,9 +111,11 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     // change happened.
     executeOnNextLayout {
       if (page!!.isExpandedOrExpanding) {
-        animateItemsOutOfTheWindow(page!!.isExpanded)
+        val immediate = page!!.isExpanded
+        animateItemsOutOfTheWindow(immediate)
       } else {
-        animateItemsBackToPosition(page!!.isCollapsed)
+        val immediate = page!!.isCollapsed
+        animateItemsBackToPosition(immediate)
       }
 
       if (page!!.currentState === ExpandablePageLayout.PageState.EXPANDING) {
@@ -205,7 +208,6 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     if (page!!.isCollapsedOrCollapsing) {
       return
     }
-    pendingItemsOutOfTheWindowAnimation = false
 
     // This ensures the items were present outside the window before collapse starts
     if (page!!.translationY == 0f) {
@@ -227,57 +229,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
    */
   @JvmOverloads
   internal fun animateItemsOutOfTheWindow(immediate: Boolean = false) {
-    if (!isLaidOut) {
-      // Neither this list has been drawn yet nor its child views.
-      pendingItemsOutOfTheWindowAnimation = true
-      return
-    }
-
-    val anchorPosition = getExpandInfo().expandedItemPosition
-    val listHeight = height
-
-    for (i in 0 until childCount) {
-      val view = getChildAt(i)
-
-      // 1. Anchor view to the top edge
-      // 2. Views above it out of the top edge
-      // 3. Views below it out of the bottom edge
-      val moveY: Float
-      val above = i <= anchorPosition
-
-      moveY = if (anchorPosition == -1 || view.height <= 0) {
-        // Item to expand not present in the list. Send all Views outside the bottom edge
-        (listHeight - paddingTop).toFloat()
-
-      } else {
-        val positionOffset = i - anchorPosition
-        (if (above)
-          (-view.top + (positionOffset * view.height)).toFloat()
-        else
-          listHeight - view.top + (view.height * (positionOffset - 1)).toFloat())
-      }
-
-      view.animate().cancel()
-      if (immediate.not()) {
-        view.animate()
-            .translationY(moveY)
-            .setDuration(page!!.animationDurationMillis)
-            .setInterpolator(page!!.animationInterpolator)
-            .setStartDelay(animationStartDelay.toLong())
-            .start()
-
-        if (anchorPosition == i) {
-          view.animate().alpha(0f).withLayer()
-        }
-
-      } else {
-        view.translationY = moveY
-        if (anchorPosition == i) {
-          view.alpha = 0f
-        }
-      }
-    }
-
+    // TODO: Move dimming logic into a separate class.
     if (immediate.not()) {
       val dimAnimator = ObjectAnimator.ofInt(dimPaint.alpha, MAX_DIM).apply {
         duration = page!!.animationDurationMillis
@@ -300,31 +252,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
    * Reverses animateItemsOutOfTheWindow() by moving all items back to their actual positions.
    */
   private fun animateItemsBackToPosition(immediate: Boolean) {
-    val childCount = childCount
-    for (i in 0 until childCount) {
-      val view = getChildAt(i) ?: continue
-
-      // Strangely, both the sections (above and below) are getting restored at the same time even when
-      // the animation duration is same. :O
-      // Update: Oh god. I confused time with speed. Not deleting this so that this comment always
-      // reminds me how stupid I can be at times.
-      view.animate().cancel()
-
-      if (immediate.not()) {
-        view.animate()
-            .alpha(1f)
-            .translationY(0f)
-            .setDuration(page!!.animationDurationMillis)
-            .setInterpolator(page!!.animationInterpolator)
-            .setStartDelay(animationStartDelay.toLong())
-            .start()
-
-      } else {
-        view.translationY = 0f
-        view.alpha = 1f
-      }
-    }
-
+    // TODO: Move dimming logic into a separate class.
     if (immediate.not()) {
       val dimAnimator = ObjectAnimator.ofInt(dimPaint.alpha, MIN_DIM).apply {
         duration = page!!.animationDurationMillis
@@ -358,14 +286,6 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   }
 
   override fun onPagePull(deltaY: Float) {
-    for (i in 0 until childCount) {
-      val itemView = getChildAt(i)
-
-      // Stop any ongoing animation in case the user started pulling
-      // while the list items were still animating (out of the window).
-      itemView.animate().cancel()
-      itemView.translationY = itemView.translationY + deltaY
-    }
     onPageBackgroundVisible()
   }
 
@@ -502,6 +422,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   @Parcelize
   data class ExpandInfo(
       // Position of the currently expanded item.
+      // TODO: Rename to index
       var expandedItemPosition: Int,
 
       // Adapter ID of the currently expanded item.
