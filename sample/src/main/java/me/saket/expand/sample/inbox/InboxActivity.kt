@@ -9,9 +9,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import kotterknife.bindView
-import me.saket.expand.ExpandablePageLayout
 import me.saket.expand.InboxRecyclerView
-import me.saket.expand.SimpleExpandablePageStateChangeCallbacks
+import me.saket.expand.page.ExpandablePageLayout
+import me.saket.expand.page.SimpleExpandablePageStateChangeCallbacks
 import me.saket.expand.sample.EmailRepository
 import me.saket.expand.sample.R
 import me.saket.expand.sample.about.AboutActivity

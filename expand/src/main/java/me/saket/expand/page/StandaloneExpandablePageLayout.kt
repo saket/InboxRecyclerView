@@ -1,8 +1,10 @@
-package me.saket.expand
+package me.saket.expand.page
 
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import me.saket.expand.InboxRecyclerView
+import me.saket.expand.InternalPageCallbacks
 
 /** Standalone because this page can live without an [InboxRecyclerView]. */
 class StandaloneExpandablePageLayout(

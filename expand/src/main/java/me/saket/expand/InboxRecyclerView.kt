@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.parcel.Parcelize
 import me.saket.expand.Views.executeOnNextLayout
+import me.saket.expand.page.ExpandablePageLayout
 
 /**
  * Mimics the expandable layout in the Inbox app by Google. #AcheDin.

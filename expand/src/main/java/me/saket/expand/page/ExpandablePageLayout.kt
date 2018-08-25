@@ -1,4 +1,4 @@
-package me.saket.expand
+package me.saket.expand.page
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -11,6 +11,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import me.saket.expand.InboxRecyclerView
+import me.saket.expand.InternalPageCallbacks
 import me.saket.expand.Views.executeOnMeasure
 
 import java.lang.reflect.InvocationTargetException

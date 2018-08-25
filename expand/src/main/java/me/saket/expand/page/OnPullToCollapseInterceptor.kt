@@ -1,4 +1,4 @@
-package me.saket.expand
+package me.saket.expand.page
 
 import android.view.MotionEvent
 

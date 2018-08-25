@@ -14,7 +14,7 @@
     android:paddingBottom="@dimen/bottom_spacing_for_bottomappbar"
     android:paddingTop="@dimen/emailthread_item_vertical_margin" />
 
-  <me.saket.expand.ExpandablePageLayout
+  <me.saket.expand.page.ExpandablePageLayout
     android:id="@+id/inbox_email_thread_page"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

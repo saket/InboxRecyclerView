@@ -1,4 +1,4 @@
-package me.saket.expand
+package me.saket.expand.page
 
 /**
  * Empty implementations of [PageStateChangeCallbacks]. This way, any custom listener that

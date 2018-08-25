@@ -14,9 +14,9 @@ import androidx.fragment.app.Fragment
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.functions.Consumer
-import me.saket.expand.ExpandablePageLayout
-import me.saket.expand.OnPullToCollapseInterceptor
-import me.saket.expand.SimpleExpandablePageStateChangeCallbacks
+import me.saket.expand.page.ExpandablePageLayout
+import me.saket.expand.page.OnPullToCollapseInterceptor
+import me.saket.expand.page.SimpleExpandablePageStateChangeCallbacks
 import me.saket.expand.sample.Attachment.CalendarEvent
 import me.saket.expand.sample.Attachment.Image
 import me.saket.expand.sample.Attachment.Pdf

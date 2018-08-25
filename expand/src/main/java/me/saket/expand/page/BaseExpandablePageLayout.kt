@@ -1,4 +1,4 @@
-package me.saket.expand
+package me.saket.expand.page
 
 import android.animation.ObjectAnimator
 import android.animation.TimeInterpolator
@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.RelativeLayout
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import me.saket.expand.InboxRecyclerView
 
 /** Animates change in dimensions by clipping bounds instead of changing the layout params. */
 abstract class BaseExpandablePageLayout @JvmOverloads constructor(

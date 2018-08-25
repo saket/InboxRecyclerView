@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import me.saket.expand.Views.executeOnMeasure
+import me.saket.expand.page.StandaloneExpandablePageLayout
 
 /**
  * An Activity that can be dismissed by pulling it vertically.
