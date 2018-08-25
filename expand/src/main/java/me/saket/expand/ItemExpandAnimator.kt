@@ -1,5 +1,7 @@
 package me.saket.expand
 
+import android.graphics.Rect
+import android.view.ViewTreeObserver
 import me.saket.expand.page.ExpandablePageLayout
 
 abstract class ItemExpandAnimator {
@@ -16,12 +18,25 @@ abstract class ItemExpandAnimator {
 // TODO: Combine attach and detach into a single function.
 class DefaultItemExpandAnimator : ItemExpandAnimator() {
 
-  private val pagePreDrawListener = {
-    onPageMove()
-    true
+  private val pagePreDrawListener = object : ViewTreeObserver.OnPreDrawListener {
+    private var lastTranslationY = 0F
+    private var lastClippedRect = Rect()
+    private var lastState = ExpandablePageLayout.PageState.COLLAPSED
+
+    override fun onPreDraw(): Boolean {
+      if (lastTranslationY != page.translationY || lastClippedRect != page.clippedRect || lastState != page.currentState) {
+        onPageMove()
+      }
+
+      lastTranslationY = page.translationY
+      lastClippedRect = page.clippedRect
+      lastState = page.currentState
+      return true
+    }
   }
 
   private val pageLayoutChangeListener = {
+    // Changes in the page's dimensions will get handled here.
     onPageMove()
   }
 

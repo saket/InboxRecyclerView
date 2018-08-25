@@ -36,8 +36,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var internalStateChangeCallbacksForNestedPage: InternalPageCallbacks? = null
   private var internalStateChangeCallbacksForInboxRecyclerView: InternalPageCallbacks? = null
 
-  var currentState: PageState? = null
-    private set
+  lateinit var currentState: PageState
   private var toolbarAnimator: ValueAnimator? = null
   private val expandedAlpha = 1F
   private var collapsedAlpha = 0F
