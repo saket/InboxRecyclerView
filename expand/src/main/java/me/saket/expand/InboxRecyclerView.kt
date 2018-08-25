@@ -37,12 +37,18 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
       itemExpandAnimator.onPageAttached()
     }
 
+  /** TODO: Doc.  */
+  var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
+    set(value) {
+      field.onPageDetached(page!!)
+      field = value
+    }
+
   private var expandInfo: ExpandInfo? = null             // Details about the currently expanded Item
   private val dimPaint: Paint
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
-  private var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
 
   init {
     // For drawing an overlay shadow while the expandable page is fully expanded.
