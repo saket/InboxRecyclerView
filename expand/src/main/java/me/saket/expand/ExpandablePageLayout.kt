@@ -472,6 +472,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     this.nestedPage = nestedPage
 
     nestedPage.setInternalStateCallbacksForNestedPage(object : InternalPageCallbacks {
+      override fun onPageAboutToExpand() {}
+
       override fun onPageAboutToCollapse() {
         onPageBackgroundVisible()
       }
@@ -546,6 +548,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     // The state change must happen after the subscribers have been
     // notified that the page is going to expand
     changeState(PageState.EXPANDING)
+
+    if (internalStateChangeCallbacksForNestedPage != null) {
+      internalStateChangeCallbacksForNestedPage!!.onPageAboutToExpand()
+    }
+    if (internalStateChangeCallbacksForInboxRecyclerView != null) {
+      internalStateChangeCallbacksForInboxRecyclerView!!.onPageAboutToExpand()
+    }
 
     if (stateChangeCallbacks != null) {
       // Reverse loop to let listeners remove themselves while in the loop.

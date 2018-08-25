@@ -40,6 +40,8 @@ class StandaloneExpandablePageLayout(
 
   internal fun setCallbacks(callbacks: Callbacks) {
     super.setInternalStateCallbacksForList(object : InternalPageCallbacks {
+      override fun onPageAboutToExpand() {}
+
       override fun onPageFullyCovered() {}
 
       override fun onPageAboutToCollapse() {}

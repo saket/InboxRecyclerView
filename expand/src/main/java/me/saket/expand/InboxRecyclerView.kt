@@ -32,7 +32,6 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   private var activityWindowOrigBackground: Drawable? = null
   private var pendingItemsOutOfTheWindowAnimation: Boolean = false
   private var isFullyCoveredByPage: Boolean = false
-  private var layoutManagerCreated: Boolean = false
 
   init {
     // For drawing an overlay shadow while the expandable page is fully expanded.
@@ -40,17 +39,6 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     dimPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     dimPaint.color = Color.BLACK
     dimPaint.alpha = MAX_DIM
-  }
-
-  fun createLayoutManager(): RecyclerView.LayoutManager {
-    layoutManagerCreated = true
-
-    // TODO: Create a custom LayoutManager and assert it in setLayoutManager().
-    return object : LinearLayoutManager(context) {
-      override fun scrollVerticallyBy(dy: Int, recycler: RecyclerView.Recycler?, state: RecyclerView.State?): Int {
-        return if (!canScroll()) 0 else super.scrollVerticallyBy(dy, recycler, state)
-      }
-    }
   }
 
   fun saveExpandableState(outState: Bundle) {
@@ -111,23 +99,21 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
 
-    // Must have gotten called because the keyboard was called / hidden. The items must maintain their
-    // positions, relative to the new bounds. Wait for Android to draw the child Views. Calling
-    // getChildCount() right now will return old values (that is, no. of children that were present
-    // before this height change happened.
     if (page == null) {
       return
     }
 
-    this.executeOnNextLayout {
-      // Fix list items.
+    // The items must maintain their positions, relative to the new bounds. Wait for
+    // Android to draw the child Views. Calling getChildCount() right now will return
+    // old values (that is, no. of children that were present before this height
+    // change happened.
+    executeOnNextLayout {
       if (page!!.isExpandedOrExpanding) {
         animateItemsOutOfTheWindow(page!!.isExpanded)
       } else {
         animateItemsBackToPosition(page!!.isCollapsed)
       }
 
-      // Fix expandable page (or else it gets stuck in the middle since it doesn't know of the size change).
       if (page!!.currentState === ExpandablePageLayout.PageState.EXPANDING) {
         page!!.animatePageExpandCollapse(true, width, height, getExpandInfo())
 
@@ -137,14 +123,9 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     }
   }
 
-  // ======== EXPAND / COLLAPSE ======== //
-
   private fun ensurePageIsSetup() {
     if (page == null) {
       throw IllegalAccessError("Did you forget to call InboxRecyclerView.setup(ExpandablePage, Toolbar)")
-    }
-    if (!layoutManagerCreated) {
-      throw IllegalAccessError("LayoutManager isn't set. Use createLayoutManager()")
     }
     if (adapter == null) {
       throw AssertionError("Adapter isn't attached yet. No items to expand.")
@@ -270,9 +251,9 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
       } else {
         val positionOffset = i - anchorPosition
         (if (above)
-          -view.top + positionOffset * view.height
+          (-view.top + (positionOffset * view.height)).toFloat()
         else
-          listHeight - view.top + view.height * (positionOffset - 1)).toFloat()
+          listHeight - view.top + (view.height * (positionOffset - 1)).toFloat())
       }
 
       view.animate().cancel()
@@ -280,7 +261,9 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
         view.animate()
             .translationY(moveY)
             .setDuration(page!!.animationDurationMillis)
-            .setInterpolator(page!!.animationInterpolator).startDelay = animationStartDelay.toLong()
+            .setInterpolator(page!!.animationInterpolator)
+            .setStartDelay(animationStartDelay.toLong())
+            .start()
 
         if (anchorPosition == i) {
           view.animate().alpha(0f).withLayer()
@@ -333,6 +316,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
             .setDuration(page!!.animationDurationMillis)
             .setInterpolator(page!!.animationInterpolator)
             .setStartDelay(animationStartDelay.toLong())
+            .start()
 
       } else {
         view.translationY = 0f
@@ -358,7 +342,12 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     }
   }
 
+  override fun onPageAboutToExpand() {
+    isLayoutFrozen = true
+  }
+
   override fun onPageAboutToCollapse() {
+    isLayoutFrozen = false
     onPageBackgroundVisible()
     postInvalidate()
   }
@@ -492,6 +481,18 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   fun optimizeActivityBackgroundOverdraw(activity: Activity) {
     activityWindow = activity.window
     activityWindowOrigBackground = activityWindow!!.decorView.background
+  }
+
+  override fun setAdapter(adapter: Adapter<*>?) {
+    val isLayoutFrozenBak = isLayoutFrozen
+    super.setAdapter(adapter)
+    isLayoutFrozen = isLayoutFrozenBak
+  }
+
+  override fun swapAdapter(adapter: Adapter<*>?, removeAndRecycleExistingViews: Boolean) {
+    val isLayoutFrozenBak = isLayoutFrozen
+    super.swapAdapter(adapter, removeAndRecycleExistingViews)
+    isLayoutFrozen = isLayoutFrozenBak
   }
 
   /**

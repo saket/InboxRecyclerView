@@ -4,6 +4,7 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
@@ -65,7 +66,7 @@ class InboxActivity : AppCompatActivity() {
   }
 
   private fun setupThreadList() {
-    recyclerView.layoutManager = recyclerView.createLayoutManager()
+    recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.setExpandablePage(emailPageLayout, resources.getDimensionPixelSize(R.dimen.inbox_email_page_pulltocollapse_threshold))
 
     threadsAdapter.submitList(EmailRepository.threads())
