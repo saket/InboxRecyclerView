@@ -46,7 +46,9 @@ class InboxRecyclerView(
   // TODO: Doc.
   var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
     set(value) {
-      field.onPageDetached(page!!)
+      if (page != null) {
+        field.onPageDetached(page!!)
+      }
       field = value
     }
 
