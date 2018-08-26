@@ -14,7 +14,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.Window
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.parcel.Parcelize
 import me.saket.expand.Views.executeOnNextLayout
 import me.saket.expand.page.ExpandablePageLayout
@@ -22,7 +21,10 @@ import me.saket.expand.page.ExpandablePageLayout
 /**
  * Mimics the expandable layout in the Inbox app by Google. #AcheDin.
  */
-class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(context, attrs), InternalPageCallbacks {
+class InboxRecyclerView(
+    context: Context,
+    attrs: AttributeSet
+) : ScrollSuppressibleRecyclerView(context, attrs), InternalPageCallbacks {
 
   var page: ExpandablePageLayout? = null
     private set(value) {
@@ -44,7 +46,9 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
       field = value
     }
 
-  private var expandInfo: ExpandInfo? = null             // Details about the currently expanded Item
+  /** Details about the currently expanded row. */
+  private var expandInfo: ExpandInfo? = null
+
   private val dimPaint: Paint
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
@@ -64,7 +68,10 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     }
   }
 
-  /** Letting Activities handle restoration manually so that the setup can happen before onRestore gets called.  */
+  /**
+   * Letting Activities handle restoration manually so that the setup can optionally
+   * happen before onRestore gets called.
+   * */
   fun restoreExpandableState(savedInstance: Bundle) {
     expandInfo = savedInstance.getParcelable(KEY_EXPAND_INFO) as ExpandInfo?
     if (expandInfo != null) {
@@ -76,11 +83,9 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   }
 
   /**
-   * TODO: Use page's setter instead.
-   *
    * Sets the [ExpandablePageLayout] and [Toolbar] to be used with this list. The toolbar
-   * gets pushed up when the page is expanding. It is also safe to call this method again and replace
-   * the ExpandablePage or Toolbar.
+   * gets pushed up when the page is expanding. It is also safe to call this method again
+   * and replace the ExpandablePage or Toolbar.
    *
    * The [toolbar]'s height is also used as the pull-to-collapse distance threshold.
    */
@@ -133,7 +138,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     }
   }
 
-  private fun ensurePageIsSetup() {
+  private fun ensureSetup() {
     if (page == null) {
       throw IllegalAccessError("Did you forget to call InboxRecyclerView.setup(ExpandablePage, Toolbar)")
     }
@@ -146,7 +151,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
    * @param itemPosition Item's position in the adapter.
    */
   fun expandItem(itemPosition: Int, itemId: Long) {
-    ensurePageIsSetup()
+    ensureSetup()
 
     if (page!!.isExpandedOrExpanding) {
       return
@@ -186,7 +191,7 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
 
   /** Expand from the top, pushing all items out of the window towards the bottom. */
   fun expandFromTop() {
-    ensurePageIsSetup()
+    ensureSetup()
 
     expandInfo = ExpandInfo(-1, -1, Rect(left, top, right, top))
     animateItemsOutOfTheWindow()
@@ -349,43 +354,8 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
     }
   }
 
-  private fun canScroll(): Boolean {
+  override fun canScrollProgrammatically(): Boolean {
     return page == null || page!!.isCollapsed
-  }
-
-  override fun scrollToPosition(position: Int) {
-    if (!canScroll()) {
-      return
-    }
-    super.scrollToPosition(position)
-  }
-
-  override fun smoothScrollToPosition(position: Int) {
-    if (!canScroll()) {
-      return
-    }
-    super.smoothScrollToPosition(position)
-  }
-
-  override fun smoothScrollBy(dx: Int, dy: Int) {
-    if (!canScroll()) {
-      return
-    }
-    super.smoothScrollBy(dx, dy)
-  }
-
-  override fun scrollTo(x: Int, y: Int) {
-    if (!canScroll()) {
-      return
-    }
-    super.scrollTo(x, y)
-  }
-
-  override fun scrollBy(x: Int, y: Int) {
-    if (!canScroll()) {
-      return
-    }
-    super.scrollBy(x, y)
   }
 
   /**
@@ -413,6 +383,8 @@ class InboxRecyclerView(context: Context, attrs: AttributeSet) : RecyclerView(co
   override fun setAdapter(adapter: Adapter<*>?) {
     val isLayoutFrozenBak = isLayoutFrozen
     super.setAdapter(adapter)
+
+    // isLayoutFrozen is reset when the adapter is changed.
     isLayoutFrozen = isLayoutFrozenBak
   }
 
