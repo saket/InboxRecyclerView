@@ -233,7 +233,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Expands this page (with animation) so that it fills the whole screen.
    */
-  internal fun expand(expandInfo: InboxRecyclerView.ExpandInfo) {
+  internal fun expand(expandedItem: InboxRecyclerView.ExpandedItem) {
     // Skip animations if Android hasn't measured Views yet.
     if (!isLaidOut && visibility != View.GONE) {
       throw IllegalAccessError("Width / Height not available to expand")
@@ -245,13 +245,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
 
     // Place the expandable page on top of the expanding item.
-    alignPageWithExpandingItem(expandInfo)
+    alignPageWithExpandingItem(expandedItem)
 
     // Callbacks, just before the animation starts.
     dispatchOnAboutToExpandCallback(animationDurationMillis)
 
     // Animate!
-    animatePageExpandCollapse(true, width, height, expandInfo)
+    animatePageExpandCollapse(true, width, height, expandedItem)
   }
 
   /**
@@ -289,20 +289,20 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Collapses this page, back to its original state.
    */
-  internal fun collapse(expandInfo: InboxRecyclerView.ExpandInfo) {
+  internal fun collapse(expandedItem: InboxRecyclerView.ExpandedItem) {
     // Ignore if already collapsed.
     if (currentState == PageState.COLLAPSED || currentState == PageState.COLLAPSING) {
       return
     }
 
     // Fire!
-    var targetWidth = expandInfo.expandedItemLocationRect.width()
-    val targetHeight = expandInfo.expandedItemLocationRect.height()
+    var targetWidth = expandedItem.expandedItemLocationRect.width()
+    val targetHeight = expandedItem.expandedItemLocationRect.height()
     if (targetWidth == 0) {
       // Page must have expanded immediately after a state restoration.
       targetWidth = width
     }
-    animatePageExpandCollapse(false, targetWidth, targetHeight, expandInfo)
+    animatePageExpandCollapse(false, targetWidth, targetHeight, expandedItem)
 
     // Send state callbacks that the city is going to collapse.
     dispatchOnPageAboutToCollapseCallback()
@@ -312,13 +312,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * Places the expandable page exactly on top of the expanding list item
    * (including matching its height with the list item)
    */
-  protected fun alignPageWithExpandingItem(expandInfo: InboxRecyclerView.ExpandInfo) {
+  protected fun alignPageWithExpandingItem(expandedItem: InboxRecyclerView.ExpandedItem) {
     // Match height and location.
     setClippedDimensions(
-        expandInfo.expandedItemLocationRect.width(),
-        expandInfo.expandedItemLocationRect.height()
+        expandedItem.expandedItemLocationRect.width(),
+        expandedItem.expandedItemLocationRect.height()
     )
-    translationY = expandInfo.expandedItemLocationRect.top.toFloat()
+    translationY = expandedItem.expandedItemLocationRect.top.toFloat()
   }
 
   fun alignPageToCoverScreen() {
@@ -326,13 +326,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     translationY = 0F
   }
 
-  fun animatePageExpandCollapse(expand: Boolean, targetWidth: Int, targetHeight: Int, expandInfo: InboxRecyclerView.ExpandInfo) {
-    var targetPageTranslationY = if (expand) 0F else expandInfo.expandedItemLocationRect.top.toFloat()
-    val targetPageTranslationX = if (expand) 0F else expandInfo.expandedItemLocationRect.left.toFloat()
+  fun animatePageExpandCollapse(expand: Boolean, targetWidth: Int, targetHeight: Int, expandedItem: InboxRecyclerView.ExpandedItem) {
+    var targetPageTranslationY = if (expand) 0F else expandedItem.expandedItemLocationRect.top.toFloat()
+    val targetPageTranslationX = if (expand) 0F else expandedItem.expandedItemLocationRect.left.toFloat()
 
     // If there's no record about the expanded list item (from whose place this page was expanded),
     // collapse just below the toolbar and not the window top to avoid closing the toolbar upon hiding.
-    if (!expand && expandInfo.expandedItemLocationRect.height() == 0) {
+    if (!expand && expandedItem.expandedItemLocationRect.height() == 0) {
       val toolbarBottom = if (activityToolbar != null) activityToolbar!!.bottom else 0
       targetPageTranslationY = Math.max(targetPageTranslationY, toolbarBottom.toFloat())
     }

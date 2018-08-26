@@ -17,7 +17,7 @@ import me.saket.expand.dimming.ItemDimmer
 import me.saket.expand.page.ExpandablePageLayout
 
 /**
- * Mimics the expandable layout in the Inbox app by Google. #AcheDin.
+ * A RecyclerView where items can expand and collapse to and from an [ExpandablePageLayout].
  */
 class InboxRecyclerView(
     context: Context,
@@ -63,8 +63,8 @@ class InboxRecyclerView(
       field.onPageAttached()
     }
 
-  /** Details about the currently expanded row. */
-  private var expandInfo: ExpandInfo? = null
+  /** Details about the currently expanded item. */
+  var expandedItem: ExpandedItem = ExpandedItem.EMPTY
 
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
@@ -77,7 +77,7 @@ class InboxRecyclerView(
 
   fun saveExpandableState(outState: Bundle) {
     if (page != null) {
-      outState.putParcelable(KEY_EXPAND_INFO, expandInfo)
+      outState.putParcelable(KEY_EXPAND_INFO, expandedItem)
     }
   }
 
@@ -86,15 +86,15 @@ class InboxRecyclerView(
    * happen before onRestore gets called.
    * */
   fun restoreExpandableState(savedInstance: Bundle) {
-    expandInfo = savedInstance.getParcelable(KEY_EXPAND_INFO) as ExpandInfo?
-    if (expandInfo != null) {
+    expandedItem = savedInstance.getParcelable(KEY_EXPAND_INFO) as ExpandedItem
+    if (expandedItem.isEmpty().not()) {
       ensureSetup()
       expandImmediately()
     }
   }
 
   /**
-   * Sets the [ExpandablePageLayout] and [Toolbar] to be used with this list. The toolbar
+   * Set the [ExpandablePageLayout] and [Toolbar] to be used with this list. The toolbar
    * gets pushed up when the page is expanding. It is also safe to call this method again
    * and replace the ExpandablePage or Toolbar.
    *
@@ -133,7 +133,7 @@ class InboxRecyclerView(
     // change happened.
     executeOnNextLayout {
       if (page!!.currentState === ExpandablePageLayout.PageState.EXPANDING) {
-        page!!.animatePageExpandCollapse(true, width, height, getExpandInfo())
+        page!!.animatePageExpandCollapse(true, width, height, expandedItem)
 
       } else if (page!!.currentState === ExpandablePageLayout.PageState.EXPANDED) {
         page!!.alignPageToCoverScreen()
@@ -182,12 +182,12 @@ class InboxRecyclerView(
       itemRect.right = right
     }
 
-    expandInfo = ExpandInfo(itemViewPosition, itemId, itemRect)
+    expandedItem = ExpandedItem(itemViewPosition, itemId, itemRect)
 
     if (!isLaidOut && visibility != View.GONE) {
       expandImmediately()
     } else {
-      page!!.expand(getExpandInfo())
+      page!!.expand(expandedItem)
     }
   }
 
@@ -195,12 +195,12 @@ class InboxRecyclerView(
   fun expandFromTop() {
     ensureSetup()
 
-    expandInfo = ExpandInfo(-1, -1, Rect(left, top, right, top))
+    expandedItem = ExpandedItem.EMPTY.copy(expandedItemLocationRect = Rect(left, top, right, top))
 
     if (!isLaidOut && visibility != View.GONE) {
       expandImmediately()
     } else {
-      page!!.expand(getExpandInfo())
+      page!!.expand(expandedItem)
     }
   }
 
@@ -223,7 +223,7 @@ class InboxRecyclerView(
 
     // Collapse the page and restore the item positions of this list
     if (page != null) {
-      val expandInfo = getExpandInfo()
+      val expandInfo = expandedItem
       page!!.collapse(expandInfo)
     }
   }
@@ -238,7 +238,7 @@ class InboxRecyclerView(
   }
 
   override fun onPageFullyCollapsed() {
-    expandInfo = null
+    expandedItem = ExpandedItem.EMPTY
   }
 
   override fun onPagePull(deltaY: Float) {
@@ -292,17 +292,6 @@ class InboxRecyclerView(
   }
 
   /**
-   * @return Details of the currently expanded item. Returns an empty ExpandInfo object
-   * if all items are collapsed.
-   */
-  fun getExpandInfo(): ExpandInfo {
-    if (expandInfo == null) {
-      expandInfo = ExpandInfo.EMPTY
-    }
-    return expandInfo!!
-  }
-
-  /**
    * Reduce overdraw by 1 level by removing the Activity Window's background
    * while the [ExpandablePageLayout] is open. No point in drawing it when
    * it's not visible to the user. This way, there's no extra overdraw while the
@@ -327,29 +316,28 @@ class InboxRecyclerView(
     isLayoutFrozen = isLayoutFrozenBak
   }
 
-  /**
-   * Contains details of the currently expanded item.
-   */
+  /** Details of the currently expanded item. */
   @Parcelize
-  data class ExpandInfo(
-      // Position of the currently expanded item.
-      // TODO: Rename to index
-      var expandedItemPosition: Int,
+  data class ExpandedItem(
+      // Index of the currently expanded item's
+      // View. This is not the adapter index.
+      val viewIndex: Int,
 
       // Adapter ID of the currently expanded item.
-      var expandedItemId: Long,
+      val itemId: Long,
 
       // Original location of the currently expanded item (that is, when the user
       // selected this item). Can be used for restoring states after collapsing.
-      internal var expandedItemLocationRect: Rect
+      val expandedItemLocationRect: Rect
+
   ) : Parcelable {
 
     internal fun isEmpty(): Boolean {
-      return expandedItemPosition == -1 || expandedItemId == -1L || expandedItemLocationRect.height() == 0
+      return viewIndex == -1 || itemId == -1L || expandedItemLocationRect.height() == 0
     }
 
     companion object {
-      internal val EMPTY = ExpandInfo(expandedItemId = -1, expandedItemPosition = -1, expandedItemLocationRect = Rect(0, 0, 0, 0))
+      internal val EMPTY = ExpandedItem(itemId = -1, viewIndex = -1, expandedItemLocationRect = Rect(0, 0, 0, 0))
     }
   }
 

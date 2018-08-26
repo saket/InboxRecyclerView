@@ -69,14 +69,14 @@ class StandaloneExpandablePageLayout(
    */
   internal fun expandFrom(fromShapeRect: Rect) {
     setClippedDimensions(width, 0)
-    expand(InboxRecyclerView.ExpandInfo(-1, -1, fromShapeRect))
+    expand(InboxRecyclerView.ExpandedItem(-1, -1, fromShapeRect))
   }
 
   /**
    * @param toShapeRect Final dimensions of this page, when it fully collapses.
    */
   internal fun collapseTo(toShapeRect: Rect) {
-    collapse(InboxRecyclerView.ExpandInfo(-1, -1, toShapeRect))
+    collapse(InboxRecyclerView.ExpandedItem(-1, -1, toShapeRect))
   }
 
   companion object {

@@ -71,8 +71,8 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
       return
     }
 
-    val (anchorPosition) = recyclerView.getExpandInfo()
-    val anchorView = recyclerView.getChildAt(anchorPosition)
+    val (anchorIndex) = recyclerView.expandedItem
+    val anchorView = recyclerView.getChildAt(anchorIndex)
 
     val pageTop = page.translationY
     val pageBottom = page.translationY + page.clippedRect.height()
@@ -92,7 +92,7 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
 
         } else {
           childView.translationY = when {
-            childIndex <= anchorPosition -> distanceExpandedTowardsTop
+            childIndex <= anchorIndex -> distanceExpandedTowardsTop
             else -> distanceExpandedTowardsBottom
           }
         }
