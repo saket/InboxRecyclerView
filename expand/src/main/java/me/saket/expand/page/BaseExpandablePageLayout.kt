@@ -32,7 +32,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     get() = clippedRect.height()
 
   val animationInterpolator: TimeInterpolator
-    get() = ANIM_INTERPOLATOR
+    get() = DEFAULT_ANIM_INTERPOLATOR
 
   init {
     init()
@@ -99,6 +99,6 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
 
   companion object {
     const val DEFAULT_ANIM_DURATION = 250L
-    private val ANIM_INTERPOLATOR = FastOutSlowInInterpolator()
+    private val DEFAULT_ANIM_INTERPOLATOR = FastOutSlowInInterpolator()
   }
 }

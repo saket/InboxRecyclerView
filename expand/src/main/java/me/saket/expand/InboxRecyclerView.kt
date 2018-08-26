@@ -1,11 +1,8 @@
 package me.saket.expand
 
-import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -16,6 +13,7 @@ import android.view.Window
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.expand.Views.executeOnNextLayout
+import me.saket.expand.dimming.ItemDimmer
 import me.saket.expand.page.ExpandablePageLayout
 
 /**
@@ -33,23 +31,39 @@ class InboxRecyclerView(
 
       if (oldPage != null) {
         itemExpandAnimator.onPageDetached(oldPage)
+        itemDimmer.onPageDetached(oldPage)
       }
+
       itemExpandAnimator.page = field!!
       itemExpandAnimator.recyclerView = this
       itemExpandAnimator.onPageAttached()
+
+      itemDimmer.page = field!!
+      itemDimmer.recyclerView = this
+      itemDimmer.onPageAttached()
     }
 
-  /** TODO: Doc.  */
+  // TODO: Doc.
   var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
     set(value) {
       field.onPageDetached(page!!)
       field = value
     }
 
+  // TODO: Doc.
+  var itemDimmer: ItemDimmer = ItemDimmer.uncoveredItems()
+    set(value) {
+      field.onPageDetached(page!!)
+      field = value
+
+      field.page = page!!
+      field.recyclerView = this
+      field.onPageAttached()
+    }
+
   /** Details about the currently expanded row. */
   private var expandInfo: ExpandInfo? = null
 
-  private val dimPaint: Paint
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
@@ -57,9 +71,6 @@ class InboxRecyclerView(
   init {
     // For drawing an overlay shadow while the expandable page is fully expanded.
     setWillNotDraw(false)
-    dimPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    dimPaint.color = Color.BLACK
-    dimPaint.alpha = MAX_DIM
   }
 
   fun saveExpandableState(outState: Bundle) {
@@ -75,9 +86,7 @@ class InboxRecyclerView(
   fun restoreExpandableState(savedInstance: Bundle) {
     expandInfo = savedInstance.getParcelable(KEY_EXPAND_INFO) as ExpandInfo?
     if (expandInfo != null) {
-      if (page == null) {
-        throw NullPointerException("setExpandablePage() must be called before calling restoreExpandableState()")
-      }
+      ensureSetup()
       expandImmediately()
     }
   }
@@ -121,14 +130,6 @@ class InboxRecyclerView(
     // old values (that is, no. of children that were present before this height
     // change happened.
     executeOnNextLayout {
-      if (page!!.isExpandedOrExpanding) {
-        val immediate = page!!.isExpanded
-        animateItemsOutOfTheWindow(immediate)
-      } else {
-        val immediate = page!!.isCollapsed
-        animateItemsBackToPosition(immediate)
-      }
-
       if (page!!.currentState === ExpandablePageLayout.PageState.EXPANDING) {
         page!!.animatePageExpandCollapse(true, width, height, getExpandInfo())
 
@@ -181,7 +182,6 @@ class InboxRecyclerView(
 
     expandInfo = ExpandInfo(itemViewPosition, itemId, itemRect)
 
-    animateItemsOutOfTheWindow()
     if (!isLaidOut && visibility != View.GONE) {
       expandImmediately()
     } else {
@@ -194,7 +194,7 @@ class InboxRecyclerView(
     ensureSetup()
 
     expandInfo = ExpandInfo(-1, -1, Rect(left, top, right, top))
-    animateItemsOutOfTheWindow()
+
     if (!isLaidOut && visibility != View.GONE) {
       expandImmediately()
     } else {
@@ -207,7 +207,6 @@ class InboxRecyclerView(
    */
   fun expandImmediately() {
     page!!.expandImmediately()
-    animateItemsOutOfTheWindow(immediate = true)
   }
 
   fun collapse() {
@@ -220,65 +219,10 @@ class InboxRecyclerView(
       return
     }
 
-    // This ensures the items were present outside the window before collapse starts
-    if (page!!.translationY == 0f) {
-      animateItemsOutOfTheWindow(true)
-    }
-
     // Collapse the page and restore the item positions of this list
     if (page != null) {
       val expandInfo = getExpandInfo()
       page!!.collapse(expandInfo)
-    }
-    animateItemsBackToPosition(false)
-  }
-
-  /**
-   * Animates all items out of the Window. The item at position `expandInfo.expandedItemPosition`
-   * is moved to the top, while the items above it are animated out of the window from the top and the rest
-   * from the bottom.
-   */
-  @JvmOverloads
-  internal fun animateItemsOutOfTheWindow(immediate: Boolean = false) {
-    // TODO: Move dimming logic into a separate class.
-    if (immediate.not()) {
-      val dimAnimator = ObjectAnimator.ofInt(dimPaint.alpha, MAX_DIM).apply {
-        duration = page!!.animationDurationMillis
-        interpolator = page!!.animationInterpolator
-        startDelay = animationStartDelay.toLong()
-      }
-      dimAnimator.addUpdateListener {
-        dimPaint.alpha = it.animatedValue as Int
-        postInvalidate()
-      }
-      dimAnimator.start()
-
-    } else {
-      dimPaint.alpha = MAX_DIM
-      postInvalidate()
-    }
-  }
-
-  /**
-   * Reverses animateItemsOutOfTheWindow() by moving all items back to their actual positions.
-   */
-  private fun animateItemsBackToPosition(immediate: Boolean) {
-    // TODO: Move dimming logic into a separate class.
-    if (immediate.not()) {
-      val dimAnimator = ObjectAnimator.ofInt(dimPaint.alpha, MIN_DIM).apply {
-        duration = page!!.animationDurationMillis
-        interpolator = page!!.animationInterpolator
-        startDelay = animationStartDelay.toLong()
-      }
-      dimAnimator.addUpdateListener {
-        dimPaint.alpha = it.animatedValue as Int
-        postInvalidate()
-      }
-      dimAnimator.start()
-
-    } else {
-      dimPaint.alpha = MIN_DIM
-      postInvalidate()
     }
   }
 
@@ -289,7 +233,6 @@ class InboxRecyclerView(
   override fun onPageAboutToCollapse() {
     isLayoutFrozen = false
     onPageBackgroundVisible()
-    postInvalidate()
   }
 
   override fun onPageFullyCollapsed() {
@@ -303,9 +246,6 @@ class InboxRecyclerView(
   override fun onPageRelease(collapseEligible: Boolean) {
     if (collapseEligible) {
       collapse()
-      onPageBackgroundVisible()
-    } else {
-      animateItemsOutOfTheWindow()
     }
   }
 
@@ -341,16 +281,7 @@ class InboxRecyclerView(
 
     // Dimming behind the expandable page.
     if (page != null) {
-      val pageCopy = this.page!!
-      canvas.drawRect(0F, 0F, right.toFloat(), pageCopy.translationY, dimPaint)
-
-      if (pageCopy.isExpanded) {
-        canvas.drawRect(0F, (bottom + pageCopy.translationY), right.toFloat(), bottom.toFloat(), dimPaint)
-
-      } else if (pageCopy.isExpandingOrCollapsing) {
-        val pageBottom = pageCopy.translationY + pageCopy.clippedRect.height().toFloat()
-        canvas.drawRect(0F, pageBottom, right.toFloat(), bottom.toFloat(), dimPaint)
-      }
+      itemDimmer.drawDimming(canvas)
     }
   }
 
@@ -422,9 +353,6 @@ class InboxRecyclerView(
 
   companion object {
     private const val KEY_EXPAND_INFO = "expand_info"
-    private const val MIN_DIM = 0
-    private const val MAX_DIM_FACTOR = 0.1F                       // [0..1]
-    private const val MAX_DIM = (255 * MAX_DIM_FACTOR).toInt()    // [0..255]
     const val animationStartDelay: Int = 0
   }
 }

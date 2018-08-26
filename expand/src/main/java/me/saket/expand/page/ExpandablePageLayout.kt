@@ -248,7 +248,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     alignPageWithExpandingItem(expandInfo)
 
     // Callbacks, just before the animation starts.
-    dispatchOnAboutToExpandCallback()
+    dispatchOnAboutToExpandCallback(animationDurationMillis)
 
     // Animate!
     animatePageExpandCollapse(true, width, height, expandInfo)
@@ -281,7 +281,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
       // Let the list know about this so that it dims itself
       // right away and does not draw any child Views
-      dispatchOnAboutToExpandCallback()
+      dispatchOnAboutToExpandCallback(0)
       dispatchOnFullyExpandedCallback()
     }
   }
@@ -545,7 +545,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
   }
 
-  private fun dispatchOnAboutToExpandCallback() {
+  private fun dispatchOnAboutToExpandCallback(expandAnimDuration: Long) {
     // The state change must happen after the subscribers have been
     // notified that the page is going to expand
     changeState(PageState.EXPANDING)
@@ -560,7 +560,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     if (stateChangeCallbacks != null) {
       // Reverse loop to let listeners remove themselves while in the loop.
       for (i in stateChangeCallbacks!!.indices.reversed()) {
-        stateChangeCallbacks!![i].onPageAboutToExpand(animationDurationMillis)
+        stateChangeCallbacks!![i].onPageAboutToExpand(expandAnimDuration)
       }
     }
 

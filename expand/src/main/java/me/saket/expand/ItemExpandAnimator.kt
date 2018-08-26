@@ -50,6 +50,13 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
     page.viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
   }
 
+  /**
+   * When the page is expanding, this animates all RecyclerView items out of the Window.
+   * The expanding item is moved to the top, while the items above it are animated out
+   * of the window towards the top and the rest towards the bottom.
+   *
+   * Vice versa when the page is collapsing.
+   */
   private fun onPageMove() {
     if (page.isCollapsed) {
       // Reset everything. This is also useful when the content size
