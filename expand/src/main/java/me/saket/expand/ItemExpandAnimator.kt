@@ -18,7 +18,7 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
     private var lastState = ExpandablePageLayout.PageState.COLLAPSED
 
     override fun onPreDraw(): Boolean {
-      val page = recyclerView.requirePage()
+      val page = recyclerView.page
       if (lastTranslationY != page.translationY || lastClippedRect != page.clippedRect || lastState != page.currentState) {
         onPageMove()
       }
@@ -39,8 +39,8 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
 
   override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {
     this.recyclerView = recyclerView
-    recyclerView.requirePage().viewTreeObserver.addOnGlobalLayoutListener(pageLayoutChangeListener)
-    recyclerView.requirePage().viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
+    recyclerView.page.viewTreeObserver.addOnGlobalLayoutListener(pageLayoutChangeListener)
+    recyclerView.page.viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
   }
 
   /**
@@ -51,7 +51,7 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
    * Vice versa when the page is collapsing.
    */
   private fun onPageMove() {
-    val page = recyclerView.requirePage()
+    val page = recyclerView.page
     if (page.isCollapsed) {
       // Reset everything. This is also useful when the content size
       // changes, say as a result of the soft-keyboard getting dismissed.

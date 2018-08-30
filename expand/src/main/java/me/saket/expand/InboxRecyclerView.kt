@@ -24,14 +24,14 @@ class InboxRecyclerView(
     attrs: AttributeSet
 ) : ScrollSuppressibleRecyclerView(context, attrs), InternalPageCallbacks {
 
-  // TODO: Doc.
+  /** Controls how [InboxRecyclerView] items are animated when its page is moving. */
   var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
     set(value) {
       field = value
       field.onAttachRecyclerView(this)
     }
 
-  // TODO: Doc.
+  /** Controls how items are dimmed when the page is expanding/collapsing. */
   var itemDimmer: ItemDimmer = ItemDimmer.uncoveredItems()
     set(value) {
       field = value
@@ -41,7 +41,11 @@ class InboxRecyclerView(
   /** Details about the currently expanded item. */
   var expandedItem: ExpandedItem = ExpandedItem.EMPTY
 
-  private var page: ExpandablePageLayout? = null
+  lateinit var page: ExpandablePageLayout
+    private set
+
+  private var pageSetupDone: Boolean = false
+
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
@@ -75,10 +79,10 @@ class InboxRecyclerView(
    * The [toolbar]'s height is also used as the pull-to-collapse distance threshold.
    */
   fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View) {
-    if (page != null) {
+    if (pageSetupDone) {
       throw IllegalStateException("Expandable page is already set.")
     }
-
+    pageSetupDone = true
     page = expandablePage
     expandablePage.setInternalStateCallbacksForList(this)
 
@@ -92,10 +96,10 @@ class InboxRecyclerView(
    * [collapseDistanceThreshold] Minimum Y-distance the page has to be pulled to collapse.
    */
   fun setExpandablePage(expandablePage: ExpandablePageLayout, collapseDistanceThreshold: Int) {
-    if (page != null) {
+    if (pageSetupDone) {
       throw IllegalStateException("Expandable page is already set.")
     }
-
+    pageSetupDone = true
     page = expandablePage
     expandablePage.setInternalStateCallbacksForList(this)
 
@@ -105,30 +109,28 @@ class InboxRecyclerView(
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
 
-    if (page == null) {
-      return
-    }
-
     // The items must maintain their positions, relative to the new bounds. Wait for
     // Android to draw the child Views. Calling getChildCount() right now will return
     // old values (that is, no. of children that were present before this height
     // change happened.
-    executeOnNextLayout {
-      if (page!!.currentState === ExpandablePageLayout.PageState.EXPANDING) {
-        page!!.animatePageExpandCollapse(true, width, height, expandedItem)
+    if (pageSetupDone) {
+      executeOnNextLayout {
+        if (page.currentState === ExpandablePageLayout.PageState.EXPANDING) {
+          page.animatePageExpandCollapse(true, width, height, expandedItem)
 
-      } else if (page!!.currentState === ExpandablePageLayout.PageState.EXPANDED) {
-        page!!.alignPageToCoverScreen()
+        } else if (page.currentState === ExpandablePageLayout.PageState.EXPANDED) {
+          page.alignPageToCoverScreen()
+        }
       }
     }
   }
 
   private fun ensureSetup() {
-    if (page == null) {
-      throw IllegalAccessError("Did you forget to call InboxRecyclerView.setup(ExpandablePage, Toolbar)")
+    if (pageSetupDone.not()) {
+      throw IllegalAccessError("Did you forget to call InboxRecyclerView.setup()?")
     }
     if (adapter == null) {
-      throw AssertionError("Adapter isn't attached yet. No items to expand.")
+      throw AssertionError("Adapter isn't attached yet.")
     }
   }
 
@@ -138,7 +140,7 @@ class InboxRecyclerView(
   fun expandItem(itemPosition: Int, itemId: Long) {
     ensureSetup()
 
-    if (page!!.isExpandedOrExpanding) {
+    if (page.isExpandedOrExpanding) {
       return
     }
 
@@ -169,7 +171,7 @@ class InboxRecyclerView(
     if (!isLaidOut && visibility != View.GONE) {
       expandImmediately()
     } else {
-      page!!.expand(expandedItem)
+      page.expand(expandedItem)
     }
   }
 
@@ -182,7 +184,7 @@ class InboxRecyclerView(
     if (!isLaidOut && visibility != View.GONE) {
       expandImmediately()
     } else {
-      page!!.expand(expandedItem)
+      page.expand(expandedItem)
     }
   }
 
@@ -190,23 +192,15 @@ class InboxRecyclerView(
    * Expands the page right away and pushes the items out of the list without animations.
    */
   fun expandImmediately() {
-    page!!.expandImmediately()
+    page.expandImmediately()
   }
 
   fun collapse() {
-    if (page == null) {
-      throw IllegalStateException("No page attached. Cannot collapse. ListId: $id")
-    }
+    ensureSetup()
 
-    // Ignore if already collapsed
-    if (page!!.isCollapsedOrCollapsing) {
-      return
-    }
-
-    // Collapse the page and restore the item positions of this list
-    if (page != null) {
+    if (page.isCollapsedOrCollapsing.not()) {
       val expandInfo = expandedItem
-      page!!.collapse(expandInfo)
+      page.collapse(expandInfo)
     }
   }
 
@@ -264,13 +258,13 @@ class InboxRecyclerView(
     super.draw(canvas)
 
     // Dimming behind the expandable page.
-    if (page != null) {
+    if (pageSetupDone) {
       itemDimmer.drawDimming(canvas)
     }
   }
 
   override fun canScrollProgrammatically(): Boolean {
-    return page == null || page!!.isCollapsed
+    return pageSetupDone.not() || page.isCollapsed
   }
 
   /**
@@ -296,13 +290,6 @@ class InboxRecyclerView(
     val isLayoutFrozenBak = isLayoutFrozen
     super.swapAdapter(adapter, removeAndRecycleExistingViews)
     isLayoutFrozen = isLayoutFrozenBak
-  }
-
-  fun requirePage(): ExpandablePageLayout {
-    // This function exists because page cannot be made non-null. Kotlin's
-    // default NPE isn't very helpful. Instead, ensureSetup() throws an
-    // exception that is understandable by users.
-    return page!!
   }
 
   /** Details of the currently expanded item. */

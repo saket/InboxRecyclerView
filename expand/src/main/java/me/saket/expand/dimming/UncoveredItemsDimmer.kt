@@ -26,7 +26,7 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
 
   private var dimAnimator: ValueAnimator = ObjectAnimator()
   protected val dimPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-  private lateinit var recyclerView: InboxRecyclerView
+  protected lateinit var recyclerView: InboxRecyclerView
 
   init {
     dimPaint.color = Color.BLACK
@@ -39,7 +39,7 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
     private var lastState = ExpandablePageLayout.PageState.COLLAPSED
 
     override fun onPreDraw(): Boolean {
-      val page = recyclerView.requirePage()
+      val page = recyclerView.page
       if (lastTranslationY != page.translationY || lastClippedRect != page.clippedRect || lastState != page.currentState) {
         onPageMove()
       }
@@ -58,9 +58,9 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
 
   override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {
     this.recyclerView = recyclerView
-    recyclerView.requirePage().addStateChangeCallbacks(this)
-    recyclerView.requirePage().viewTreeObserver.addOnGlobalLayoutListener(pageLayoutChangeListener)
-    recyclerView.requirePage().viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
+    recyclerView.page.addStateChangeCallbacks(this)
+    recyclerView.page.viewTreeObserver.addOnGlobalLayoutListener(pageLayoutChangeListener)
+    recyclerView.page.viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
   }
 
   private fun onPageMove() {
@@ -69,8 +69,6 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
 
   override fun drawDimming(canvas: Canvas) {
     recyclerView.apply {
-      val page = requirePage()
-
       // Content above the page.
       canvas.drawRect(0F, 0F, right.toFloat(), page.translationY, dimPaint)
 
@@ -96,10 +94,9 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
   }
 
   private fun animateDimming(toAlpha: Int, dimDuration: Long) {
-    val page = recyclerView.requirePage()
     dimAnimator = ObjectAnimator.ofInt(dimPaint.alpha, toAlpha).apply {
       duration = dimDuration
-      interpolator = page.animationInterpolator
+      interpolator = recyclerView.page.animationInterpolator
       startDelay = InboxRecyclerView.animationStartDelay.toLong()
     }
     dimAnimator.addUpdateListener {
