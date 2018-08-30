@@ -13,6 +13,8 @@ import android.view.Window
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.expand.Views.executeOnNextLayout
+import me.saket.expand.animation.DefaultItemExpandAnimator
+import me.saket.expand.animation.ItemExpandAnimator
 import me.saket.expand.dimming.ItemDimmer
 import me.saket.expand.page.ExpandablePageLayout
 
@@ -26,17 +28,9 @@ class InboxRecyclerView(
 
   /** Controls how [InboxRecyclerView] items are animated when its page is moving. */
   var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
-    set(value) {
-      field = value
-      field.onAttachRecyclerView(this)
-    }
 
   /** Controls how items are dimmed when the page is expanding/collapsing. */
   var itemDimmer: ItemDimmer = ItemDimmer.uncoveredItems()
-    set(value) {
-      field = value
-      field.onAttachRecyclerView(this)
-    }
 
   /** Details about the currently expanded item. */
   var expandedItem: ExpandedItem = ExpandedItem.EMPTY
@@ -73,18 +67,12 @@ class InboxRecyclerView(
 
   /**
    * Set the [ExpandablePageLayout] and [Toolbar] to be used with this list. The toolbar
-   * gets pushed up when the page is expanding. It is also safe to call this method again
-   * and replace the ExpandablePage or Toolbar.
+   * gets pushed up when the page is expanding.
    *
    * The [toolbar]'s height is also used as the pull-to-collapse distance threshold.
    */
   fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View) {
-    if (pageSetupDone) {
-      throw IllegalStateException("Expandable page is already set.")
-    }
-    pageSetupDone = true
-    page = expandablePage
-    expandablePage.setInternalStateCallbacksForList(this)
+    setExpandablePageInternal(expandablePage)
 
     expandablePage.setToolbar(toolbar)
     toolbar.post {
@@ -96,14 +84,21 @@ class InboxRecyclerView(
    * [collapseDistanceThreshold] Minimum Y-distance the page has to be pulled to collapse.
    */
   fun setExpandablePage(expandablePage: ExpandablePageLayout, collapseDistanceThreshold: Int) {
+    setExpandablePageInternal(expandablePage)
+
+    expandablePage.setPullToCollapseDistanceThreshold(collapseDistanceThreshold)
+  }
+
+  private fun setExpandablePageInternal(expandablePage: ExpandablePageLayout) {
     if (pageSetupDone) {
       throw IllegalStateException("Expandable page is already set.")
     }
     pageSetupDone = true
     page = expandablePage
-    expandablePage.setInternalStateCallbacksForList(this)
 
-    expandablePage.setPullToCollapseDistanceThreshold(collapseDistanceThreshold)
+    expandablePage.setInternalStateCallbacksForList(this)
+    itemDimmer.onAttachRecyclerView(this)
+    itemExpandAnimator.onAttachRecyclerView(this)
   }
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

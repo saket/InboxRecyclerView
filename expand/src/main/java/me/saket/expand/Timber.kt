@@ -10,4 +10,9 @@ internal object Timber {
   fun i(message: String) {
     Log.i("IRV", message)
   }
+
+  @SuppressLint("LogNotTimber")
+  fun w(message: String) {
+    Log.w("IRV", message)
+  }
 }
