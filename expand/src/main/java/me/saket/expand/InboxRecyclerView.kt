@@ -24,48 +24,24 @@ class InboxRecyclerView(
     attrs: AttributeSet
 ) : ScrollSuppressibleRecyclerView(context, attrs), InternalPageCallbacks {
 
-  var page: ExpandablePageLayout? = null
-    private set(value) {
-      val oldPage = field
-      field = value!!
-
-      if (oldPage != null) {
-        itemExpandAnimator.onPageDetached(oldPage)
-        itemDimmer.onPageDetached(oldPage)
-      }
-
-      itemExpandAnimator.page = field!!
-      itemExpandAnimator.recyclerView = this
-      itemExpandAnimator.onPageAttached()
-
-      itemDimmer.page = field!!
-      itemDimmer.recyclerView = this
-      itemDimmer.onPageAttached()
-    }
-
   // TODO: Doc.
   var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
     set(value) {
-      if (page != null) {
-        field.onPageDetached(page!!)
-      }
       field = value
+      field.onAttachRecyclerView(this)
     }
 
   // TODO: Doc.
   var itemDimmer: ItemDimmer = ItemDimmer.uncoveredItems()
     set(value) {
-      field.onPageDetached(page!!)
       field = value
-
-      field.page = page!!
-      field.recyclerView = this
-      field.onPageAttached()
+      field.onAttachRecyclerView(this)
     }
 
   /** Details about the currently expanded item. */
   var expandedItem: ExpandedItem = ExpandedItem.EMPTY
 
+  private var page: ExpandablePageLayout? = null
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
@@ -76,9 +52,7 @@ class InboxRecyclerView(
   }
 
   fun saveExpandableState(outState: Bundle) {
-    if (page != null) {
-      outState.putParcelable(KEY_EXPAND_INFO, expandedItem)
-    }
+    outState.putParcelable(KEY_EXPAND_INFO, expandedItem)
   }
 
   /**
@@ -314,6 +288,13 @@ class InboxRecyclerView(
     val isLayoutFrozenBak = isLayoutFrozen
     super.swapAdapter(adapter, removeAndRecycleExistingViews)
     isLayoutFrozen = isLayoutFrozenBak
+  }
+
+  fun requirePage(): ExpandablePageLayout {
+    // This function exists because page cannot be made non-null. Kotlin's
+    // default NPE isn't very helpful. Instead, ensureSetup() throws an
+    // exception that is understandable by users.
+    return page!!
   }
 
   /** Details of the currently expanded item. */

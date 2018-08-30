@@ -26,6 +26,7 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
 
   private var dimAnimator: ValueAnimator = ObjectAnimator()
   protected val dimPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+  private lateinit var recyclerView: InboxRecyclerView
 
   init {
     dimPaint.color = Color.BLACK
@@ -38,6 +39,7 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
     private var lastState = ExpandablePageLayout.PageState.COLLAPSED
 
     override fun onPreDraw(): Boolean {
+      val page = recyclerView.requirePage()
       if (lastTranslationY != page.translationY || lastClippedRect != page.clippedRect || lastState != page.currentState) {
         onPageMove()
       }
@@ -54,17 +56,11 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
     onPageMove()
   }
 
-  override fun onPageDetached(page: ExpandablePageLayout) {
-    dimAnimator.cancel()
-    page.removeStateChangeCallbacks(this)
-    page.viewTreeObserver.removeOnGlobalLayoutListener(pageLayoutChangeListener)
-    page.viewTreeObserver.removeOnPreDrawListener(pagePreDrawListener)
-  }
-
-  override fun onPageAttached() {
-    page.addStateChangeCallbacks(this)
-    page.viewTreeObserver.addOnGlobalLayoutListener(pageLayoutChangeListener)
-    page.viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
+  override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {
+    this.recyclerView = recyclerView
+    recyclerView.requirePage().addStateChangeCallbacks(this)
+    recyclerView.requirePage().viewTreeObserver.addOnGlobalLayoutListener(pageLayoutChangeListener)
+    recyclerView.requirePage().viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
   }
 
   private fun onPageMove() {
@@ -72,18 +68,18 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
   }
 
   override fun drawDimming(canvas: Canvas) {
-    val pageCopy = this.page
-
     recyclerView.apply {
+      val page = requirePage()
+
       // Content above the page.
-      canvas.drawRect(0F, 0F, right.toFloat(), pageCopy.translationY, dimPaint)
+      canvas.drawRect(0F, 0F, right.toFloat(), page.translationY, dimPaint)
 
       // Content below the page.
-      if (pageCopy.isExpanded) {
-        canvas.drawRect(0F, (bottom + pageCopy.translationY), right.toFloat(), bottom.toFloat(), dimPaint)
+      if (page.isExpanded) {
+        canvas.drawRect(0F, (bottom + page.translationY), right.toFloat(), bottom.toFloat(), dimPaint)
 
-      } else if (pageCopy.isExpandingOrCollapsing) {
-        val pageBottom = pageCopy.translationY + pageCopy.clippedRect.height().toFloat()
+      } else if (page.isExpandingOrCollapsing) {
+        val pageBottom = page.translationY + page.clippedRect.height().toFloat()
         canvas.drawRect(0F, pageBottom, right.toFloat(), bottom.toFloat(), dimPaint)
       }
     }
@@ -100,6 +96,7 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
   }
 
   private fun animateDimming(toAlpha: Int, dimDuration: Long) {
+    val page = recyclerView.requirePage()
     dimAnimator = ObjectAnimator.ofInt(dimPaint.alpha, toAlpha).apply {
       duration = dimDuration
       interpolator = page.animationInterpolator
