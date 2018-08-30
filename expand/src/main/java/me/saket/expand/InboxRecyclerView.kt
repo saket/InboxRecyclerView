@@ -26,7 +26,7 @@ class InboxRecyclerView(
     attrs: AttributeSet
 ) : ScrollSuppressibleRecyclerView(context, attrs), InternalPageCallbacks {
 
-  /** Controls how [InboxRecyclerView] items are animated when its page is moving. */
+  /** Controls how [InboxRecyclerView] items are animated when the page is moving. */
   var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
 
   /** Controls how items are dimmed when the page is expanding/collapsing. */
@@ -45,7 +45,7 @@ class InboxRecyclerView(
   private var isFullyCoveredByPage: Boolean = false
 
   init {
-    // For drawing an overlay shadow while the expandable page is fully expanded.
+    // For drawing dimming using ItemDimmer.
     setWillNotDraw(false)
   }
 
@@ -263,11 +263,10 @@ class InboxRecyclerView(
   }
 
   /**
-   * Reduce overdraw by 1 level by removing the Activity Window's background
-   * while the [ExpandablePageLayout] is open. No point in drawing it when
-   * it's not visible to the user. This way, there's no extra overdraw while the
-   * expandable page is open.
-   */
+   * Experimental: Reduce overdraw by 1 level by removing the Activity Window's
+   * background when the [ExpandablePageLayout] is expanded. No point in drawing
+   * it when it's not visible to the user.
+   **/
   fun optimizeActivityBackgroundOverdraw(activity: Activity) {
     activityWindow = activity.window
     activityWindowOrigBackground = activityWindow!!.decorView.background
@@ -314,6 +313,6 @@ class InboxRecyclerView(
 
   companion object {
     private const val KEY_EXPAND_INFO = "expand_info"
-    const val animationStartDelay: Int = 0
+    const val animationStartDelay: Int = 0  // Only used for debugging.
   }
 }
