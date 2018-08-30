@@ -75,6 +75,10 @@ class InboxRecyclerView(
    * The [toolbar]'s height is also used as the pull-to-collapse distance threshold.
    */
   fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View) {
+    if (page != null) {
+      throw IllegalStateException("Expandable page is already set.")
+    }
+
     page = expandablePage
     expandablePage.setInternalStateCallbacksForList(this)
 
@@ -88,6 +92,10 @@ class InboxRecyclerView(
    * [collapseDistanceThreshold] Minimum Y-distance the page has to be pulled to collapse.
    */
   fun setExpandablePage(expandablePage: ExpandablePageLayout, collapseDistanceThreshold: Int) {
+    if (page != null) {
+      throw IllegalStateException("Expandable page is already set.")
+    }
+
     page = expandablePage
     expandablePage.setInternalStateCallbacksForList(this)
 
