@@ -76,7 +76,7 @@ class InboxRecyclerView(
 
     expandablePage.setToolbar(toolbar)
     toolbar.post {
-      expandablePage.setPullToCollapseDistanceThreshold(toolbar.height)
+      expandablePage.setPullToCollapseDistanceThreshold((toolbar.height * 0.85F).toInt())
     }
   }
 

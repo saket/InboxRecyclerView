@@ -135,10 +135,9 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
 
         // If the gesture has covered a distance >= the toolbar height, mark this gesture eligible
         // for collapsible when the finger is lifted
-        val collapseThresholdDistance = (collapseDistanceThreshold * COLLAPSE_THRESHOLD_DISTANCE_FACTOR).toInt()
         eligibleForCollapse = when {
-          upwardSwipe -> expandablePage.translationY <= -collapseThresholdDistance
-          else -> expandablePage.translationY >= collapseThresholdDistance
+          upwardSwipe -> expandablePage.translationY <= -collapseDistanceThreshold
+          else -> expandablePage.translationY >= collapseDistanceThreshold
         }
         var resistedDeltaY = deltaY / resistanceFactor
 
@@ -188,9 +187,5 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
 
   private fun cancelAnyOngoingAnimations() {
     expandablePage.stopAnyOngoingPageAnimation()
-  }
-
-  companion object {
-    private const val COLLAPSE_THRESHOLD_DISTANCE_FACTOR = 0.85f   // This gets multiplied with the toolbar height
   }
 }
