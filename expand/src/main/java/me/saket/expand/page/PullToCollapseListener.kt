@@ -10,9 +10,11 @@ import java.util.ArrayList
 
 class PullToCollapseListener(context: Context, private val expandablePage: ExpandablePageLayout) : View.OnTouchListener {
 
+  /** The distance after which the page can collapse when pulled. */
+  var collapseDistanceThreshold: Int = 0
+
   private val touchSlop: Int = ViewConfiguration.get(context).scaledTouchSlop
   private val onPullListeners = ArrayList<OnPullListener>(3)
-  private var collapseDistanceThreshold: Int = 0
   private var downX: Float = 0.toFloat()
   private var downY: Float = 0.toFloat()
   private var lastMoveY: Float = 0.toFloat()
@@ -53,13 +55,6 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
 
   fun removeOnPullListener(listener: OnPullListener) {
     onPullListeners.remove(listener)
-  }
-
-  /**
-   * The distance after which the page can collapse when pulled.
-   */
-  fun setCollapseDistanceThreshold(threshold: Int) {
-    collapseDistanceThreshold = threshold
   }
 
   @SuppressLint("ClickableViewAccessibility")

@@ -12,7 +12,7 @@ import me.saket.expand.page.ExpandablePageLayout
 import me.saket.expand.page.PageStateChangeCallbacks
 
 private const val MIN_DIM = 0
-private const val MAX_DIM_FACTOR = 0.1F                       // [0..1]
+private const val MAX_DIM_FACTOR = 0.15F                      // [0..1]
 private const val MAX_DIM = (255 * MAX_DIM_FACTOR).toInt()    // [0..255]
 
 /**
@@ -26,6 +26,8 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
 
   private var dimAnimator: ValueAnimator = ObjectAnimator()
   protected val dimPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+  private var lastIsCollapseEligible = false
+
   protected lateinit var recyclerView: InboxRecyclerView
 
   init {
@@ -64,7 +66,22 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
   }
 
   private fun onPageMove() {
-    recyclerView.postInvalidate()
+    // Remove dimming when the page is being pulled and is eligible for collapse.
+    if (recyclerView.page.isExpanded) {
+      val collapseThreshold = recyclerView.page.pullToCollapseListener.collapseDistanceThreshold
+      val translationYAbs = Math.abs(recyclerView.page.translationY)
+      val isCollapseEligible = translationYAbs >= collapseThreshold
+
+      if (isCollapseEligible != lastIsCollapseEligible) {
+        animateDimming(
+            toAlpha = if (isCollapseEligible) MIN_DIM else MAX_DIM,
+            dimDuration = 200)
+      }
+      lastIsCollapseEligible = isCollapseEligible
+
+    } else {
+      lastIsCollapseEligible = false
+    }
   }
 
   override fun drawDimming(canvas: Canvas) {
@@ -101,6 +118,7 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
     }
     dimAnimator.addUpdateListener {
       dimPaint.alpha = it.animatedValue as Int
+      recyclerView.postInvalidate()
     }
     dimAnimator.start()
   }

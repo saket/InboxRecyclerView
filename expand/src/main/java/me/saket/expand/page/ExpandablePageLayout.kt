@@ -30,7 +30,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var activityToolbar: View? = null  // Toolbar inside the parent page, not in this page.
   private var nestedPage: ExpandablePageLayout? = null
 
-  private val pullToCollapseListener: PullToCollapseListener
+  val pullToCollapseListener: PullToCollapseListener
+
   private var onPullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
   private var stateChangeCallbacks: MutableList<PageStateChangeCallbacks>? = null
   private var internalStateChangeCallbacksForNestedPage: InternalPageCallbacks? = null
@@ -105,7 +106,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * The distance after which the page can collapse when pulled.
    */
   fun setPullToCollapseDistanceThreshold(threshold: Int) {
-    pullToCollapseListener.setCollapseDistanceThreshold(threshold)
+    pullToCollapseListener.collapseDistanceThreshold = threshold
   }
 
   fun setPullToCollapseEnabled(enabled: Boolean) {
