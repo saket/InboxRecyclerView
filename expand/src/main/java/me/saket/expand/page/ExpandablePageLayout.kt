@@ -14,8 +14,6 @@ import android.view.ViewGroup
 import me.saket.expand.InboxRecyclerView
 import me.saket.expand.InternalPageCallbacks
 import me.saket.expand.Views.executeOnMeasure
-
-import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.ArrayList
 
@@ -69,19 +67,15 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     COLLAPSING,
     COLLAPSED,
     EXPANDING,
-    EXPANDED;
-
-    val isCollapsed: Boolean
-      get() = this == COLLAPSED
+    EXPANDED
   }
 
   init {
-    // Hidden on start
+    // Hidden on start.
     alpha = expandedAlpha
     visibility = View.INVISIBLE
     changeState(PageState.COLLAPSED)
 
-    // Handles pull-to-collapse-this-page gestures
     setPullToCollapseEnabled(true)
     pullToCollapseListener = PullToCollapseListener(getContext(), this)
     pullToCollapseListener.addOnPullListener(this)
@@ -103,7 +97,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   /**
-   * The distance after which the page can collapse when pulled.
+   * Pull distance after which the page can collapse.
    */
   fun setPullToCollapseDistanceThreshold(threshold: Int) {
     pullToCollapseListener.collapseDistanceThreshold = threshold
@@ -118,7 +112,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   override fun hasOverlappingRendering(): Boolean {
-    // According to Google developer videos, returning false improves performance when animating alpha.
+    // According to this video, this should help improve performance when animating alpha:
+    // https://www.youtube.com/watch?v=wIy8g8yNhNk.
     return false
   }
 
@@ -131,8 +126,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     // Consume all touch events to avoid them leaking behind.
     return true
   }
-
-  // ======== PULL TO COLLAPSE ======== //
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
     var intercepted = false
@@ -188,7 +181,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       stopAnyOngoingPageAnimation()
 
       // Restore everything to their expanded position.
-      // 1. Hide Toolbar again
+      // 1. Hide Toolbar again.
       if (activityToolbar != null) {
         animateToolbar(false, 0F)
       }
@@ -229,14 +222,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
   }
 
-  // ======== EXPAND / COLLAPSE ANIMATION ======== //
-
   /**
    * Expands this page (with animation) so that it fills the whole screen.
    */
   internal fun expand(expandedItem: InboxRecyclerView.ExpandedItem) {
-    // Skip animations if Android hasn't measured Views yet.
-    if (!isLaidOut && visibility != View.GONE) {
+    if (isLaidOut.not() && visibility != View.GONE) {
       throw IllegalAccessError("Width / Height not available to expand")
     }
 
@@ -256,11 +246,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   /**
-   * Expands this page instantly, without any animation. Use this when the user wants to directly
-   * navigate to this page, by-passing the list.
-   *
-   * It's allowed to call this directly without a RecyclerView in cases where there is no list.
-   * Like: DankPullCollapsibleActivity.
+   * Expand this page instantly, without any animation.
    */
   fun expandImmediately() {
     if (currentState == PageState.EXPANDING || currentState == PageState.EXPANDED) {
@@ -270,18 +256,12 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     visibility = View.VISIBLE
     alpha = expandedAlpha
 
-    // Hide the toolbar as soon as we have its height (as expandImmediately()
-    // could have been called before the Views were drawn).
-    if (activityToolbar != null) {
-      activityToolbar!!.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
-    }
+    // Hide the toolbar as soon as its height is available.
+    activityToolbar?.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
 
-    this.executeOnMeasure {
+    executeOnMeasure {
       // Cover the whole screen right away. Don't need any animations.
       alignPageToCoverScreen()
-
-      // Let the list know about this so that it dims itself
-      // right away and does not draw any child Views
       dispatchOnAboutToExpandCallback(0)
       dispatchOnFullyExpandedCallback()
     }
@@ -291,12 +271,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * Collapses this page, back to its original state.
    */
   internal fun collapse(expandedItem: InboxRecyclerView.ExpandedItem) {
-    // Ignore if already collapsed.
     if (currentState == PageState.COLLAPSED || currentState == PageState.COLLAPSING) {
       return
     }
 
-    // Fire!
     var targetWidth = expandedItem.expandedItemLocationRect.width()
     val targetHeight = expandedItem.expandedItemLocationRect.height()
     if (targetWidth == 0) {
@@ -310,10 +288,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   /**
-   * Places the expandable page exactly on top of the expanding list item
-   * (including matching its height with the list item)
+   * Place the expandable page exactly on top of the expanding item.
    */
-  protected fun alignPageWithExpandingItem(expandedItem: InboxRecyclerView.ExpandedItem) {
+  private fun alignPageWithExpandingItem(expandedItem: InboxRecyclerView.ExpandedItem) {
     // Match height and location.
     setClippedDimensions(
         expandedItem.expandedItemLocationRect.width(),
@@ -338,7 +315,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       targetPageTranslationY = Math.max(targetPageTranslationY, toolbarBottom.toFloat())
     }
 
-    setSuppressLayoutMethodUsingReflection(this@ExpandablePageLayout, true)
+    setSuppressLayoutMethodUsingReflection(this, true)
 
     if (expand) {
       visibility = View.VISIBLE
@@ -410,7 +387,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     // The hide animation happens a bit too quickly if the page has to travel a large
     // distance (when using the current interpolator: EASE). Let's try slowing it down.
     var speedFactor = 1L
-    if (show && Math.abs(targetPageTranslationY - fromTy) > clippedHeight * 2 / 5) {
+    if (show && Math.abs(targetPageTranslationY - fromTy) > clippedRect.height() * 2 / 5) {
       speedFactor *= 2L
     }
 
@@ -459,13 +436,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
   }
 
-  // ======== OPTIMIZATIONS ======== //
-
   /**
-   * To be used when another ExpandablePageLayout is shown inside this page.Z
-   * This page will avoid all draw calls while the nested page is open to
-   * minimize overdraw.
-   *
+   * Experimental: To be used when another ExpandablePageLayout is shown inside
+   * this page. This page will avoid all draw calls while the nested page is
+   * open to minimize overdraw.
    *
    * WARNING: DO NOT USE THIS IF THE NESTED PAGE IS THE ONLY PULL-COLLAPSIBLE
    * PAGE IN AN ACTIVITY.
@@ -520,13 +494,12 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
     // When this page is fully covered by a nested ExpandablePage, avoid drawing any other child Views.
-
     return if (isFullyCoveredByNestedPage && child !is ExpandablePageLayout) {
       false
-    } else super.drawChild(canvas, child, drawingTime)
+    } else {
+      super.drawChild(canvas, child, drawingTime)
+    }
   }
-
-  // ======== CALLBACKS ======== //
 
   private fun dispatchOnPagePullCallbacks(deltaY: Float) {
     if (internalStateChangeCallbacksForNestedPage != null) {
@@ -667,8 +640,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    */
   internal fun handleOnPullToCollapseIntercept(event: MotionEvent, downX: Float, downY: Float, deltaUpwardSwipe: Boolean): Boolean {
     if (nestedPage != null && nestedPage!!.isExpandedOrExpanding && nestedPage!!.clippedRect.contains(downX.toInt(), downY.toInt())) {
-      // Block this pull if it's being made inside a nested page. Let the nested page's pull-listener consume this event.
-      // We should use nested scrolling in the future to make this smarter.
+      // Block this pull if it's being made inside a nested page. Let the nested
+      // page's pull-listener consume this event. We should use nested scrolling
+      // in the future to make this smarter.
       // TODO: 20/03/17 Do we even need to call the nested page's listener?
       nestedPage!!.handleOnPullToCollapseIntercept(event, downX, downY, deltaUpwardSwipe)
       return true
@@ -688,7 +662,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateChangeCallbacksForInboxRecyclerView = listCallbacks
   }
 
-  internal fun setInternalStateCallbacksForNestedPage(nestedPageCallbacks: InternalPageCallbacks) {
+  private fun setInternalStateCallbacksForNestedPage(nestedPageCallbacks: InternalPageCallbacks) {
     internalStateChangeCallbacksForNestedPage = nestedPageCallbacks
   }
 
@@ -736,15 +710,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
           suppressLayoutMethod = ViewGroup::class.java.getMethod("suppressLayout", Boolean::class.javaPrimitiveType)
         }
         suppressLayoutMethod!!.invoke(layout, suppress)
-
-      } catch (e: NoSuchMethodException) {
-        throw RuntimeException(e)
-      } catch (e: IllegalAccessException) {
-        throw RuntimeException(e)
-      } catch (e: InvocationTargetException) {
-        throw RuntimeException(e)
+      } catch (e: Throwable) {
+        throw e
       }
-
     }
   }
 }

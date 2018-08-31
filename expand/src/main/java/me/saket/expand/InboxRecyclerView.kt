@@ -243,18 +243,14 @@ class InboxRecyclerView(
       postInvalidate()
     }
 
-    if (activityWindow != null) {
-      activityWindow!!.setBackgroundDrawable(null)
-    }
+    activityWindow?.setBackgroundDrawable(null)
   }
 
   private fun onPageBackgroundVisible() {
     isFullyCoveredByPage = false
     postInvalidate()
 
-    if (activityWindow != null) {
-      activityWindow!!.setBackgroundDrawable(activityWindowOrigBackground)
-    }
+    activityWindow?.setBackgroundDrawable(activityWindowOrigBackground)
   }
 
   override fun draw(canvas: Canvas) {
@@ -283,7 +279,7 @@ class InboxRecyclerView(
    **/
   fun optimizeActivityBackgroundOverdraw(activity: Activity) {
     activityWindow = activity.window
-    activityWindowOrigBackground = activityWindow!!.decorView.background
+    activityWindowOrigBackground = activity.window.decorView.background
   }
 
   override fun setAdapter(adapter: Adapter<*>?) {

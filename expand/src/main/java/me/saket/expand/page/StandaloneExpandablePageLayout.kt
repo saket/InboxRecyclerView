@@ -28,7 +28,7 @@ class StandaloneExpandablePageLayout(
 
   init {
     setCollapsedAlpha(1f)
-    animationDurationMillis = ANIMATION_DURATION_MILLIS
+    animationDurationMillis = 300
   }
 
   override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -79,8 +79,4 @@ class StandaloneExpandablePageLayout(
     collapse(InboxRecyclerView.ExpandedItem(-1, -1, toShapeRect))
   }
 
-  companion object {
-
-    val ANIMATION_DURATION_MILLIS: Long = 300
-  }
 }

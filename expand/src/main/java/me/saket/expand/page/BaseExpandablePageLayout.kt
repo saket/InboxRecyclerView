@@ -13,32 +13,25 @@ import android.widget.RelativeLayout
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import me.saket.expand.InboxRecyclerView
 
-/** Animates change in dimensions by clipping bounds instead of changing the layout params. */
+/**
+ * Animating change in dimensions by changing the actual width and height is expensive.
+ * This layout animates change in dimensions by clipping visible bounds instead.
+ */
 abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : RelativeLayout(context, attrs) {
 
+  /** The visible portion of this layout. */
   val clippedRect = Rect()
+
   private var dimensionAnimator: ValueAnimator? = null
   private var isFullyVisible: Boolean = false
 
   var animationDurationMillis = DEFAULT_ANIM_DURATION
-
-  private val clippedWidth: Int
-    get() = clippedRect.width()
-
-  protected val clippedHeight: Int
-    get() = clippedRect.height()
-
-  val animationInterpolator: TimeInterpolator
-    get() = DEFAULT_ANIM_INTERPOLATOR
+  var animationInterpolator: TimeInterpolator = DEFAULT_ANIM_INTERPOLATOR
 
   init {
-    init()
-  }
-
-  private fun init() {
     outlineProvider = object : ViewOutlineProvider() {
       override fun getOutline(view: View, outline: Outline) {
         outline.setRect(0, 0, clippedRect.width(), clippedRect.height())
@@ -63,8 +56,8 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
       interpolator = animationInterpolator
       startDelay = InboxRecyclerView.animationStartDelay.toLong()
 
-      val fromWidth = clippedWidth
-      val fromHeight = clippedHeight
+      val fromWidth = clippedRect.width()
+      val fromHeight = clippedRect.height()
 
       addUpdateListener {
         val scale = it.animatedValue as Float
@@ -98,7 +91,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   }
 
   companion object {
-    const val DEFAULT_ANIM_DURATION = 250L
+    private const val DEFAULT_ANIM_DURATION = 250L
     private val DEFAULT_ANIM_INTERPOLATOR = FastOutSlowInInterpolator()
   }
 }
