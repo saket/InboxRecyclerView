@@ -28,9 +28,21 @@ class InboxRecyclerView(
 
   /** Controls how [InboxRecyclerView] items are animated when the page is moving. */
   var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
+    set(value) {
+      field = value
+      if (pageSetupDone) {
+        itemDimmer.onAttachRecyclerView(this)
+      }
+    }
 
   /** Controls how items are dimmed when the page is expanding/collapsing. */
   var itemDimmer: ItemDimmer = ItemDimmer.uncoveredItems()
+    set(value) {
+      field = value
+      if (pageSetupDone) {
+        itemDimmer.onAttachRecyclerView(this)
+      }
+    }
 
   /** Details about the currently expanded item. */
   var expandedItem: ExpandedItem = ExpandedItem.EMPTY
