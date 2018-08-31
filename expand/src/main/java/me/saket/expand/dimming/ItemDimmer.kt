@@ -20,5 +20,12 @@ abstract class ItemDimmer {
     fun allItems(): ItemDimmer {
       return AllItemsDimmer()
     }
+
+    fun noOp(): ItemDimmer {
+      return object : ItemDimmer() {
+        override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {}
+        override fun drawDimming(canvas: Canvas) {}
+      }
+    }
   }
 }
