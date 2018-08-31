@@ -79,7 +79,7 @@ class InboxActivity : AppCompatActivity() {
         .delay(100, TimeUnit.MILLISECONDS, mainThread())
         .takeUntil(onDestroy)
         .subscribe {
-          recyclerView.expandItem(it.itemPosition, it.itemId)
+          recyclerView.expandItem(it.itemId)
         }
   }
 

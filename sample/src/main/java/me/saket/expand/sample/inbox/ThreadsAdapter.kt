@@ -70,7 +70,7 @@ open class EmailViewHolder(
 
   init {
     itemView.setOnClickListener {
-      itemClicks.accept(EmailThreadClicked(emailThread, adapterPosition, itemId))
+      itemClicks.accept(EmailThreadClicked(emailThread, itemId))
     }
   }
 
@@ -112,7 +112,7 @@ class EmailViewHolderWithImageAttachments(
   private val imageAttachmentsStub = itemView.findViewById<ViewStub>(R.id.emailthread_image_attachments_stub)
   private val imageAttachmentsRecyclerView by lazy { itemView.findViewById<RecyclerView>(R.id.emailthread_image_attachments) }
   private val adapter = ImageAttachmentAdapter(clickListener = {
-    itemClicks.accept(EmailThreadClicked(emailThread, adapterPosition, itemId))
+    itemClicks.accept(EmailThreadClicked(emailThread, itemId))
   })
 
   init {

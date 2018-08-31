@@ -1,5 +1,7 @@
 package me.saket.expand.animation
 
+import android.view.View
+
 /**
  * When the page is expanding, this pushes all RecyclerView items out of the Window.
  * The expanding item is pushed to align with the top edge, while the items above it
@@ -27,37 +29,41 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
     }
 
     val (anchorIndex) = recyclerView.expandedItem
-    val anchorView = recyclerView.getChildAt(anchorIndex)
+    val anchorView: View? = recyclerView.getChildAt(anchorIndex)
 
     val pageTop = page.translationY
     val pageBottom = page.translationY + page.clippedRect.height()
 
-    val distanceExpandedTowardsTop = pageTop - anchorView.top
-    val distanceExpandedTowardsBottom = pageBottom - anchorView.bottom
-
     // Move the RecyclerView rows with the page.
-    recyclerView.apply {
-      for (childIndex in 0 until childCount) {
-        val childView = getChildAt(childIndex)
+    if (anchorView != null) {
+      val distanceExpandedTowardsTop = pageTop - anchorView.top
+      val distanceExpandedTowardsBottom = pageBottom - anchorView.bottom
 
-        if (anchorView == null) {
-          // Anchor View can be null when the page was expanded from
-          // an arbitrary location. See InboxRecyclerView#expandFromTop().
-          childView.translationY = pageBottom
-
-        } else {
-          childView.translationY = when {
+      recyclerView.apply {
+        for (childIndex in 0 until childCount) {
+          getChildAt(childIndex).translationY = when {
             childIndex <= anchorIndex -> distanceExpandedTowardsTop
             else -> distanceExpandedTowardsBottom
           }
         }
       }
+
+    } else {
+      // Anchor View can be null when the page was expanded from
+      // an arbitrary location. See InboxRecyclerView#expandFromTop().
+      recyclerView.apply {
+        for (childIndex in 0 until childCount) {
+          getChildAt(childIndex).translationY = pageBottom
+        }
+      }
     }
 
     // Fade in the anchor row with the expanding/collapsing page.
-    val minPageHeight = anchorView.height
-    val maxPageHeight = page.height
-    val expandRatio = (page.clippedRect.height() - minPageHeight).toFloat() / (maxPageHeight - minPageHeight)
-    anchorView.alpha = 1F - expandRatio
+    anchorView?.apply {
+      val minPageHeight = anchorView.height
+      val maxPageHeight = page.height
+      val expandRatio = (page.clippedRect.height() - minPageHeight).toFloat() / (maxPageHeight - minPageHeight)
+      alpha = 1F - expandRatio
+    }
   }
 }

@@ -71,9 +71,10 @@ class InboxRecyclerView(
    * */
   fun restoreExpandableState(savedInstance: Bundle) {
     expandedItem = savedInstance.getParcelable(KEY_EXPAND_INFO) as ExpandedItem
+
     if (expandedItem.isEmpty().not()) {
       ensureSetup()
-      expandImmediately()
+      expandItem(expandedItem.itemId)
     }
   }
 
@@ -142,57 +143,58 @@ class InboxRecyclerView(
   }
 
   /**
-   * @param itemPosition Item's position in the adapter.
+   * @param itemId ID of the item to expand.
    */
-  fun expandItem(itemPosition: Int, itemId: Long) {
+  fun expandItem(itemId: Long) {
     ensureSetup()
+
+    if (isLaidOut.not()) {
+      post { expandItem(itemId) }
+      return
+    }
 
     if (page.isExpandedOrExpanding) {
       return
     }
 
-    val itemView = (layoutManager as LinearLayoutManager).findViewByPosition(itemPosition)
-        ?: throw AssertionError("Couldn't find the View for adapter position $itemPosition")
+    val adapter = adapter!!
+    var itemAdapterPosition: Int = -1
+    for (i in 0 until adapter.itemCount) {
+      if (adapter.getItemId(i) == itemId) {
+        itemAdapterPosition = i
+      }
+    }
+
+    val itemView: View? = (layoutManager as LinearLayoutManager).findViewByPosition(itemAdapterPosition)
+
+    if (itemView == null) {
+      // View got removed right when it was clicked to expand.
+      expandFromTop()
+      return
+    }
 
     val itemViewPosition = indexOfChild(itemView)
-    val child = getChildAt(itemViewPosition)
-    if (child == null) {
-      // View got removed right when it was clicked to expand.
-    }
-
     val itemRect = Rect(
-        left + child.left,
-        top + child.top,
-        width - right + child.right,
-        top + child.bottom)
-
-    if (itemRect.width() == 0) {
-      // Should expand from full width even when expanding from
-      // arbitrary location (that is, item to expand is null).
-      itemRect.left = left
-      itemRect.right = right
-    }
+        left + itemView.left,
+        top + itemView.top,
+        width - right + itemView.right,
+        top + itemView.bottom)
 
     expandedItem = ExpandedItem(itemViewPosition, itemId, itemRect)
-
-    if (!isLaidOut && visibility != View.GONE) {
-      expandImmediately()
-    } else {
-      page.expand(expandedItem)
-    }
+    page.expand(expandedItem)
   }
 
   /** Expand from the top, pushing all items out of the window towards the bottom. */
   fun expandFromTop() {
     ensureSetup()
 
-    expandedItem = ExpandedItem.EMPTY.copy(expandedItemLocationRect = Rect(left, top, right, top))
-
-    if (!isLaidOut && visibility != View.GONE) {
-      expandImmediately()
-    } else {
-      page.expand(expandedItem)
+    if (isLaidOut.not()) {
+      post { expandFromTop() }
+      return
     }
+
+    expandedItem = ExpandedItem.EMPTY.copy(expandedItemLocationRect = Rect(left, top, right, top))
+    page.expand(expandedItem)
   }
 
   /**
@@ -315,7 +317,7 @@ class InboxRecyclerView(
   ) : Parcelable {
 
     internal fun isEmpty(): Boolean {
-      return viewIndex == -1 || itemId == -1L || expandedItemLocationRect.height() == 0
+      return viewIndex == -1 && itemId == -1L && expandedItemLocationRect.width() == 0 && expandedItemLocationRect.height() == 0
     }
 
     companion object {
