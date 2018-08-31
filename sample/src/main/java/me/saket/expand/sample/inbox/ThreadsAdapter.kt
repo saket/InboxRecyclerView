@@ -30,6 +30,10 @@ class ThreadsAdapter : ListAdapter<EmailThread, EmailViewHolder>(EmailThread.Ite
 
   val itemClicks = PublishRelay.create<EmailThreadClicked>()!!
 
+  init {
+    setHasStableIds(true)
+  }
+
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmailViewHolder {
     val threadLayout = LayoutInflater.from(parent.context).inflate(R.layout.list_email_thread, parent, false)
     return when (values()[viewType]) {

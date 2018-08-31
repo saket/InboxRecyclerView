@@ -287,6 +287,7 @@ class InboxRecyclerView(
   }
 
   override fun setAdapter(adapter: Adapter<*>?) {
+    ensureStableIds(adapter)
     val isLayoutFrozenBak = isLayoutFrozen
     super.setAdapter(adapter)
 
@@ -295,9 +296,19 @@ class InboxRecyclerView(
   }
 
   override fun swapAdapter(adapter: Adapter<*>?, removeAndRecycleExistingViews: Boolean) {
+    ensureStableIds(adapter)
     val isLayoutFrozenBak = isLayoutFrozen
     super.swapAdapter(adapter, removeAndRecycleExistingViews)
     isLayoutFrozen = isLayoutFrozenBak
+  }
+
+  private fun ensureStableIds(adapter: Adapter<*>?) {
+    adapter?.apply {
+      if (hasStableIds().not()) {
+        // Stable IDs are required because the expanded item's adapter position can change, but ID cannot.
+        throw AssertionError("Adapter needs to have stable IDs so that the expanded item can be restored across orientation changes.")
+      }
+    }
   }
 
   /** Details of the currently expanded item. */
