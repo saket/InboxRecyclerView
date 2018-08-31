@@ -1,5 +1,6 @@
 package me.saket.expand.sample.inbox
 
+import android.graphics.Color
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.view.View
@@ -10,6 +11,7 @@ import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import kotterknife.bindView
 import me.saket.expand.InboxRecyclerView
+import me.saket.expand.dimming.ItemDimmer
 import me.saket.expand.page.ExpandablePageLayout
 import me.saket.expand.page.SimpleExpandablePageStateChangeCallbacks
 import me.saket.expand.sample.EmailRepository
@@ -68,6 +70,7 @@ class InboxActivity : AppCompatActivity() {
   private fun setupThreadList() {
     recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.setExpandablePage(emailPageLayout, resources.getDimensionPixelSize(R.dimen.inbox_email_page_pulltocollapse_threshold))
+    recyclerView.itemDimmer = ItemDimmer.uncoveredItems(dimColor = Color.WHITE, maxDimRatio = 0.65F)
 
     threadsAdapter.submitList(EmailRepository.threads())
     recyclerView.adapter = threadsAdapter
