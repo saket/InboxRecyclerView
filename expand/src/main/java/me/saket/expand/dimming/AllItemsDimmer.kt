@@ -8,7 +8,7 @@ import me.saket.expand.InboxRecyclerView
  * this requires the page to have its own background, but is a safer option because
  * it involve any coordinate calculations.
  */
-class AllItemsDimmer : UncoveredItemsDimmer() {
+class AllItemsDimmer(dimColor: Int, maxDimRatio: Float) : UncoveredItemsDimmer(dimColor, maxDimRatio) {
 
   override fun drawDimming(canvas: Canvas) {
     recyclerView.apply {

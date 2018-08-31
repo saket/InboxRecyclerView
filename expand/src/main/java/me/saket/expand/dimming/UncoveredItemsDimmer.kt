@@ -3,17 +3,12 @@ package me.saket.expand.dimming
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.ViewTreeObserver
 import me.saket.expand.InboxRecyclerView
 import me.saket.expand.page.ExpandablePageLayout
 import me.saket.expand.page.PageStateChangeCallbacks
-
-private const val MIN_DIM = 0
-private const val MAX_DIM_FACTOR = 0.15F                      // [0..1]
-private const val MAX_DIM = (255 * MAX_DIM_FACTOR).toInt()    // [0..255]
 
 /**
  * Draws dimming on [InboxRecyclerView] only in the area that's not covered by its page.
@@ -22,17 +17,20 @@ private const val MAX_DIM = (255 * MAX_DIM_FACTOR).toInt()    // [0..255]
  *
  * If the dimming appears incorrect, try using [ItemDimmer.allItems] instead.
  */
-open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
+open class UncoveredItemsDimmer(dimColor: Int, maxDimRatio: Float) : ItemDimmer(), PageStateChangeCallbacks {
+
+  private val minDim = 0
+  private val maxDim = (255 * maxDimRatio).toInt()    // [0..255]
 
   private var dimAnimator: ValueAnimator = ObjectAnimator()
-  protected val dimPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
   private var lastIsCollapseEligible = false
 
+  protected val dimPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
   protected lateinit var recyclerView: InboxRecyclerView
 
   init {
-    dimPaint.color = Color.BLACK
-    dimPaint.alpha = MIN_DIM
+    dimPaint.color = dimColor
+    dimPaint.alpha = minDim
   }
 
   private val pagePreDrawListener = object : ViewTreeObserver.OnPreDrawListener {
@@ -74,7 +72,7 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
 
       if (isCollapseEligible != lastIsCollapseEligible) {
         animateDimming(
-            toAlpha = if (isCollapseEligible) MIN_DIM else MAX_DIM,
+            toAlpha = if (isCollapseEligible) minDim else maxDim,
             dimDuration = 200)
       }
       lastIsCollapseEligible = isCollapseEligible
@@ -102,12 +100,12 @@ open class UncoveredItemsDimmer : ItemDimmer(), PageStateChangeCallbacks {
 
   override fun onPageAboutToExpand(expandAnimDuration: Long) {
     dimAnimator.cancel()
-    animateDimming(MAX_DIM, expandAnimDuration)
+    animateDimming(maxDim, expandAnimDuration)
   }
 
   override fun onPageAboutToCollapse(collapseAnimDuration: Long) {
     dimAnimator.cancel()
-    animateDimming(MIN_DIM, collapseAnimDuration)
+    animateDimming(minDim, collapseAnimDuration)
   }
 
   private fun animateDimming(toAlpha: Int, dimDuration: Long) {

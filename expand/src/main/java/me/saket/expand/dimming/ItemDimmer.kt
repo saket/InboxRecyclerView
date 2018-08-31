@@ -1,6 +1,9 @@
 package me.saket.expand.dimming
 
 import android.graphics.Canvas
+import android.graphics.Color
+import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import me.saket.expand.InboxRecyclerView
 
 /**
@@ -13,12 +16,21 @@ abstract class ItemDimmer {
   abstract fun drawDimming(canvas: Canvas)
 
   companion object {
-    fun uncoveredItems(): ItemDimmer {
-      return UncoveredItemsDimmer()
+
+    @JvmOverloads
+    fun uncoveredItems(
+        @ColorInt dimColor: Int = Color.BLACK,
+        @FloatRange(from = 0.0, to = 1.0) maxDimRatio: Float = 0.15F
+    ): ItemDimmer {
+      return UncoveredItemsDimmer(dimColor, maxDimRatio)
     }
 
-    fun allItems(): ItemDimmer {
-      return AllItemsDimmer()
+    @JvmOverloads
+    fun allItems(
+        @ColorInt dimColor: Int = Color.BLACK,
+        @FloatRange(from = 0.0, to = 1.0) maxDimRatio: Float = 0.15F
+    ): ItemDimmer {
+      return AllItemsDimmer(dimColor, maxDimRatio)
     }
 
     fun noOp(): ItemDimmer {
