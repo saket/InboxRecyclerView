@@ -109,7 +109,7 @@ class InboxRecyclerView(
     pageSetupDone = true
     page = expandablePage
 
-    expandablePage.setInternalStateCallbacksForList(this)
+    expandablePage.internalStateCallbacksForRecyclerView = this
     itemDimmer.onAttachRecyclerView(this)
     itemExpandAnimator.onAttachRecyclerView(this)
   }
@@ -231,7 +231,7 @@ class InboxRecyclerView(
     onPageBackgroundVisible()
   }
 
-  override fun onPageFullyCollapsed() {
+  override fun onPageCollapsed() {
     expandedItem = ExpandedItem.EMPTY
   }
 

@@ -16,7 +16,7 @@ import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.functions.Consumer
 import me.saket.expand.page.ExpandablePageLayout
 import me.saket.expand.page.OnPullToCollapseInterceptor
-import me.saket.expand.page.SimpleExpandablePageStateChangeCallbacks
+import me.saket.expand.page.SimplePageStateChangeCallbacks
 import me.saket.expand.sample.Attachment.CalendarEvent
 import me.saket.expand.sample.Attachment.Image
 import me.saket.expand.sample.Attachment.Pdf
@@ -69,7 +69,7 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
       }
     })
 
-    emailThreadPage.addStateChangeCallbacks(object : SimpleExpandablePageStateChangeCallbacks() {
+    emailThreadPage.addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
       override fun onPageCollapsed() {
         scrollableContainer.scrollTo(0, 0)
       }

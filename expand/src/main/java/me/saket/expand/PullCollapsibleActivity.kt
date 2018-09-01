@@ -97,7 +97,7 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
           }
         }
 
-        override fun onPageFullyCollapsed() {
+        override fun onPageCollapsed() {
           superFinish()
           overridePendingTransition(0, 0)
         }

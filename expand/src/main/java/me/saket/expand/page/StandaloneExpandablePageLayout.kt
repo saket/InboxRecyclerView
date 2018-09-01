@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
 import me.saket.expand.InboxRecyclerView
-import me.saket.expand.InternalPageCallbacks
 
 /** Standalone because this page can live without an [InboxRecyclerView]. */
 class StandaloneExpandablePageLayout(
@@ -13,13 +12,14 @@ class StandaloneExpandablePageLayout(
 ) : ExpandablePageLayout(context, attrs) {
 
   internal interface Callbacks {
-    /**
-     * Called when this page has fully collapsed and is no longer visible.
-     */
-    fun onPageFullyCollapsed()
 
     /**
-     * Called when this page was released while being pulled.
+     * Page has fully collapsed and is no longer visible.
+     */
+    fun onPageCollapsed()
+
+    /**
+     * Page was released while being pulled.
      *
      * @param collapseEligible Whether the page was pulled enough for collapsing it.
      */
@@ -27,7 +27,7 @@ class StandaloneExpandablePageLayout(
   }
 
   init {
-    setCollapsedAlpha(1f)
+    collapsedAlpha = 1F
     animationDurationMillis = 300
   }
 
@@ -41,23 +41,15 @@ class StandaloneExpandablePageLayout(
   }
 
   internal fun setCallbacks(callbacks: Callbacks) {
-    super.setInternalStateCallbacksForList(object : InternalPageCallbacks {
-      override fun onPageAboutToExpand() {}
-
-      override fun onPageFullyCovered() {}
-
-      override fun onPageAboutToCollapse() {}
-
-      override fun onPageFullyCollapsed() {
-        callbacks.onPageFullyCollapsed()
-      }
-
-      override fun onPagePull(deltaY: Float) {
-
-      }
-
-      override fun onPageRelease(collapseEligible: Boolean) {
+    addOnPullListener(object : SimpleOnPullListener() {
+      override fun onRelease(collapseEligible: Boolean) {
         callbacks.onPageRelease(collapseEligible)
+      }
+    })
+
+    addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
+      override fun onPageCollapsed() {
+        callbacks.onPageCollapsed()
       }
     })
   }
@@ -78,5 +70,4 @@ class StandaloneExpandablePageLayout(
   internal fun collapseTo(toShapeRect: Rect) {
     collapse(InboxRecyclerView.ExpandedItem(-1, -1, toShapeRect))
   }
-
 }

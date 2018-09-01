@@ -25,7 +25,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   /** The visible portion of this layout. */
   val clippedRect = Rect()
 
-  private var dimensionAnimator: ValueAnimator? = null
+  private var dimensionAnimator: ValueAnimator = ObjectAnimator()
   private var isFullyVisible: Boolean = false
 
   var animationDurationMillis = DEFAULT_ANIM_DURATION
@@ -49,7 +49,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   }
 
   fun animateDimensions(toWidth: Int, toHeight: Int) {
-    cancelOngoingClipAnimation()
+    dimensionAnimator.cancel()
 
     dimensionAnimator = ObjectAnimator.ofFloat(0f, 1f).apply {
       duration = animationDurationMillis
@@ -66,7 +66,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
         setClippedDimensions(newWidth, newHeight)
       }
     }
-    dimensionAnimator!!.start()
+    dimensionAnimator.start()
   }
 
   fun setClippedDimensions(newClippedWidth: Int, newClippedHeight: Int) {
@@ -82,12 +82,6 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   /** Immediately reset the clipping so that this layout is visible. */
   fun resetClipping() {
     setClippedDimensions(width, height)
-  }
-
-  private fun cancelOngoingClipAnimation() {
-    if (dimensionAnimator != null) {
-      dimensionAnimator!!.cancel()
-    }
   }
 
   companion object {

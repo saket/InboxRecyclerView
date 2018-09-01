@@ -13,7 +13,7 @@ import kotterknife.bindView
 import me.saket.expand.InboxRecyclerView
 import me.saket.expand.dimming.ItemDimmer
 import me.saket.expand.page.ExpandablePageLayout
-import me.saket.expand.page.SimpleExpandablePageStateChangeCallbacks
+import me.saket.expand.page.SimplePageStateChangeCallbacks
 import me.saket.expand.sample.EmailRepository
 import me.saket.expand.sample.R
 import me.saket.expand.sample.about.AboutActivity
@@ -106,7 +106,7 @@ class InboxActivity : AppCompatActivity() {
   private fun setupFab() {
     val editToReplyAllIcon = ReversibleAnimatedVectorDrawable(fab.drawable as AnimatedVectorDrawable)
 
-    emailPageLayout.addStateChangeCallbacks(object : SimpleExpandablePageStateChangeCallbacks() {
+    emailPageLayout.addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
       override fun onPageAboutToExpand(expandAnimDuration: Long) {
         editToReplyAllIcon.play()
       }

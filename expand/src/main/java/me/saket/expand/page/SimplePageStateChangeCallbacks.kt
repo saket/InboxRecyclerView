@@ -5,7 +5,7 @@ package me.saket.expand.page
  * cares only about a subset of the methods of this listener can subclass this adapter
  * class instead of implementing the interface directly.
  */
-abstract class SimpleExpandablePageStateChangeCallbacks : PageStateChangeCallbacks {
+abstract class SimplePageStateChangeCallbacks : PageStateChangeCallbacks {
 
   override fun onPageAboutToExpand(expandAnimDuration: Long) {
     // For rent. Broker free.

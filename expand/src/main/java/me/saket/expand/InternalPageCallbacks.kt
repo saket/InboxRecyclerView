@@ -15,7 +15,7 @@ internal interface InternalPageCallbacks {
   fun onPageAboutToCollapse()
 
   /** Page is no longer visible at this point. */
-  fun onPageFullyCollapsed()
+  fun onPageCollapsed()
 
   /** Page is being pulled. Sync the scroll with the list. */
   fun onPagePull(deltaY: Float)

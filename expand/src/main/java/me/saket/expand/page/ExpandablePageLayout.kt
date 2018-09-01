@@ -30,15 +30,19 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   val pullToCollapseListener: PullToCollapseListener
 
-  private var onPullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
-  private var stateChangeCallbacks: MutableList<PageStateChangeCallbacks>? = null
-  private var internalStateChangeCallbacksForNestedPage: InternalPageCallbacks? = null
-  private var internalStateChangeCallbacksForInboxRecyclerView: InternalPageCallbacks? = null
+  /** Alpha of this page when it's collapsed. */
+  var collapsedAlpha = 0F
+
+  internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks? = null
+  private var internalStateCallbacksForNestedPage: InternalPageCallbacks? = null
 
   lateinit var currentState: PageState
+
+  private var onPullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
+  private var stateChangeCallbacks: MutableList<PageStateChangeCallbacks>? = null
+
   private var toolbarAnimator: ValueAnimator? = null
   private val expandedAlpha = 1F
-  private var collapsedAlpha = 0F
   private var isFullyCoveredByNestedPage = false
   private var pullToCollapseEnabled = false
 
@@ -164,7 +168,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   override fun onRelease(collapseEligible: Boolean) {
-    dispatchOnPageReleasedCallback(collapseEligible)
+    dispatchOnPageReleaseCallback(collapseEligible)
 
     // The list should either collapse or animate
     // back its items out of the list.
@@ -239,7 +243,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     alignPageWithExpandingItem(expandedItem)
 
     // Callbacks, just before the animation starts.
-    dispatchOnAboutToExpandCallback(animationDurationMillis)
+    dispatchOnPageAboutToExpandCallback(animationDurationMillis)
 
     // Animate!
     animatePageExpandCollapse(true, width, height, expandedItem)
@@ -262,8 +266,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     executeOnMeasure {
       // Cover the whole screen right away. Don't need any animations.
       alignPageToCoverScreen()
-      dispatchOnAboutToExpandCallback(0)
-      dispatchOnFullyExpandedCallback()
+      dispatchOnPageAboutToExpandCallback(0)
+      dispatchOnPageFullyExpandedCallback()
     }
   }
 
@@ -350,7 +354,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
                 visibility = View.INVISIBLE
                 dispatchOnPageCollapsedCallback()
               } else {
-                dispatchOnFullyExpandedCallback()
+                dispatchOnPageFullyExpandedCallback()
               }
             }
           }
@@ -447,14 +451,14 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   fun setNestedExpandablePage(nestedPage: ExpandablePageLayout) {
     this.nestedPage = nestedPage
 
-    nestedPage.setInternalStateCallbacksForNestedPage(object : InternalPageCallbacks {
+    nestedPage.internalStateCallbacksForNestedPage = object : InternalPageCallbacks {
       override fun onPageAboutToExpand() {}
 
       override fun onPageAboutToCollapse() {
         onPageBackgroundVisible()
       }
 
-      override fun onPageFullyCollapsed() {}
+      override fun onPageCollapsed() {}
 
       override fun onPagePull(deltaY: Float) {
         onPageBackgroundVisible()
@@ -481,7 +485,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
           postInvalidate()
         }
       }
-    })
+    }
   }
 
   override fun draw(canvas: Canvas) {
@@ -502,33 +506,29 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   private fun dispatchOnPagePullCallbacks(deltaY: Float) {
-    if (internalStateChangeCallbacksForNestedPage != null) {
-      internalStateChangeCallbacksForNestedPage!!.onPagePull(deltaY)
+    if (internalStateCallbacksForNestedPage != null) {
+      internalStateCallbacksForNestedPage!!.onPagePull(deltaY)
     }
-    if (internalStateChangeCallbacksForInboxRecyclerView != null) {
-      internalStateChangeCallbacksForInboxRecyclerView!!.onPagePull(deltaY)
-    }
-  }
-
-  private fun dispatchOnPageReleasedCallback(collapseEligible: Boolean) {
-    if (internalStateChangeCallbacksForNestedPage != null) {
-      internalStateChangeCallbacksForNestedPage!!.onPageRelease(collapseEligible)
-    }
-    if (internalStateChangeCallbacksForInboxRecyclerView != null) {
-      internalStateChangeCallbacksForInboxRecyclerView!!.onPageRelease(collapseEligible)
+    if (internalStateCallbacksForRecyclerView != null) {
+      internalStateCallbacksForRecyclerView!!.onPagePull(deltaY)
     }
   }
 
-  private fun dispatchOnAboutToExpandCallback(expandAnimDuration: Long) {
-    // The state change must happen after the subscribers have been
-    // notified that the page is going to expand
-    changeState(PageState.EXPANDING)
-
-    if (internalStateChangeCallbacksForNestedPage != null) {
-      internalStateChangeCallbacksForNestedPage!!.onPageAboutToExpand()
+  private fun dispatchOnPageReleaseCallback(collapseEligible: Boolean) {
+    if (internalStateCallbacksForNestedPage != null) {
+      internalStateCallbacksForNestedPage!!.onPageRelease(collapseEligible)
     }
-    if (internalStateChangeCallbacksForInboxRecyclerView != null) {
-      internalStateChangeCallbacksForInboxRecyclerView!!.onPageAboutToExpand()
+    if (internalStateCallbacksForRecyclerView != null) {
+      internalStateCallbacksForRecyclerView!!.onPageRelease(collapseEligible)
+    }
+  }
+
+  private fun dispatchOnPageAboutToExpandCallback(expandAnimDuration: Long) {
+    if (internalStateCallbacksForNestedPage != null) {
+      internalStateCallbacksForNestedPage!!.onPageAboutToExpand()
+    }
+    if (internalStateCallbacksForRecyclerView != null) {
+      internalStateCallbacksForRecyclerView!!.onPageAboutToExpand()
     }
 
     if (stateChangeCallbacks != null) {
@@ -539,9 +539,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
 
     onPageAboutToExpand(animationDurationMillis)
+
+    // The state change must happen after the subscribers have been
+    // notified that the page is going to expand.
+    changeState(PageState.EXPANDING)
   }
 
-  private fun dispatchOnFullyExpandedCallback() {
+  private fun dispatchOnPageFullyExpandedCallback() {
     changeState(PageState.EXPANDED)
     dispatchOnPageFullyCoveredCallback()
 
@@ -561,23 +565,20 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * usually when the user is pulling the page.
    */
   private fun dispatchOnPageFullyCoveredCallback() {
-    if (internalStateChangeCallbacksForNestedPage != null) {
-      internalStateChangeCallbacksForNestedPage!!.onPageFullyCovered()
+    if (internalStateCallbacksForNestedPage != null) {
+      internalStateCallbacksForNestedPage!!.onPageFullyCovered()
     }
-    if (internalStateChangeCallbacksForInboxRecyclerView != null) {
-      internalStateChangeCallbacksForInboxRecyclerView!!.onPageFullyCovered()
+    if (internalStateCallbacksForRecyclerView != null) {
+      internalStateCallbacksForRecyclerView!!.onPageFullyCovered()
     }
   }
 
   private fun dispatchOnPageAboutToCollapseCallback() {
-    // The state change must happen after the subscribers have been notified that the page is going to collapse.
-    changeState(PageState.COLLAPSING)
-
-    if (internalStateChangeCallbacksForNestedPage != null) {
-      internalStateChangeCallbacksForNestedPage!!.onPageAboutToCollapse()
+    if (internalStateCallbacksForNestedPage != null) {
+      internalStateCallbacksForNestedPage!!.onPageAboutToCollapse()
     }
-    if (internalStateChangeCallbacksForInboxRecyclerView != null) {
-      internalStateChangeCallbacksForInboxRecyclerView!!.onPageAboutToCollapse()
+    if (internalStateCallbacksForRecyclerView != null) {
+      internalStateCallbacksForRecyclerView!!.onPageAboutToCollapse()
     }
 
     if (stateChangeCallbacks != null) {
@@ -589,16 +590,20 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
 
     onPageAboutToCollapse(animationDurationMillis)
+
+    // The state change must happen after the subscribers have been
+    // notified that the page is going to collapse.
+    changeState(PageState.COLLAPSING)
   }
 
   private fun dispatchOnPageCollapsedCallback() {
     changeState(PageState.COLLAPSED)
 
-    if (internalStateChangeCallbacksForNestedPage != null) {
-      internalStateChangeCallbacksForNestedPage!!.onPageFullyCollapsed()
+    if (internalStateCallbacksForNestedPage != null) {
+      internalStateCallbacksForNestedPage!!.onPageCollapsed()
     }
-    if (internalStateChangeCallbacksForInboxRecyclerView != null) {
-      internalStateChangeCallbacksForInboxRecyclerView!!.onPageFullyCollapsed()
+    if (internalStateCallbacksForRecyclerView != null) {
+      internalStateCallbacksForRecyclerView!!.onPageCollapsed()
     }
 
     if (stateChangeCallbacks != null) {
@@ -655,17 +660,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
   }
 
-  /**
-   * Calls for the associated InboxRecyclerView.
-   */
-  internal fun setInternalStateCallbacksForList(listCallbacks: InternalPageCallbacks) {
-    internalStateChangeCallbacksForInboxRecyclerView = listCallbacks
-  }
-
-  private fun setInternalStateCallbacksForNestedPage(nestedPageCallbacks: InternalPageCallbacks) {
-    internalStateChangeCallbacksForNestedPage = nestedPageCallbacks
-  }
-
   fun addStateChangeCallbacks(callbacks: PageStateChangeCallbacks) {
     if (this.stateChangeCallbacks == null) {
       this.stateChangeCallbacks = ArrayList(4)
@@ -690,13 +684,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   fun removeOnPullListener(pullListener: PullToCollapseListener.OnPullListener) {
     pullToCollapseListener.removeOnPullListener(pullListener)
-  }
-
-  /**
-   * Alpha of this page when it's collapsed.
-   */
-  fun setCollapsedAlpha(collapsedAlpha: Float) {
-    this.collapsedAlpha = collapsedAlpha
   }
 
   companion object {
