@@ -73,7 +73,7 @@ open class UncoveredItemsDimmer(dimColor: Int, maxDimRatio: Float) : ItemDimmer(
       if (isCollapseEligible != lastIsCollapseEligible) {
         animateDimming(
             toAlpha = if (isCollapseEligible) minDim else maxDim,
-            dimDuration = 200)
+            dimDuration = 300)
       }
       lastIsCollapseEligible = isCollapseEligible
 
