@@ -79,7 +79,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     invalidateOutline()
   }
 
-  /** Immediately reset the clipping so that this layout is visible. */
+  /** Immediately reset the clipping so that this layout is fully visible. */
   fun resetClipping() {
     setClippedDimensions(width, height)
   }

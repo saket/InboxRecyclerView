@@ -8,8 +8,6 @@ import android.view.View
  * are pushed out of the window towards the top and the rest towards the bottom.
  *
  * Vice versa when the page is collapsing.
- *
- * TODO: Find a better name.
  */
 class DefaultItemExpandAnimator : ItemExpandAnimator() {
 

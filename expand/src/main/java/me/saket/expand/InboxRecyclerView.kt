@@ -87,9 +87,9 @@ class InboxRecyclerView(
   fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View) {
     setExpandablePageInternal(expandablePage)
 
-    expandablePage.setToolbar(toolbar)
+    expandablePage.parentToolbar = toolbar
     toolbar.post {
-      expandablePage.setPullToCollapseDistanceThreshold((toolbar.height * 0.85F).toInt())
+      expandablePage.pullToCollapseThresholdDistance = (toolbar.height * 0.85F).toInt()
     }
   }
 
@@ -98,8 +98,7 @@ class InboxRecyclerView(
    */
   fun setExpandablePage(expandablePage: ExpandablePageLayout, collapseDistanceThreshold: Int) {
     setExpandablePageInternal(expandablePage)
-
-    expandablePage.setPullToCollapseDistanceThreshold(collapseDistanceThreshold)
+    expandablePage.pullToCollapseThresholdDistance = collapseDistanceThreshold
   }
 
   private fun setExpandablePageInternal(expandablePage: ExpandablePageLayout) {

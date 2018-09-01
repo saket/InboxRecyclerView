@@ -89,8 +89,8 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
     window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
     if (pullCollapsibleEnabled) {
-      pageLayout.setPullToCollapseDistanceThreshold(standardToolbarHeight)
-      pageLayout.setCallbacks(object : StandaloneExpandablePageLayout.Callbacks {
+      pageLayout.pullToCollapseThresholdDistance = standardToolbarHeight
+      pageLayout.callbacks = object : StandaloneExpandablePageLayout.Callbacks {
         override fun onPageRelease(collapseEligible: Boolean) {
           if (collapseEligible) {
             finish()
@@ -101,10 +101,10 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
           superFinish()
           overridePendingTransition(0, 0)
         }
-      })
+      }
 
     } else {
-      pageLayout.setPullToCollapseEnabled(false)
+      pageLayout.pullToCollapseEnabled = false
       pageLayout.expandImmediately()
     }
 

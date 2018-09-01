@@ -10,7 +10,7 @@ import java.util.ArrayList
 
 class PullToCollapseListener(context: Context, private val expandablePage: ExpandablePageLayout) : View.OnTouchListener {
 
-  /** The distance after which the page can collapse when pulled. */
+  /** Pull distance after which the page can collapse. */
   var collapseDistanceThreshold: Int = 0
 
   private val touchSlop: Int = ViewConfiguration.get(context).scaledTouchSlop

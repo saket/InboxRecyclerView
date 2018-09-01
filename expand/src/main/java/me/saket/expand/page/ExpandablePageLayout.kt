@@ -24,25 +24,32 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener {
 
-  private var activityToolbar: View? = null  // Toolbar inside the parent page, not in this page.
-  private var nestedPage: ExpandablePageLayout? = null
-
-  val pullToCollapseListener: PullToCollapseListener
+  /** Toolbar inside the parent page, not in this page. */
+  var parentToolbar: View? = null
 
   /** Alpha of this page when it's collapsed. */
   var collapsedAlpha = 0F
 
+  var pullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
+
+  var pullToCollapseThresholdDistance: Int
+    get() = pullToCollapseListener.collapseDistanceThreshold
+    set(value) {
+      pullToCollapseListener.collapseDistanceThreshold = value
+    }
+
+  var pullToCollapseEnabled = false
+  val pullToCollapseListener: PullToCollapseListener
   lateinit var currentState: PageState
 
   internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks? = null
   private var internalStateCallbacksForNestedPage: InternalPageCallbacks? = null
-  private var onPullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
   private var stateChangeCallbacks: MutableList<PageStateChangeCallbacks>? = null
 
+  private var nestedPage: ExpandablePageLayout? = null
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
   private val expandedAlpha = 1F
   private var isFullyCoveredByNestedPage = false
-  private var pullToCollapseEnabled = false
 
   val isExpanded: Boolean
     get() = currentState == PageState.EXPANDED
@@ -78,7 +85,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     visibility = View.INVISIBLE
     changeState(PageState.COLLAPSED)
 
-    setPullToCollapseEnabled(true)
+    pullToCollapseEnabled = true
     pullToCollapseListener = PullToCollapseListener(getContext(), this)
     pullToCollapseListener.addOnPullListener(this)
   }
@@ -94,33 +101,19 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }.start()
   }
 
-  fun setToolbar(parentActivityToolbar: View) {
-    activityToolbar = parentActivityToolbar
-  }
-
-  /**
-   * Pull distance after which the page can collapse.
-   */
-  fun setPullToCollapseDistanceThreshold(threshold: Int) {
-    pullToCollapseListener.collapseDistanceThreshold = threshold
-  }
-
-  fun setPullToCollapseEnabled(enabled: Boolean) {
-    pullToCollapseEnabled = enabled
-  }
-
   private fun changeState(newPageState: PageState) {
     currentState = newPageState
   }
 
   override fun hasOverlappingRendering(): Boolean {
-    // According to this video, this should help improve performance when animating alpha:
-    // https://www.youtube.com/watch?v=wIy8g8yNhNk.
+    // This should help improve performance when animating alpha.
+    // Source: https://www.youtube.com/watch?v=wIy8g8yNhNk.
     return false
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    // Ignore touch events until the page is fully expanded for avoiding accidental taps.
+    // Ignore touch events until the page is
+    // fully expanded for avoiding accidental taps.
     if (isExpanded) {
       super.dispatchTouchEvent(ev)
     }
@@ -157,7 +150,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
     // Reveal the toolbar if this page is being pulled down or
     // hide it back if it's being released.
-    if (activityToolbar != null) {
+    if (parentToolbar != null) {
       updateToolbarTranslationY(currentTranslationY > 0F, currentTranslationY)
     }
 
@@ -183,7 +176,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
     // Restore everything to their expanded position.
     // 1. Hide Toolbar again.
-    if (activityToolbar != null) {
+    if (parentToolbar != null) {
       animateToolbar(false, targetPageTranslationY = 0F)
     }
 
@@ -235,7 +228,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     alpha = expandedAlpha
 
     // Hide the toolbar as soon as its height is available.
-    activityToolbar?.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
+    parentToolbar?.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
 
     executeOnMeasure {
       // Cover the whole screen right away. Don't need any animations.
@@ -289,7 +282,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     // If there's no record about the expanded list item (from whose place this page was expanded),
     // collapse just below the toolbar and not the window top to avoid closing the toolbar upon hiding.
     if (!expand && expandedItem.expandedItemLocationRect.height() == 0) {
-      val toolbarBottom = if (activityToolbar != null) activityToolbar!!.bottom else 0
+      val toolbarBottom = if (parentToolbar != null) parentToolbar!!.bottom else 0
       targetPageTranslationY = Math.max(targetPageTranslationY, toolbarBottom.toFloat())
     }
 
@@ -325,11 +318,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
     // Show the toolbar fully even if the page is going to collapse behind it
     var targetPageTranslationYForToolbar = targetPageTranslationY
-    if (!expand && activityToolbar != null && targetPageTranslationYForToolbar < activityToolbar!!.bottom) {
-      targetPageTranslationYForToolbar = activityToolbar!!.bottom.toFloat()
+    if (!expand && parentToolbar != null && targetPageTranslationYForToolbar < parentToolbar!!.bottom) {
+      targetPageTranslationYForToolbar = parentToolbar!!.bottom.toFloat()
     }
 
-    if (activityToolbar != null) {
+    if (parentToolbar != null) {
       // Hide / show the toolbar by pushing it up during expand and pulling it down during collapse.
       animateToolbar(
           !expand, // When expand is false, !expand shows the toolbar.
@@ -346,7 +339,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       return
     }
 
-    val toolbarCurrentBottom = if (activityToolbar != null) activityToolbar!!.bottom + activityToolbar!!.translationY else 0F
+    val toolbarCurrentBottom = if (parentToolbar != null) parentToolbar!!.bottom + parentToolbar!!.translationY else 0F
     val fromTy = Math.max(toolbarCurrentBottom, translationY)
 
     // The hide animation happens a bit too quickly if the page has to travel a large
@@ -371,7 +364,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * Helper method for showing / hiding the toolbar depending upon this page's current translationY.
    */
   private fun updateToolbarTranslationY(show: Boolean, pageTranslationY: Float) {
-    val toolbarHeight = activityToolbar!!.bottom
+    val toolbarHeight = parentToolbar!!.bottom
     var targetTranslationY = pageTranslationY - toolbarHeight
 
     if (show) {
@@ -382,12 +375,12 @@ open class ExpandablePageLayout @JvmOverloads constructor(
         targetTranslationY = 0F
       }
 
-    } else if (pageTranslationY >= toolbarHeight || activityToolbar!!.translationY <= -toolbarHeight) {
+    } else if (pageTranslationY >= toolbarHeight || parentToolbar!!.translationY <= -toolbarHeight) {
       // Hide.
       return
     }
 
-    activityToolbar!!.translationY = targetTranslationY
+    parentToolbar!!.translationY = targetTranslationY
   }
 
   internal fun stopAnyOngoingPageAnimation() {
@@ -408,6 +401,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * PAGE IN AN ACTIVITY.
    */
   fun setNestedExpandablePage(nestedPage: ExpandablePageLayout) {
+    val old = this.nestedPage
+    if (old != null) {
+      old.internalStateCallbacksForNestedPage = null
+    }
+
     this.nestedPage = nestedPage
 
     nestedPage.internalStateCallbacksForNestedPage = object : InternalPageCallbacks {
@@ -615,8 +613,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       nestedPageCopy.handleOnPullToCollapseIntercept(event, downX, downY, deltaUpwardSwipe)
       InterceptResult.INTERCEPTED
 
-    } else if (onPullToCollapseInterceptor != null) {
-      onPullToCollapseInterceptor!!.onInterceptPullToCollapseGesture(event, downX, downY, deltaUpwardSwipe)
+    } else if (pullToCollapseInterceptor != null) {
+      pullToCollapseInterceptor!!.onInterceptPullToCollapseGesture(event, downX, downY, deltaUpwardSwipe)
 
     } else {
       InterceptResult.IGNORED
@@ -632,10 +630,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   fun removeStateChangeCallbacks(callbacks: PageStateChangeCallbacks) {
     stateChangeCallbacks!!.remove(callbacks)
-  }
-
-  fun setPullToCollapseInterceptor(interceptor: OnPullToCollapseInterceptor) {
-    onPullToCollapseInterceptor = interceptor
   }
 
   /**

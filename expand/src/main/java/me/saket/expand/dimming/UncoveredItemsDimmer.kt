@@ -66,7 +66,7 @@ open class UncoveredItemsDimmer(dimColor: Int, maxDimRatio: Float) : ItemDimmer(
   private fun onPageMove() {
     // Remove dimming when the page is being pulled and is eligible for collapse.
     if (recyclerView.page.isExpanded) {
-      val collapseThreshold = recyclerView.page.pullToCollapseListener.collapseDistanceThreshold
+      val collapseThreshold = recyclerView.page.pullToCollapseThresholdDistance
       val translationYAbs = Math.abs(recyclerView.page.translationY)
       val isCollapseEligible = translationYAbs >= collapseThreshold
 
