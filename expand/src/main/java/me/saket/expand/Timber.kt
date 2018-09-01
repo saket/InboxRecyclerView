@@ -8,11 +8,15 @@ internal object Timber {
 
   @SuppressLint("LogNotTimber")
   fun i(message: String) {
-    Log.i("IRV", message)
+    if (BuildConfig.DEBUG) {
+      Log.i("IRV", message)
+    }
   }
 
   @SuppressLint("LogNotTimber")
   fun w(message: String) {
-    Log.w("IRV", message)
+    if (BuildConfig.DEBUG) {
+      Log.w("IRV", message)
+    }
   }
 }
