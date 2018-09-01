@@ -116,7 +116,7 @@ class EmailViewHolderWithImageAttachments(
   private val imageAttachmentsStub = itemView.findViewById<ViewStub>(R.id.emailthread_image_attachments_stub)
   private val imageAttachmentsRecyclerView by lazy { itemView.findViewById<RecyclerView>(R.id.emailthread_image_attachments) }
   private val adapter = ImageAttachmentAdapter(clickListener = {
-    itemClicks.accept(EmailThreadClicked(emailThread, itemId))
+    itemView.onTouchEvent(it)
   })
 
   init {

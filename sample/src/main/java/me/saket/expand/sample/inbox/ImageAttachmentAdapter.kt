@@ -1,6 +1,7 @@
 package me.saket.expand.sample.inbox
 
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -11,7 +12,7 @@ import me.saket.expand.sample.R
 import me.saket.expand.sample.widgets.executeOnMeasure
 
 class ImageAttachmentAdapter(
-    private val clickListener: () -> Unit
+    private val clickListener: (MotionEvent) -> Boolean
 ) : RecyclerView.Adapter<ImageViewHolder>() {
 
   var images: List<Attachment.Image> = emptyList()
@@ -29,7 +30,8 @@ class ImageAttachmentAdapter(
 }
 
 class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-  fun render(attachment: Attachment.Image, clickListener: () -> Unit) {
+
+  fun render(attachment: Attachment.Image, clickListener: (MotionEvent) -> Boolean) {
     val imageView = itemView as ImageView
     val image = ContextCompat.getDrawable(imageView.context, attachment.drawableRes)!!
     imageView.setImageDrawable(image)
@@ -41,6 +43,6 @@ class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
       imageView.layoutParams = params
     }
 
-    itemView.setOnClickListener { clickListener() }
+    itemView.setOnTouchListener { _, event -> clickListener(event) }
   }
 }
