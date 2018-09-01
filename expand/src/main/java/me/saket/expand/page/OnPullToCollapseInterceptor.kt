@@ -5,21 +5,15 @@ import android.view.MotionEvent
 interface OnPullToCollapseInterceptor {
 
   /**
-   * TODO: Improve doc.
+   * Called once every time a vertical scroll gesture is registered on [ExpandablePageLayout].
+   * When intercepted, all touch events until the finger is lifted will be ignored. This is
+   * useful when nested (vertically) scrollable layouts are also present inside the page.
    *
-   * Called when the user makes a vertical swipe gesture, which is registered as a pull-to-collapse gesture.
-   * This is called once per gesture, when the user's finger touches this page. `ExpandablePage`
-   * starts accepting this gesture if this method returns false.
+   * @param downX      X-coordinate from where the gesture started, relative to the screen window.
+   * @param downY      Y-coordinate from where the gesture started, relative to the screen window.
+   * @param upwardPull Upward pull == downward scroll and vice versa.
    *
-   * So, if you have other vertically scrollable Views in your layout (RecyclerView, ListView, ScrollView, etc.),
-   * you can return true to consume a gesture after verifying that the touch event lies on one of those Views.
-   * This will block `ExpandablePage` from processing the gesture until the finger is lifted.
-   *
-   * @param downX          X-location from where the gesture started.
-   * @param downY          Y-location from where the gesture started.
-   * @param upwardPagePull True if the PAGE is being pulled upwards. Remember that upward swipe == downward
-   * scroll and vice versa.
    * @return True to consume this touch event. False otherwise.
    */
-  fun onInterceptPullToCollapseGesture(event: MotionEvent, downX: Float, downY: Float, upwardPagePull: Boolean): Boolean
+  fun onInterceptPullToCollapseGesture(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean): Boolean
 }

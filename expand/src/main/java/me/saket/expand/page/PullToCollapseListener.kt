@@ -15,9 +15,9 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
 
   private val touchSlop: Int = ViewConfiguration.get(context).scaledTouchSlop
   private val onPullListeners = ArrayList<OnPullListener>(3)
-  private var downX: Float = 0.toFloat()
-  private var downY: Float = 0.toFloat()
-  private var lastMoveY: Float = 0.toFloat()
+  private var downX: Float = 0F
+  private var downY: Float = 0F
+  private var lastMoveY: Float = 0F
   private var eligibleForCollapse: Boolean = false
   private var horizontalSwipingConfirmed: Boolean? = null
   private var interceptedUntilNextGesture: Boolean? = null
@@ -72,7 +72,6 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
       }
 
       MotionEvent.ACTION_MOVE -> {
-        // Keep ignoring horizontal swipes.
         if (horizontalSwipingConfirmed != null && horizontalSwipingConfirmed!!) {
           return false
         }
@@ -90,19 +89,20 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
           return false
         }
 
-        // When it's confirmed that the movement distance is > touchSlop and this is indeed a gesture,
-        // we check for two things:
-        // 1. Whether or not this is a horizontal swipe.
-        // 2. Whether a registered interceptor wants to intercept this gesture.
-        // These two checks should only happen once per gesture, just when the gesture starts. The
-        // flags will reset when the finger is lifted.
+        // When it's confirmed that the movement distance is > touchSlop and this is
+        // indeed a gesture, two checks are made:
+        //
+        // 1. Whether this is a horizontal swipe.
+        // 2. Whether an interceptor wants to intercept this gesture.
+        //
+        // These two checks should only happen once per gesture, just when the gesture
+        // starts. The flags will reset when the finger is lifted.
 
-        // Ignore horizontal swipes (Step 1)
+        // Ignore horizontal swipes (Step 1).
         if (horizontalSwipingConfirmed == null) {
           horizontalSwipingConfirmed = totalSwipeDistanceXAbs > totalSwipeDistanceYAbs
 
-          // Lazy hack: We must also cancel any ongoing release animation. But it should only be performed
-          // once, at the starting of a gesture. Let's just do it here.
+          // Any ongoing release animation must also be canceled at the starting of a gesture.
           if (expandablePage.isExpanded) {
             cancelAnyOngoingAnimations()
           }
@@ -114,8 +114,6 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
 
         val deltaUpwardSwipe = deltaY < 0
 
-        // Avoid registering this gesture if the page doesn't want us to. Mostly used when the page also
-        // has a scrollable child.
         if (interceptedUntilNextGesture == null) {
           interceptedUntilNextGesture = expandablePage.handleOnPullToCollapseIntercept(event, downX, downY, deltaUpwardSwipe)
           if (interceptedUntilNextGesture!!) {
@@ -125,39 +123,37 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
           }
         }
 
-        val upwardSwipe = totalSwipeDistanceY < 0f
-        val resistanceFactor = 4f
+        val upwardSwipe = totalSwipeDistanceY < 0F
 
-        // If the gesture has covered a distance >= the toolbar height, mark this gesture eligible
-        // for collapsible when the finger is lifted
         eligibleForCollapse = when {
           upwardSwipe -> expandablePage.translationY <= -collapseDistanceThreshold
           else -> expandablePage.translationY >= collapseDistanceThreshold
         }
-        var resistedDeltaY = deltaY / resistanceFactor
 
-        // Once it's eligible, start resisting more as an indicator that the
-        // page / list is being overscrolled. This will also prevent the user
-        // to swipe all the way down or up
-        if (eligibleForCollapse && expandablePage.translationY != 0f) {
-          val extraResistance = collapseDistanceThreshold / Math.abs(expandablePage.translationY)
-          resistedDeltaY *= extraResistance / 2
+        // The page isn't moved with the same speed as the finger. Some friction is applied
+        // to make the gesture feel nice. This friction is increased further once the page
+        // is eligible for collapse as a visual indicator that the page can now be released.
+        val frictionFactor = 4F
+        var deltaYWithFriction = deltaY / frictionFactor
+
+        if (eligibleForCollapse) {
+          val extraFriction = collapseDistanceThreshold / Math.abs(expandablePage.translationY)
+          deltaYWithFriction *= extraFriction / 2F
         }
 
-        // Move page
-        val translationY = expandablePage.translationY + resistedDeltaY
+        val translationY = expandablePage.translationY + deltaYWithFriction
         expandablePage.translationY = translationY
-        dispatchPulledCallback(resistedDeltaY, translationY, upwardSwipe, deltaUpwardSwipe)
+        dispatchPulledCallback(deltaYWithFriction, translationY, upwardSwipe, deltaUpwardSwipe)
 
         lastMoveY = event.rawY
         return true
       }
 
       MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
-        // Collapse or restore the page when the finger is lifted, depending on
-        // the pull distance
         val totalSwipeDistanceY = event.rawY - downY
         if (Math.abs(totalSwipeDistanceY) >= touchSlop) {
+          // The page is responsible for animating back into
+          // position if the page wasn't eligible for collapse.
           dispatchReleaseCallback()
         }
       }

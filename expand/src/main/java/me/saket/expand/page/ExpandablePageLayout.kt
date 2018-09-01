@@ -1,7 +1,5 @@
 package me.saket.expand.page
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
@@ -14,6 +12,7 @@ import android.view.ViewGroup
 import me.saket.expand.InboxRecyclerView
 import me.saket.expand.InternalPageCallbacks
 import me.saket.expand.Views.executeOnMeasure
+import me.saket.expand.withEndAction
 import java.lang.reflect.Method
 import java.util.ArrayList
 
@@ -33,15 +32,14 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /** Alpha of this page when it's collapsed. */
   var collapsedAlpha = 0F
 
-  internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks? = null
-  private var internalStateCallbacksForNestedPage: InternalPageCallbacks? = null
-
   lateinit var currentState: PageState
 
+  internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks? = null
+  private var internalStateCallbacksForNestedPage: InternalPageCallbacks? = null
   private var onPullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
   private var stateChangeCallbacks: MutableList<PageStateChangeCallbacks>? = null
 
-  private var toolbarAnimator: ValueAnimator? = null
+  private var toolbarAnimator: ValueAnimator = ObjectAnimator()
   private val expandedAlpha = 1F
   private var isFullyCoveredByNestedPage = false
   private var pullToCollapseEnabled = false
@@ -197,29 +195,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
           .alpha(expandedAlpha)
           .setDuration(animationDurationMillis)
           .setInterpolator(animationInterpolator)
-          .setListener(object : AnimatorListenerAdapter() {
-            // TODO: Use withEndAction() instead.
-            var canceled: Boolean = false
-
-            override fun onAnimationStart(animation: Animator) {
-              super.onAnimationStart(animation)
-              canceled = false
-            }
-
-            override fun onAnimationCancel(animation: Animator) {
-              super.onAnimationCancel(animation)
-              canceled = true
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-              super.onAnimationEnd(animation)
-              if (canceled) {
-                return
-              }
-              dispatchOnPageFullyCoveredCallback()
-            }
-
-          })
+          .withEndAction { dispatchOnPageFullyCoveredCallback() }
           .start()
     }
   }
@@ -332,31 +308,18 @@ open class ExpandablePageLayout @JvmOverloads constructor(
         .translationX(targetPageTranslationX)
         .setDuration(animationDurationMillis)
         .setInterpolator(animationInterpolator)
-        .setListener(object : AnimatorListenerAdapter() {
-          // TODO: Use withEndAction() instead.
-          private var canceled: Boolean = false
+        .withEndAction { canceled ->
+          setSuppressLayoutMethodUsingReflection(this@ExpandablePageLayout, false)
 
-          override fun onAnimationStart(animation: Animator) {
-            canceled = false
-          }
-
-          override fun onAnimationCancel(animation: Animator) {
-            canceled = true
-          }
-
-          override fun onAnimationEnd(animation: Animator) {
-            setSuppressLayoutMethodUsingReflection(this@ExpandablePageLayout, false)
-
-            if (!canceled) {
-              if (!expand) {
-                visibility = View.INVISIBLE
-                dispatchOnPageCollapsedCallback()
-              } else {
-                dispatchOnPageFullyExpandedCallback()
-              }
+          if (!canceled) {
+            if (!expand) {
+              visibility = View.INVISIBLE
+              dispatchOnPageCollapsedCallback()
+            } else {
+              dispatchOnPageFullyExpandedCallback()
             }
           }
-        })
+        }
         .setStartDelay(InboxRecyclerView.animationStartDelay.toLong())
         .start()
 
@@ -397,11 +360,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
     // If the page lies behind the toolbar, use toolbar's current bottom position instead
     toolbarAnimator = ObjectAnimator.ofFloat(fromTy, targetPageTranslationY)
-    toolbarAnimator!!.addUpdateListener { animation -> updateToolbarTranslationY(show, animation.animatedValue as Float) }
-    toolbarAnimator!!.duration = animationDurationMillis * speedFactor
-    toolbarAnimator!!.interpolator = animationInterpolator
-    toolbarAnimator!!.startDelay = InboxRecyclerView.animationStartDelay.toLong()
-    toolbarAnimator!!.start()
+    toolbarAnimator.addUpdateListener { animation -> updateToolbarTranslationY(show, animation.animatedValue as Float) }
+    toolbarAnimator.duration = animationDurationMillis * speedFactor
+    toolbarAnimator.interpolator = animationInterpolator
+    toolbarAnimator.startDelay = InboxRecyclerView.animationStartDelay.toLong()
+    toolbarAnimator.start()
   }
 
   /**
@@ -433,9 +396,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   private fun stopToolbarAnimation() {
-    if (toolbarAnimator != null) {
-      toolbarAnimator!!.cancel()
-    }
+    toolbarAnimator.cancel()
   }
 
   /**

@@ -1,11 +1,13 @@
 package me.saket.expand
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.View
+import android.view.ViewPropertyAnimator
 import android.view.ViewTreeObserver
 
-// TODO: Convert to extension functions.
 internal object Views {
 
   /**
@@ -45,4 +47,22 @@ internal object Views {
       }
     })
   }
+}
+
+fun ViewPropertyAnimator.withEndAction(action: (Boolean) -> Unit): ViewPropertyAnimator {
+  return setListener(object: AnimatorListenerAdapter() {
+    var canceled = false
+
+    override fun onAnimationStart(animation: Animator) {
+      canceled = false
+    }
+
+    override fun onAnimationCancel(animation: Animator) {
+      canceled = true
+    }
+
+    override fun onAnimationEnd(animation: Animator) {
+      action(canceled)
+    }
+  })
 }
