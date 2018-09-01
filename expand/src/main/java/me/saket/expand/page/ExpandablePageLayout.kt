@@ -170,59 +170,57 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   override fun onRelease(collapseEligible: Boolean) {
     dispatchOnPageReleaseCallback(collapseEligible)
 
-    // The list should either collapse or animate
-    // back its items out of the list.
-    if (collapseEligible) {
-      dispatchOnPageAboutToCollapseCallback()
+    if (!collapseEligible.not()) {
+      return
+    }
 
-    } else {
-      if (isCollapsedOrCollapsing) {
-        // Let the page collapse in peace.
-        return
-      }
+    if (isCollapsedOrCollapsing) {
+      // collapse() got called somehow.
+      // Let the page collapse in peace.
+      return
+    }
 
-      changeState(PageState.EXPANDED)
-      stopAnyOngoingPageAnimation()
+    changeState(PageState.EXPANDED)
+    stopAnyOngoingPageAnimation()
 
-      // Restore everything to their expanded position.
-      // 1. Hide Toolbar again.
-      if (activityToolbar != null) {
-        animateToolbar(false, 0F)
-      }
+    // Restore everything to their expanded position.
+    // 1. Hide Toolbar again.
+    if (activityToolbar != null) {
+      animateToolbar(false, targetPageTranslationY = 0F)
+    }
 
-      // 2. Expand page again.
-      if (translationY != 0F) {
-        animate()
-            .withLayer()
-            .translationY(0F)
-            .alpha(expandedAlpha)
-            .setDuration(animationDurationMillis)
-            .setInterpolator(animationInterpolator)
-            .setListener(object : AnimatorListenerAdapter() {
-              // TODO: Use withEndAction() instead.
-              var canceled: Boolean = false
+    // 2. Expand page again.
+    if (translationY != 0F) {
+      animate()
+          .withLayer()
+          .translationY(0F)
+          .alpha(expandedAlpha)
+          .setDuration(animationDurationMillis)
+          .setInterpolator(animationInterpolator)
+          .setListener(object : AnimatorListenerAdapter() {
+            // TODO: Use withEndAction() instead.
+            var canceled: Boolean = false
 
-              override fun onAnimationStart(animation: Animator) {
-                super.onAnimationStart(animation)
-                canceled = false
+            override fun onAnimationStart(animation: Animator) {
+              super.onAnimationStart(animation)
+              canceled = false
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+              super.onAnimationCancel(animation)
+              canceled = true
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+              super.onAnimationEnd(animation)
+              if (canceled) {
+                return
               }
+              dispatchOnPageFullyCoveredCallback()
+            }
 
-              override fun onAnimationCancel(animation: Animator) {
-                super.onAnimationCancel(animation)
-                canceled = true
-              }
-
-              override fun onAnimationEnd(animation: Animator) {
-                super.onAnimationEnd(animation)
-                if (canceled) {
-                  return
-                }
-                dispatchOnPageFullyCoveredCallback()
-              }
-
-            })
-            .start()
-      }
+          })
+          .start()
     }
   }
 
