@@ -54,27 +54,28 @@ object EmailRepository {
             subject = "High school reunion?",
             emails = listOf(
                 Email(
-                    body = """
-                      Hi friends,
-
-                      I was at the grocery store on Sunday
-                      night... when I ran into Genie Williams!
-                      I almost didn't recognize her after 20 years!
-
-                      Anyway, it turns out she is on
-                      the organizing committee for the high school
-                      reuinion this fall. I don't know if you were
-                      planning on going or not, but she could
-                      definitely use our help in trying to track
-                      down lots of missing alums. If you can make
-                      it, we're doing a llittle phone-tree party
-                      at her place next Saturday, hoping that if
-                      we can find one person, a few more will
-                      emerge. What do you say?
-
-                      Talk soon!
-                      Trevor
-                    """.trimIndent(),
+                    body =
+                    "Hi friends,"
+                        + "\n\n"
+                        + "I was at the grocery store on Sunday"
+                        + "night... when I ran into Genie Williams!"
+                        + "I almost didn't recognize her after 20 years!"
+                        + "\n\n"
+                        + "Anyway, it turns out she is on"
+                        + "the organizing committee for the high school"
+                        + "reuinion this fall. I don't know if you were"
+                        + "planning on going or not, but she could"
+                        + "definitely use our help in trying to track"
+                        + "down lots of missing alums. If you can make"
+                        + "it, we're doing a llittle phone-tree party"
+                        + "at her place next Saturday, hoping that if"
+                        + "we can find one person, a few more will"
+                        + "emerge. What do you say?"
+                        + "\n\n"
+                        + "Talk soon!"
+                        + "\n"
+                        + "Trevor"
+                    ,
                     showBodyInThreads = false,
                     recipients = listOf(
                         user,
