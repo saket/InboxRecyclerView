@@ -74,7 +74,7 @@ class InboxRecyclerView(
 
     if (expandedItem.isEmpty().not()) {
       ensureSetup()
-      expandItem(expandedItem.itemId)
+      expandItem(expandedItem.itemId, immediate = true)
     }
   }
 
@@ -145,11 +145,12 @@ class InboxRecyclerView(
   /**
    * @param itemId ID of the item to expand.
    */
-  fun expandItem(itemId: Long) {
+  @JvmOverloads
+  fun expandItem(itemId: Long, immediate: Boolean = false) {
     ensureSetup()
 
     if (isLaidOut.not()) {
-      post { expandItem(itemId) }
+      post { expandItem(itemId, immediate) }
       return
     }
 
@@ -169,7 +170,7 @@ class InboxRecyclerView(
 
     if (itemView == null) {
       // View got removed right when it was clicked to expand.
-      expandFromTop()
+      expandFromTop(immediate)
       return
     }
 
@@ -181,35 +182,43 @@ class InboxRecyclerView(
         top + itemView.bottom)
 
     expandedItem = ExpandedItem(itemViewPosition, itemId, itemRect)
-    page.expand(expandedItem)
+    if (immediate) {
+      page.expandImmediately()
+    } else {
+      page.expand(expandedItem)
+    }
   }
 
-  /** Expand from the top, pushing all items out of the window towards the bottom. */
-  fun expandFromTop() {
+  /**
+   * Expand from the top, pushing all items out of the window towards the bottom.
+   */
+  @JvmOverloads
+  fun expandFromTop(immediate: Boolean = false) {
     ensureSetup()
 
     if (isLaidOut.not()) {
-      post { expandFromTop() }
+      post { expandFromTop(immediate) }
+      return
+    }
+
+    if (page.isExpandedOrExpanding) {
       return
     }
 
     expandedItem = ExpandedItem.EMPTY.copy(expandedItemLocationRect = Rect(left, top, right, top))
-    page.expand(expandedItem)
-  }
 
-  /**
-   * Expands the page right away and pushes the items out of the list without animations.
-   */
-  fun expandImmediately() {
-    page.expandImmediately()
+    if (immediate) {
+      page.expandImmediately()
+    } else {
+      page.expand(expandedItem)
+    }
   }
 
   fun collapse() {
     ensureSetup()
 
     if (page.isCollapsedOrCollapsing.not()) {
-      val expandInfo = expandedItem
-      page.collapse(expandInfo)
+      page.collapse(expandedItem)
     }
   }
 
