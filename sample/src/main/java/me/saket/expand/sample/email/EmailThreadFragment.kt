@@ -15,6 +15,7 @@ import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.functions.Consumer
 import me.saket.expand.page.ExpandablePageLayout
+import me.saket.expand.page.InterceptResult
 import me.saket.expand.page.OnPullToCollapseInterceptor
 import me.saket.expand.page.SimplePageStateChangeCallbacks
 import me.saket.expand.sample.Attachment.CalendarEvent
@@ -63,9 +64,13 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
     }
 
     emailThreadPage.setPullToCollapseInterceptor(object : OnPullToCollapseInterceptor {
-      override fun onInterceptPullToCollapseGesture(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean): Boolean {
+      override fun onInterceptPullToCollapseGesture(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean): InterceptResult {
         val directionInt = if (upwardPull) +1 else -1
-        return scrollableContainer.canScrollVertically(directionInt)
+        val canScrollFurther = scrollableContainer.canScrollVertically(directionInt)
+        return when {
+          canScrollFurther -> InterceptResult.INTERCEPTED
+          else -> InterceptResult.IGNORED
+        }
       }
     })
 

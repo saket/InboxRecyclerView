@@ -602,20 +602,24 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * Offer a pull-to-collapse to a listener if it wants to block it. If a nested page is registered
    * and the touch was made on it, block it right away.
    */
-  internal fun handleOnPullToCollapseIntercept(event: MotionEvent, downX: Float, downY: Float, deltaUpwardSwipe: Boolean): Boolean {
-    if (nestedPage != null && nestedPage!!.isExpandedOrExpanding && nestedPage!!.clippedRect.contains(downX.toInt(), downY.toInt())) {
-      // Block this pull if it's being made inside a nested page. Let the nested
-      // page's pull-listener consume this event. We should use nested scrolling
+  internal fun handleOnPullToCollapseIntercept(event: MotionEvent, downX: Float, downY: Float, deltaUpwardSwipe: Boolean): InterceptResult {
+    val nestedPageCopy = nestedPage
+
+    return if (nestedPageCopy != null
+        && nestedPageCopy.isExpandedOrExpanding
+        && nestedPageCopy.clippedRect.contains(downX.toInt(), downY.toInt())) {
+      // Block this pull if it was made inside a nested page. Let the nested
+      // page's pull-listener consume this event. I should use nested scrolling
       // in the future to make this smarter.
       // TODO: 20/03/17 Do we even need to call the nested page's listener?
-      nestedPage!!.handleOnPullToCollapseIntercept(event, downX, downY, deltaUpwardSwipe)
-      return true
+      nestedPageCopy.handleOnPullToCollapseIntercept(event, downX, downY, deltaUpwardSwipe)
+      InterceptResult.INTERCEPTED
 
-    } else return if (onPullToCollapseInterceptor != null) {
+    } else if (onPullToCollapseInterceptor != null) {
       onPullToCollapseInterceptor!!.onInterceptPullToCollapseGesture(event, downX, downY, deltaUpwardSwipe)
 
     } else {
-      false
+      InterceptResult.IGNORED
     }
   }
 
