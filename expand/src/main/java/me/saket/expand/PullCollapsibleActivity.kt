@@ -120,13 +120,8 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
     }
   }
 
-  protected fun expandFrom(fromRect: Rect?) {
+  protected fun expandFrom(fromRect: Rect) {
     expandCalled = true
-
-    if (fromRect == null) {
-      expandFromTop()
-      return
-    }
 
     expandedFromRect = fromRect
     activityPageLayout.executeOnMeasure {
