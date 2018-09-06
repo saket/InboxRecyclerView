@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxrelay2.PublishRelay
-import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import kotterknife.bindView
 import me.saket.expand.InboxRecyclerView
 import me.saket.expand.dimming.ItemDimmer
@@ -19,7 +18,6 @@ import me.saket.expand.sample.R
 import me.saket.expand.sample.about.AboutActivity
 import me.saket.expand.sample.email.EmailThreadFragment
 import me.saket.expand.sample.widgets.ReversibleAnimatedVectorDrawable
-import java.util.concurrent.TimeUnit
 
 class InboxActivity : AppCompatActivity() {
 
@@ -76,10 +74,6 @@ class InboxActivity : AppCompatActivity() {
     recyclerView.adapter = threadsAdapter
 
     threadsAdapter.itemClicks
-        // Adding a tiny, non-noticeable delay allows:
-        // - the UI to prepare itself before the user can see anything.
-        // - the ripple animation to complete
-        .delay(100, TimeUnit.MILLISECONDS, mainThread())
         .takeUntil(onDestroy)
         .subscribe {
           recyclerView.expandItem(it.itemId)

@@ -51,7 +51,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   fun animateDimensions(toWidth: Int, toHeight: Int) {
     dimensionAnimator.cancel()
 
-    dimensionAnimator = ObjectAnimator.ofFloat(0f, 1f).apply {
+    dimensionAnimator = ObjectAnimator.ofFloat(0F, 1F).apply {
       duration = animationDurationMillis
       interpolator = animationInterpolator
       startDelay = InboxRecyclerView.animationStartDelay.toLong()

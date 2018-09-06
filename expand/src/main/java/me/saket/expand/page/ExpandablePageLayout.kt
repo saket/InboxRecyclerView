@@ -286,7 +286,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       targetPageTranslationY = Math.max(targetPageTranslationY, toolbarBottom.toFloat())
     }
 
-    setSuppressLayoutMethodUsingReflection(this, true)
+    if (expand.not()) {
+      setSuppressLayoutMethodUsingReflection(this, true)
+    }
 
     if (expand) {
       visibility = View.VISIBLE
@@ -330,7 +332,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       )
     }
 
-    // Width & Height.
     animateDimensions(targetWidth, targetHeight)
   }
 
