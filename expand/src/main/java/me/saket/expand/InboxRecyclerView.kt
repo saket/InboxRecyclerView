@@ -13,7 +13,6 @@ import android.view.Window
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.expand.Views.executeOnNextLayout
-import me.saket.expand.animation.DefaultItemExpandAnimator
 import me.saket.expand.animation.ItemExpandAnimator
 import me.saket.expand.dimming.ItemDimmer
 import me.saket.expand.page.ExpandablePageLayout
@@ -27,16 +26,19 @@ class InboxRecyclerView(
 ) : ScrollSuppressibleRecyclerView(context, attrs), InternalPageCallbacks {
 
   /** Controls how [InboxRecyclerView] items are animated when the page is moving. */
-  var itemExpandAnimator: ItemExpandAnimator = DefaultItemExpandAnimator()
+  var itemExpandAnimator: ItemExpandAnimator = ItemExpandAnimator.default()
     set(value) {
+      val old = field
       field = value
+
       if (pageSetupDone) {
-        itemDimmer.onAttachRecyclerView(this)
+        old.onDetachRecyclerView(this)
+        value.onAttachRecyclerView(this)
       }
     }
 
   /** Controls how items are dimmed when the page is expanding/collapsing. */
-  var itemDimmer: ItemDimmer = ItemDimmer.uncoveredItems()
+  var itemDimmer: ItemDimmer = ItemDimmer.noOp()
     set(value) {
       field = value
       if (pageSetupDone) {
@@ -59,6 +61,10 @@ class InboxRecyclerView(
   init {
     // For drawing dimming using ItemDimmer.
     setWillNotDraw(false)
+
+    // Because setters don't get called for default values.
+    itemExpandAnimator = ItemExpandAnimator.default()
+    itemDimmer = ItemDimmer.uncoveredItems()
   }
 
   fun saveExpandableState(outState: Bundle) {

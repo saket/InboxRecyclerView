@@ -41,6 +41,11 @@ abstract class ItemExpandAnimator {
     recyclerView.page.viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
   }
 
+  fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {
+    recyclerView.page.viewTreeObserver.removeOnGlobalLayoutListener(pageLayoutChangeListener)
+    recyclerView.page.viewTreeObserver.removeOnPreDrawListener(pagePreDrawListener)
+  }
+
   /**
    * Called when the page changes its position and/or dimensions. This can
    * happen when the page is expanding, collapsing or being pulled vertically.
@@ -48,4 +53,9 @@ abstract class ItemExpandAnimator {
    * Override this to animate the [InboxRecyclerView] items with the page's movement.
    */
   abstract fun onPageMove()
+
+  companion object {
+
+    fun default() = DefaultItemExpandAnimator()
+  }
 }

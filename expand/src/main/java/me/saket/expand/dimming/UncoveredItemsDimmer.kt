@@ -63,6 +63,12 @@ open class UncoveredItemsDimmer(dimColor: Int, maxDimRatio: Float) : ItemDimmer(
     recyclerView.page.viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
   }
 
+  override fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {
+    recyclerView.page.removeStateChangeCallbacks(this)
+    recyclerView.page.viewTreeObserver.removeOnGlobalLayoutListener(pageLayoutChangeListener)
+    recyclerView.page.viewTreeObserver.removeOnPreDrawListener(pagePreDrawListener)
+  }
+
   private fun onPageMove() {
     // Remove dimming when the page is being pulled and is eligible for collapse.
     if (recyclerView.page.isExpanded) {

@@ -13,6 +13,8 @@ abstract class ItemDimmer {
 
   abstract fun onAttachRecyclerView(recyclerView: InboxRecyclerView)
 
+  abstract fun onDetachRecyclerView(recyclerView: InboxRecyclerView)
+
   abstract fun drawDimming(canvas: Canvas)
 
   companion object {
@@ -36,6 +38,7 @@ abstract class ItemDimmer {
     fun noOp(): ItemDimmer {
       return object : ItemDimmer() {
         override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {}
+        override fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {}
         override fun drawDimming(canvas: Canvas) {}
       }
     }
