@@ -12,17 +12,17 @@ abstract class ItemExpandAnimator {
 
   private val pagePreDrawListener = object : ViewTreeObserver.OnPreDrawListener {
     private var lastTranslationY = 0F
-    private var lastClippedRect = Rect()
+    private var lastClippedDimens = Rect()
     private var lastState = ExpandablePageLayout.PageState.COLLAPSED
 
     override fun onPreDraw(): Boolean {
       val page = recyclerView.page
-      if (lastTranslationY != page.translationY || lastClippedRect != page.clippedRect || lastState != page.currentState) {
+      if (lastTranslationY != page.translationY || lastClippedDimens != page.clippedDimens || lastState != page.currentState) {
         onPageMove()
       }
 
       lastTranslationY = page.translationY
-      lastClippedRect = page.clippedRect
+      lastClippedDimens = page.clippedDimens
       lastState = page.currentState
       return true
     }

@@ -23,7 +23,8 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
 ) : RelativeLayout(context, attrs) {
 
   /** The visible portion of this layout. */
-  val clippedRect = Rect()
+  val clippedDimens: Rect
+    get() = clipBounds
 
   private var dimensionAnimator: ValueAnimator = ObjectAnimator()
   private var isFullyVisible: Boolean = false
@@ -32,10 +33,12 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   var animationInterpolator: TimeInterpolator = DEFAULT_ANIM_INTERPOLATOR
 
   init {
+    clipBounds = Rect()
+
     outlineProvider = object : ViewOutlineProvider() {
       override fun getOutline(view: View, outline: Outline) {
-        outline.setRect(0, 0, clippedRect.width(), clippedRect.height())
-        outline.alpha = clippedRect.height().toFloat() / height
+        outline.setRect(0, 0, clipBounds.width(), clipBounds.height())
+        outline.alpha = clipBounds.height().toFloat() / height
       }
     }
   }
@@ -56,8 +59,8 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
       interpolator = animationInterpolator
       startDelay = InboxRecyclerView.animationStartDelay.toLong()
 
-      val fromWidth = clippedRect.width()
-      val fromHeight = clippedRect.height()
+      val fromWidth = clipBounds.width()
+      val fromHeight = clipBounds.height()
 
       addUpdateListener {
         val scale = it.animatedValue as Float
@@ -71,11 +74,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
 
   fun setClippedDimensions(newClippedWidth: Int, newClippedHeight: Int) {
     isFullyVisible = newClippedWidth > 0 && newClippedHeight > 0 && newClippedWidth == width && newClippedHeight == height
-
-    clippedRect.right = newClippedWidth
-    clippedRect.bottom = newClippedHeight
-
-    clipBounds = Rect(clippedRect.left, clippedRect.top, clippedRect.right, clippedRect.bottom)
+    clipBounds = Rect(0, 0, newClippedWidth, newClippedHeight)
     invalidateOutline()
   }
 

@@ -30,7 +30,7 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
     val anchorView: View? = recyclerView.getChildAt(anchorIndex)
 
     val pageTop = page.translationY
-    val pageBottom = page.translationY + page.clippedRect.height()
+    val pageBottom = page.translationY + page.clippedDimens.height()
 
     // Move the RecyclerView rows with the page.
     if (anchorView != null) {
@@ -60,7 +60,7 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
     anchorView?.apply {
       val minPageHeight = anchorView.height
       val maxPageHeight = page.height
-      val expandRatio = (page.clippedRect.height() - minPageHeight).toFloat() / (maxPageHeight - minPageHeight)
+      val expandRatio = (page.clippedDimens.height() - minPageHeight).toFloat() / (maxPageHeight - minPageHeight)
       alpha = 1F - expandRatio
     }
   }

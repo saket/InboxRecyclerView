@@ -35,17 +35,17 @@ open class UncoveredItemsDimmer(dimColor: Int, maxDimRatio: Float) : ItemDimmer(
 
   private val pagePreDrawListener = object : ViewTreeObserver.OnPreDrawListener {
     private var lastTranslationY = 0F
-    private var lastClippedRect = Rect()
+    private var lastClippedDimens = Rect()
     private var lastState = ExpandablePageLayout.PageState.COLLAPSED
 
     override fun onPreDraw(): Boolean {
       val page = recyclerView.page
-      if (lastTranslationY != page.translationY || lastClippedRect != page.clippedRect || lastState != page.currentState) {
+      if (lastTranslationY != page.translationY || lastClippedDimens != page.clippedDimens || lastState != page.currentState) {
         onPageMove()
       }
 
       lastTranslationY = page.translationY
-      lastClippedRect = page.clippedRect
+      lastClippedDimens = page.clippedDimens
       lastState = page.currentState
       return true
     }
@@ -92,7 +92,7 @@ open class UncoveredItemsDimmer(dimColor: Int, maxDimRatio: Float) : ItemDimmer(
         canvas.drawRect(0F, (bottom + page.translationY), right.toFloat(), bottom.toFloat(), dimPaint)
 
       } else if (page.isExpandingOrCollapsing) {
-        val pageBottom = page.translationY + page.clippedRect.height().toFloat()
+        val pageBottom = page.translationY + page.clippedDimens.height().toFloat()
         canvas.drawRect(0F, pageBottom, right.toFloat(), bottom.toFloat(), dimPaint)
       }
     }

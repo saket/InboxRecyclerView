@@ -346,7 +346,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     // The hide animation happens a bit too quickly if the page has to travel a large
     // distance (when using the current interpolator: EASE). Let's try slowing it down.
     var speedFactor = 1L
-    if (show && Math.abs(targetPageTranslationY - fromTy) > clippedRect.height() * 2 / 5) {
+    if (show && Math.abs(targetPageTranslationY - fromTy) > clippedDimens.height() * 2 / 5) {
       speedFactor *= 2L
     }
 
@@ -606,7 +606,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
     return if (nestedPageCopy != null
         && nestedPageCopy.isExpandedOrExpanding
-        && nestedPageCopy.clippedRect.contains(downX.toInt(), downY.toInt())) {
+        && nestedPageCopy.clippedDimens.contains(downX.toInt(), downY.toInt())) {
       // Block this pull if it was made inside a nested page. Let the nested
       // page's pull-listener consume this event. I should use nested scrolling
       // in the future to make this smarter.
