@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
-import io.reactivex.functions.Consumer
 import me.saket.expand.page.ExpandablePageLayout
 import me.saket.expand.page.InterceptResult
 import me.saket.expand.page.OnPullToCollapseInterceptor
@@ -28,7 +27,7 @@ import me.saket.expand.sample.EmailThreadId
 import me.saket.expand.sample.R
 import me.saket.expand.sample.exhaustive
 
-class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
+class EmailThreadFragment : Fragment() {
 
   private val emailThreadPage by lazy { view!!.parent as ExpandablePageLayout }
   private val scrollableContainer by lazy { view!!.findViewById<ScrollView>(R.id.emailthread_scrollable_container) }
@@ -100,7 +99,7 @@ class EmailThreadFragment : Fragment(), Consumer<EmailThreadId> {
     }
   }
 
-  override fun accept(threadId: EmailThreadId) {
+  fun populate(threadId: EmailThreadId) {
     threadIds.accept(threadId)
   }
 

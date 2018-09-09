@@ -94,7 +94,9 @@ class InboxActivity : AppCompatActivity() {
     threadsAdapter.itemClicks
         .map { it.thread.id }
         .takeUntil(onDestroy)
-        .subscribe(threadFragment)
+        .subscribe {
+          threadFragment.populate(it)
+        }
   }
 
   private fun setupFab() {
