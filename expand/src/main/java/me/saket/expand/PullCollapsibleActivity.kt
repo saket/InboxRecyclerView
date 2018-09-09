@@ -115,7 +115,7 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
   protected fun expandFromTop() {
     expandCalled = true
     activityPageLayout.executeOnMeasure {
-      val toolbarRect = Rect(0, standardToolbarHeight, activityPageLayout.width, 0)
+      val toolbarRect = Rect(0, standardToolbarHeight, activityPageLayout.width, standardToolbarHeight)
       expandFrom(toolbarRect)
     }
   }
