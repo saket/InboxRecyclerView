@@ -6,7 +6,8 @@ import me.saket.expand.InboxRecyclerView
 import me.saket.expand.page.ExpandablePageLayout
 
 /**
- * Controls how [InboxRecyclerView] items are animated when its page is moving. See [onPageMove].
+ * Controls how [InboxRecyclerView] items are animated when its page is moving.
+ * To create a custom animator, extend this and override [onPageMove].
  */
 abstract class ItemExpandAnimator {
 

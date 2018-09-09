@@ -275,7 +275,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     translationY = 0F
   }
 
-  fun animatePageExpandCollapse(expand: Boolean, targetWidth: Int, targetHeight: Int, expandedItem: InboxRecyclerView.ExpandedItem) {
+  internal fun animatePageExpandCollapse(expand: Boolean, targetWidth: Int, targetHeight: Int, expandedItem: InboxRecyclerView.ExpandedItem) {
     var targetPageTranslationY = if (expand) 0F else expandedItem.expandedItemLocationRect.top.toFloat()
     val targetPageTranslationX = if (expand) 0F else expandedItem.expandedItemLocationRect.left.toFloat()
 
