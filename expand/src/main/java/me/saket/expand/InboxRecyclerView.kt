@@ -252,9 +252,9 @@ class InboxRecyclerView(
 
   override fun onPageFullyCovered() {
     val invalidate = !isFullyCoveredByPage
-    isFullyCoveredByPage = true   // Skips draw() until visible again to the user.
+    isFullyCoveredByPage = true
     if (invalidate) {
-      postInvalidate()
+      invalidate()
     }
 
     activityWindow?.setBackgroundDrawable(null)
@@ -262,18 +262,12 @@ class InboxRecyclerView(
 
   private fun onPageBackgroundVisible() {
     isFullyCoveredByPage = false
-    postInvalidate()
+    invalidate()
 
     activityWindow?.setBackgroundDrawable(activityWindowOrigBackground)
   }
 
   override fun draw(canvas: Canvas) {
-    // Minimize overdraw by not drawing anything while this
-    // list is totally covered by the expandable page.
-    if (isFullyCoveredByPage) {
-      return
-    }
-
     super.draw(canvas)
 
     // Dimming behind the expandable page.
