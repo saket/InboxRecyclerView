@@ -5,17 +5,18 @@ import android.graphics.Color
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import me.saket.expand.InboxRecyclerView
+import me.saket.expand.page.ExpandablePageLayout
 
 /**
- * Draws dimming on [InboxRecyclerView] rows while the page is expanded or expanding.
+ * Draws a tint on [InboxRecyclerView] rows while it's covered by [ExpandablePageLayout].
  */
-abstract class ItemDimmer {
+abstract class ItemTintPainter {
 
   abstract fun onAttachRecyclerView(recyclerView: InboxRecyclerView)
 
   abstract fun onDetachRecyclerView(recyclerView: InboxRecyclerView)
 
-  abstract fun drawDimming(canvas: Canvas)
+  abstract fun drawTint(canvas: Canvas)
 
   companion object {
 
@@ -23,23 +24,23 @@ abstract class ItemDimmer {
     fun uncoveredItems(
         @ColorInt color: Int = Color.BLACK,
         @FloatRange(from = 0.0, to = 1.0) intensity: Float = 0.15F
-    ): ItemDimmer {
-      return UncoveredItemsDimmer(color, intensity)
+    ): ItemTintPainter {
+      return UncoveredItemsTintPainter(color, intensity)
     }
 
     @JvmOverloads
     fun allItems(
         @ColorInt color: Int = Color.BLACK,
         @FloatRange(from = 0.0, to = 1.0) intensity: Float = 0.15F
-    ): ItemDimmer {
-      return AllItemsDimmer(color, intensity)
+    ): ItemTintPainter {
+      return AllItemsTintPainter(color, intensity)
     }
 
-    fun noOp(): ItemDimmer {
-      return object : ItemDimmer() {
+    fun noOp(): ItemTintPainter {
+      return object : ItemTintPainter() {
         override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {}
         override fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {}
-        override fun drawDimming(canvas: Canvas) {}
+        override fun drawTint(canvas: Canvas) {}
       }
     }
   }

@@ -11,26 +11,26 @@ import me.saket.expand.page.ExpandablePageLayout
 import me.saket.expand.page.PageStateChangeCallbacks
 
 /**
- * Draws dimming on [InboxRecyclerView] only in the area that's not covered by its page.
+ * Draws a tint on [InboxRecyclerView] only in the area that's not covered by its page.
  * This allows the page content to not have another background of its own, thus reducing
  * overdraw by a level.
  *
- * If the dimming appears incorrect, try using [ItemDimmer.allItems] instead.
+ * If the tinted area appears incorrect, try using [ItemTintPainter.allItems] instead.
  */
-open class UncoveredItemsDimmer(color: Int, intensity: Float) : ItemDimmer(), PageStateChangeCallbacks {
+open class UncoveredItemsTintPainter(color: Int, intensity: Float) : ItemTintPainter(), PageStateChangeCallbacks {
 
-  private val minDim = 0
-  private val maxDim = (255 * intensity).toInt()    // [0..255]
+  private val minIntensity = 0
+  private val maxIntensity = (255 * intensity).toInt()    // [0..255]
 
-  private var dimAnimator: ValueAnimator = ObjectAnimator()
+  private var tintAnimator: ValueAnimator = ObjectAnimator()
   private var lastIsCollapseEligible = false
 
-  protected val dimPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+  protected val tintPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
   protected lateinit var recyclerView: InboxRecyclerView
 
   init {
-    dimPaint.color = color
-    dimPaint.alpha = minDim
+    tintPaint.color = color
+    tintPaint.alpha = minIntensity
   }
 
   private val pagePreDrawListener = object : ViewTreeObserver.OnPreDrawListener {
@@ -78,7 +78,7 @@ open class UncoveredItemsDimmer(color: Int, intensity: Float) : ItemDimmer(), Pa
 
       if (isCollapseEligible != lastIsCollapseEligible) {
         animateDimming(
-            toAlpha = if (isCollapseEligible) minDim else maxDim,
+            toAlpha = if (isCollapseEligible) minIntensity else maxIntensity,
             dimDuration = 300)
       }
       lastIsCollapseEligible = isCollapseEligible
@@ -88,43 +88,43 @@ open class UncoveredItemsDimmer(color: Int, intensity: Float) : ItemDimmer(), Pa
     }
   }
 
-  override fun drawDimming(canvas: Canvas) {
+  override fun drawTint(canvas: Canvas) {
     recyclerView.apply {
       // Content above the page.
-      canvas.drawRect(0F, 0F, right.toFloat(), page.translationY, dimPaint)
+      canvas.drawRect(0F, 0F, right.toFloat(), page.translationY, tintPaint)
 
       // Content below the page.
       if (page.isExpanded) {
-        canvas.drawRect(0F, (bottom + page.translationY), right.toFloat(), bottom.toFloat(), dimPaint)
+        canvas.drawRect(0F, (bottom + page.translationY), right.toFloat(), bottom.toFloat(), tintPaint)
 
       } else if (page.isExpandingOrCollapsing) {
         val pageBottom = page.translationY + page.clippedDimens.height().toFloat()
-        canvas.drawRect(0F, pageBottom, right.toFloat(), bottom.toFloat(), dimPaint)
+        canvas.drawRect(0F, pageBottom, right.toFloat(), bottom.toFloat(), tintPaint)
       }
     }
   }
 
   override fun onPageAboutToExpand(expandAnimDuration: Long) {
-    dimAnimator.cancel()
-    animateDimming(maxDim, expandAnimDuration)
+    tintAnimator.cancel()
+    animateDimming(maxIntensity, expandAnimDuration)
   }
 
   override fun onPageAboutToCollapse(collapseAnimDuration: Long) {
-    dimAnimator.cancel()
-    animateDimming(minDim, collapseAnimDuration)
+    tintAnimator.cancel()
+    animateDimming(minIntensity, collapseAnimDuration)
   }
 
   private fun animateDimming(toAlpha: Int, dimDuration: Long) {
-    dimAnimator = ObjectAnimator.ofInt(dimPaint.alpha, toAlpha).apply {
+    tintAnimator = ObjectAnimator.ofInt(tintPaint.alpha, toAlpha).apply {
       duration = dimDuration
       interpolator = recyclerView.page.animationInterpolator
       startDelay = InboxRecyclerView.animationStartDelay.toLong()
     }
-    dimAnimator.addUpdateListener {
-      dimPaint.alpha = it.animatedValue as Int
+    tintAnimator.addUpdateListener {
+      tintPaint.alpha = it.animatedValue as Int
       recyclerView.postInvalidate()
     }
-    dimAnimator.start()
+    tintAnimator.start()
   }
 
   override fun onPageExpanded() {}

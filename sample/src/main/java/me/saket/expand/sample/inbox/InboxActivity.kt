@@ -10,7 +10,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxrelay2.PublishRelay
 import kotterknife.bindView
 import me.saket.expand.InboxRecyclerView
-import me.saket.expand.dimming.ItemDimmer
+import me.saket.expand.dimming.ItemTintPainter
 import me.saket.expand.page.ExpandablePageLayout
 import me.saket.expand.page.SimplePageStateChangeCallbacks
 import me.saket.expand.sample.EmailRepository
@@ -68,7 +68,7 @@ class InboxActivity : AppCompatActivity() {
   private fun setupThreadList() {
     recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.setExpandablePage(emailPageLayout, resources.getDimensionPixelSize(R.dimen.inbox_email_page_pulltocollapse_threshold))
-    recyclerView.itemDimmer = ItemDimmer.uncoveredItems(color = Color.WHITE, intensity = 0.65F)
+    recyclerView.itemTintPainter = ItemTintPainter.uncoveredItems(color = Color.WHITE, intensity = 0.65F)
 
     threadsAdapter.submitList(EmailRepository.threads())
     recyclerView.adapter = threadsAdapter

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.expand.Views.executeOnNextLayout
 import me.saket.expand.animation.ItemExpandAnimator
-import me.saket.expand.dimming.ItemDimmer
+import me.saket.expand.dimming.ItemTintPainter
 import me.saket.expand.page.ExpandablePageLayout
 
 /**
@@ -38,11 +38,11 @@ class InboxRecyclerView(
     }
 
   /** Controls how items are dimmed when the page is expanding/collapsing. */
-  var itemDimmer: ItemDimmer = ItemDimmer.noOp()
+  var itemTintPainter: ItemTintPainter = ItemTintPainter.noOp()
     set(value) {
       field = value
       if (pageSetupDone) {
-        itemDimmer.onAttachRecyclerView(this)
+        itemTintPainter.onAttachRecyclerView(this)
       }
     }
 
@@ -59,12 +59,12 @@ class InboxRecyclerView(
   private var isFullyCoveredByPage: Boolean = false
 
   init {
-    // For drawing dimming using ItemDimmer.
+    // For drawing dimming using ItemTintPainter.
     setWillNotDraw(false)
 
     // Because setters don't get called for default values.
     itemExpandAnimator = ItemExpandAnimator.default()
-    itemDimmer = ItemDimmer.uncoveredItems()
+    itemTintPainter = ItemTintPainter.uncoveredItems()
   }
 
   fun saveExpandableState(outState: Bundle) {
@@ -115,7 +115,7 @@ class InboxRecyclerView(
     page = expandablePage
 
     expandablePage.internalStateCallbacksForRecyclerView = this
-    itemDimmer.onAttachRecyclerView(this)
+    itemTintPainter.onAttachRecyclerView(this)
     itemExpandAnimator.onAttachRecyclerView(this)
   }
 
@@ -272,7 +272,7 @@ class InboxRecyclerView(
 
     // Dimming behind the expandable page.
     if (pageSetupDone) {
-      itemDimmer.drawDimming(canvas)
+      itemTintPainter.drawTint(canvas)
     }
   }
 
