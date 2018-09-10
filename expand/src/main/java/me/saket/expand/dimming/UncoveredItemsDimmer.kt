@@ -17,10 +17,10 @@ import me.saket.expand.page.PageStateChangeCallbacks
  *
  * If the dimming appears incorrect, try using [ItemDimmer.allItems] instead.
  */
-open class UncoveredItemsDimmer(dimColor: Int, maxDimRatio: Float) : ItemDimmer(), PageStateChangeCallbacks {
+open class UncoveredItemsDimmer(color: Int, intensity: Float) : ItemDimmer(), PageStateChangeCallbacks {
 
   private val minDim = 0
-  private val maxDim = (255 * maxDimRatio).toInt()    // [0..255]
+  private val maxDim = (255 * intensity).toInt()    // [0..255]
 
   private var dimAnimator: ValueAnimator = ObjectAnimator()
   private var lastIsCollapseEligible = false
@@ -29,7 +29,7 @@ open class UncoveredItemsDimmer(dimColor: Int, maxDimRatio: Float) : ItemDimmer(
   protected lateinit var recyclerView: InboxRecyclerView
 
   init {
-    dimPaint.color = dimColor
+    dimPaint.color = color
     dimPaint.alpha = minDim
   }
 

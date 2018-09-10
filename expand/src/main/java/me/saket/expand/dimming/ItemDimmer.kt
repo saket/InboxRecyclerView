@@ -21,18 +21,18 @@ abstract class ItemDimmer {
 
     @JvmOverloads
     fun uncoveredItems(
-        @ColorInt dimColor: Int = Color.BLACK,
-        @FloatRange(from = 0.0, to = 1.0) maxDimRatio: Float = 0.15F
+        @ColorInt color: Int = Color.BLACK,
+        @FloatRange(from = 0.0, to = 1.0) intensity: Float = 0.15F
     ): ItemDimmer {
-      return UncoveredItemsDimmer(dimColor, maxDimRatio)
+      return UncoveredItemsDimmer(color, intensity)
     }
 
     @JvmOverloads
     fun allItems(
-        @ColorInt dimColor: Int = Color.BLACK,
-        @FloatRange(from = 0.0, to = 1.0) maxDimRatio: Float = 0.15F
+        @ColorInt color: Int = Color.BLACK,
+        @FloatRange(from = 0.0, to = 1.0) intensity: Float = 0.15F
     ): ItemDimmer {
-      return AllItemsDimmer(dimColor, maxDimRatio)
+      return AllItemsDimmer(color, intensity)
     }
 
     fun noOp(): ItemDimmer {

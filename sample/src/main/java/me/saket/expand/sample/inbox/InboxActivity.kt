@@ -68,7 +68,7 @@ class InboxActivity : AppCompatActivity() {
   private fun setupThreadList() {
     recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.setExpandablePage(emailPageLayout, resources.getDimensionPixelSize(R.dimen.inbox_email_page_pulltocollapse_threshold))
-    recyclerView.itemDimmer = ItemDimmer.uncoveredItems(dimColor = Color.WHITE, maxDimRatio = 0.65F)
+    recyclerView.itemDimmer = ItemDimmer.uncoveredItems(color = Color.WHITE, intensity = 0.65F)
 
     threadsAdapter.submitList(EmailRepository.threads())
     recyclerView.adapter = threadsAdapter
