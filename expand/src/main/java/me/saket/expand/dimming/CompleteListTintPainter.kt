@@ -8,7 +8,7 @@ import me.saket.expand.InboxRecyclerView
  * this requires the page to have its own background, but is a safer option because
  * it does not involve any coordinate calculations. Maths is hard.
  */
-class CompleteListTintPainter(color: Int, intensity: Float) : UncoveredAreaTintPainter(color, intensity) {
+class CompleteListTintPainter(color: Int, opacity: Float) : UncoveredAreaTintPainter(color, opacity) {
 
   override fun drawTint(canvas: Canvas) {
     recyclerView.apply {

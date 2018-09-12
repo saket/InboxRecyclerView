@@ -17,10 +17,10 @@ import me.saket.expand.page.PageStateChangeCallbacks
  *
  * If the tinted area appears incorrect, try using [TintPainter.completeList] instead.
  */
-open class UncoveredAreaTintPainter(color: Int, intensity: Float) : TintPainter(), PageStateChangeCallbacks {
+open class UncoveredAreaTintPainter(color: Int, opacity: Float) : TintPainter(), PageStateChangeCallbacks {
 
   private val minIntensity = 0
-  private val maxIntensity = (255 * intensity).toInt()    // [0..255]
+  private val maxIntensity = (255 * opacity).toInt()    // [0..255]
 
   private var tintAnimator: ValueAnimator = ObjectAnimator()
   private var lastIsCollapseEligible = false

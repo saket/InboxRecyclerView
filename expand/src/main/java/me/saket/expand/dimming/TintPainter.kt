@@ -26,9 +26,9 @@ abstract class TintPainter {
     @JvmOverloads
     fun uncoveredArea(
         @ColorInt color: Int = Color.BLACK,
-        @FloatRange(from = 0.0, to = 1.0) intensity: Float = 0.15F
+        @FloatRange(from = 0.0, to = 1.0) opacity: Float = 0.15F
     ): TintPainter {
-      return UncoveredAreaTintPainter(color, intensity)
+      return UncoveredAreaTintPainter(color, opacity)
     }
 
     /**
@@ -37,9 +37,9 @@ abstract class TintPainter {
     @JvmOverloads
     fun completeList(
         @ColorInt color: Int = Color.BLACK,
-        @FloatRange(from = 0.0, to = 1.0) intensity: Float = 0.15F
+        @FloatRange(from = 0.0, to = 1.0) opacity: Float = 0.15F
     ): TintPainter {
-      return CompleteListTintPainter(color, intensity)
+      return CompleteListTintPainter(color, opacity)
     }
 
     fun noOp(): TintPainter {

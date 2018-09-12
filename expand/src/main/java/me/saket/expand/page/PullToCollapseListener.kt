@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
-
 import java.util.ArrayList
 
 class PullToCollapseListener(context: Context, private val expandablePage: ExpandablePageLayout) : View.OnTouchListener {
