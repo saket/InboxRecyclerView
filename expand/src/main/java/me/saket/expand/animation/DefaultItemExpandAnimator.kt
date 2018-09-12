@@ -9,7 +9,7 @@ import android.view.View
  *
  * Vice versa when the page is collapsing.
  */
-class DefaultItemExpandAnimator : ItemExpandAnimator() {
+open class DefaultItemExpandAnimator : ItemExpandAnimator() {
 
   override fun onPageMove() {
     val page = recyclerView.page
@@ -36,24 +36,12 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
     if (anchorView != null) {
       val distanceExpandedTowardsTop = pageTop - anchorView.top
       val distanceExpandedTowardsBottom = pageBottom - anchorView.bottom
-
-      recyclerView.apply {
-        for (childIndex in 0 until childCount) {
-          getChildAt(childIndex).translationY = when {
-            childIndex <= anchorIndex -> distanceExpandedTowardsTop
-            else -> distanceExpandedTowardsBottom
-          }
-        }
-      }
+      moveListItems(anchorIndex, distanceExpandedTowardsTop, distanceExpandedTowardsBottom)
 
     } else {
       // Anchor View can be null when the page was expanded from
       // an arbitrary location. See InboxRecyclerView#expandFromTop().
-      recyclerView.apply {
-        for (childIndex in 0 until childCount) {
-          getChildAt(childIndex).translationY = pageBottom
-        }
-      }
+      moveListItems(anchorIndex, 0F, pageBottom)
     }
 
     // Fade in the anchor row with the expanding/collapsing page.
@@ -61,7 +49,22 @@ class DefaultItemExpandAnimator : ItemExpandAnimator() {
       val minPageHeight = anchorView.height
       val maxPageHeight = page.height
       val expandRatio = (page.clippedDimens.height() - minPageHeight).toFloat() / (maxPageHeight - minPageHeight)
-      alpha = 1F - expandRatio
+      applyAlphaOnAnchorView(this, expandRatio)
+    }
+  }
+
+  open fun applyAlphaOnAnchorView(anchorView: View, expandRatio: Float) {
+    anchorView.alpha = 1F - expandRatio
+  }
+
+  open fun moveListItems(anchorIndex: Int, distanceExpandedTowardsTop: Float, distanceExpandedTowardsBottom: Float) {
+    recyclerView.apply {
+      for (childIndex in 0 until childCount) {
+        getChildAt(childIndex).translationY = when {
+          childIndex <= anchorIndex -> distanceExpandedTowardsTop
+          else -> distanceExpandedTowardsBottom
+        }
+      }
     }
   }
 }
