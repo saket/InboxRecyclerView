@@ -30,7 +30,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /** Alpha of this page when it's collapsed. */
   internal var collapsedAlpha = 0F
 
-  var pullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
+  var pullToCollapseInterceptor: OnPullToCollapseInterceptor = OnPullToCollapseInterceptor.IgnoreAll()
 
   var pullToCollapseThresholdDistance: Int
     get() = pullToCollapseListener.collapseDistanceThreshold
@@ -614,11 +614,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       nestedPageCopy.handleOnPullToCollapseIntercept(event, downX, downY, deltaUpwardSwipe)
       InterceptResult.INTERCEPTED
 
-    } else if (pullToCollapseInterceptor != null) {
-      pullToCollapseInterceptor!!.onInterceptPullToCollapseGesture(event, downX, downY, deltaUpwardSwipe)
-
-    } else {
-      InterceptResult.IGNORED
+    } else run {
+      pullToCollapseInterceptor.onIntercept(event, downX, downY, deltaUpwardSwipe)
     }
   }
 

@@ -63,7 +63,7 @@ class EmailThreadFragment : Fragment() {
     }
 
     emailThreadPage.pullToCollapseInterceptor = object : OnPullToCollapseInterceptor {
-      override fun onInterceptPullToCollapseGesture(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean): InterceptResult {
+      override fun onIntercept(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean): InterceptResult {
         val directionInt = if (upwardPull) +1 else -1
         val canScrollFurther = scrollableContainer.canScrollVertically(directionInt)
         return when {

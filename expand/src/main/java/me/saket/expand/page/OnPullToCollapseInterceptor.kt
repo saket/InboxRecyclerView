@@ -23,5 +23,9 @@ interface OnPullToCollapseInterceptor {
    *
    * @return True to consume this touch event. False otherwise.
    */
-  fun onInterceptPullToCollapseGesture(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean): InterceptResult
+  fun onIntercept(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean): InterceptResult
+
+  class IgnoreAll : OnPullToCollapseInterceptor {
+    override fun onIntercept(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean) = InterceptResult.IGNORED
+  }
 }
