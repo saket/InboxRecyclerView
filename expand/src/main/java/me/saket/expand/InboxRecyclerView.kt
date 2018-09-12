@@ -26,7 +26,7 @@ class InboxRecyclerView(
 ) : ScrollSuppressibleRecyclerView(context, attrs), InternalPageCallbacks {
 
   /** Controls how [InboxRecyclerView] items are animated when the page is moving. */
-  var itemExpandAnimator: ItemExpandAnimator = ItemExpandAnimator.default()
+  var itemExpandAnimator: ItemExpandAnimator = ItemExpandAnimator.split()
     set(value) {
       val old = field
       field = value
@@ -63,7 +63,7 @@ class InboxRecyclerView(
     setWillNotDraw(false)
 
     // Because setters don't get called for default values.
-    itemExpandAnimator = ItemExpandAnimator.default()
+    itemExpandAnimator = ItemExpandAnimator.split()
     tintPainter = TintPainter.uncoveredArea()
   }
 

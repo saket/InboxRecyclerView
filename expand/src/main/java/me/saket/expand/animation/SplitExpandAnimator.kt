@@ -9,7 +9,7 @@ import android.view.View
  *
  * Vice versa when the page is collapsing.
  */
-open class DefaultItemExpandAnimator : ItemExpandAnimator() {
+open class SplitExpandAnimator : ItemExpandAnimator() {
 
   override fun onPageMove() {
     val page = recyclerView.page

@@ -57,6 +57,6 @@ abstract class ItemExpandAnimator {
 
   companion object {
 
-    fun default() = DefaultItemExpandAnimator()
+    fun split() = SplitExpandAnimator()
   }
 }
