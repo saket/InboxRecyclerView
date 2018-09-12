@@ -32,6 +32,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   var pullToCollapseInterceptor: OnPullToCollapseInterceptor = { _, _, _ -> InterceptResult.IGNORED }
 
+  /** Pull distance after which the page can collapse, in pixels. */
   var pullToCollapseThresholdDistance: Int
     get() = pullToCollapseListener.collapseDistanceThreshold
     set(value) {
