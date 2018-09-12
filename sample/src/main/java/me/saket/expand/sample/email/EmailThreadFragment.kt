@@ -14,7 +14,6 @@ import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
 import me.saket.expand.page.ExpandablePageLayout
 import me.saket.expand.page.InterceptResult
-import me.saket.expand.page.OnPullToCollapseInterceptor
 import me.saket.expand.page.SimplePageStateChangeCallbacks
 import me.saket.expand.sample.Attachment.CalendarEvent
 import me.saket.expand.sample.Attachment.Image
@@ -61,14 +60,12 @@ class EmailThreadFragment : Fragment() {
       requireActivity().onBackPressed()
     }
 
-    emailThreadPage.pullToCollapseInterceptor = object : OnPullToCollapseInterceptor {
-      override fun onIntercept(downX: Float, downY: Float, upwardPull: Boolean): InterceptResult {
-        val directionInt = if (upwardPull) +1 else -1
-        val canScrollFurther = scrollableContainer.canScrollVertically(directionInt)
-        return when {
-          canScrollFurther -> InterceptResult.INTERCEPTED
-          else -> InterceptResult.IGNORED
-        }
+    emailThreadPage.pullToCollapseInterceptor = { downX, downY, upwardPull ->
+      val directionInt = if (upwardPull) +1 else -1
+      val canScrollFurther = scrollableContainer.canScrollVertically(directionInt)
+      when {
+        canScrollFurther -> InterceptResult.INTERCEPTED
+        else -> InterceptResult.IGNORED
       }
     }
 

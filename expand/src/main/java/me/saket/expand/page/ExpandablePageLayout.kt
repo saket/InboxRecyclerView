@@ -30,7 +30,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /** Alpha of this page when it's collapsed. */
   internal var collapsedAlpha = 0F
 
-  var pullToCollapseInterceptor: OnPullToCollapseInterceptor = OnPullToCollapseInterceptor.IgnoreAll()
+  var pullToCollapseInterceptor: OnPullToCollapseInterceptor = { _, _, _ -> InterceptResult.IGNORED }
 
   var pullToCollapseThresholdDistance: Int
     get() = pullToCollapseListener.collapseDistanceThreshold
@@ -615,7 +615,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       InterceptResult.INTERCEPTED
 
     } else run {
-      pullToCollapseInterceptor.onIntercept(downX, downY, deltaUpwardSwipe)
+      pullToCollapseInterceptor(downX, downY, deltaUpwardSwipe)
     }
   }
 
