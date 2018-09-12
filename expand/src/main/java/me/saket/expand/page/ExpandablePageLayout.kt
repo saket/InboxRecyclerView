@@ -28,7 +28,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   var parentToolbar: View? = null
 
   /** Alpha of this page when it's collapsed. */
-  var collapsedAlpha = 0F
+  internal var collapsedAlpha = 0F
 
   var pullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
 
@@ -219,7 +219,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Expand this page instantly, without any animation.
    */
-  fun expandImmediately() {
+  internal fun expandImmediately() {
     if (currentState == PageState.EXPANDING || currentState == PageState.EXPANDED) {
       return
     }
