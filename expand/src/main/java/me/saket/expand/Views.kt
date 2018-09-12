@@ -3,6 +3,8 @@ package me.saket.expand
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
+import android.graphics.Rect
+import android.graphics.RectF
 import android.util.Log
 import android.view.View
 import android.view.ViewPropertyAnimator
@@ -50,7 +52,7 @@ internal object Views {
 }
 
 fun ViewPropertyAnimator.withEndAction(action: (Boolean) -> Unit): ViewPropertyAnimator {
-  return setListener(object: AnimatorListenerAdapter() {
+  return setListener(object : AnimatorListenerAdapter() {
     var canceled = false
 
     override fun onAnimationStart(animation: Animator) {
@@ -65,4 +67,10 @@ fun ViewPropertyAnimator.withEndAction(action: (Boolean) -> Unit): ViewPropertyA
       action(canceled)
     }
   })
+}
+
+fun View.globalVisibleRect(): RectF {
+  val rect = Rect()
+  getGlobalVisibleRect(rect)
+  return RectF(rect.left.toFloat(), rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat())
 }

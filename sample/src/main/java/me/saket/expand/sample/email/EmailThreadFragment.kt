@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
+import me.saket.expand.globalVisibleRect
 import me.saket.expand.page.ExpandablePageLayout
 import me.saket.expand.page.InterceptResult
 import me.saket.expand.page.SimplePageStateChangeCallbacks
@@ -61,6 +62,10 @@ class EmailThreadFragment : Fragment() {
     }
 
     emailThreadPage.pullToCollapseInterceptor = { downX, downY, upwardPull ->
+      if (scrollableContainer.globalVisibleRect().contains(downX, downY).not()) {
+        InterceptResult.IGNORED
+      }
+
       val directionInt = if (upwardPull) +1 else -1
       val canScrollFurther = scrollableContainer.canScrollVertically(directionInt)
       when {
