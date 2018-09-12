@@ -10,7 +10,7 @@ import me.saket.expand.page.ExpandablePageLayout
 /**
  * Draws a tint on [InboxRecyclerView] rows while it's covered by [ExpandablePageLayout].
  */
-abstract class ItemTintPainter {
+abstract class TintPainter {
 
   abstract fun onAttachRecyclerView(recyclerView: InboxRecyclerView)
 
@@ -20,24 +20,30 @@ abstract class ItemTintPainter {
 
   companion object {
 
+    /**
+     * See [UncoveredAreaTintPainter].
+     */
     @JvmOverloads
-    fun uncoveredItems(
+    fun uncoveredArea(
         @ColorInt color: Int = Color.BLACK,
         @FloatRange(from = 0.0, to = 1.0) intensity: Float = 0.15F
-    ): ItemTintPainter {
-      return UncoveredItemsTintPainter(color, intensity)
+    ): TintPainter {
+      return UncoveredAreaTintPainter(color, intensity)
     }
 
+    /**
+     * See [CompleteListTintPainter].
+     */
     @JvmOverloads
-    fun allItems(
+    fun completeList(
         @ColorInt color: Int = Color.BLACK,
         @FloatRange(from = 0.0, to = 1.0) intensity: Float = 0.15F
-    ): ItemTintPainter {
-      return AllItemsTintPainter(color, intensity)
+    ): TintPainter {
+      return CompleteListTintPainter(color, intensity)
     }
 
-    fun noOp(): ItemTintPainter {
-      return object : ItemTintPainter() {
+    fun noOp(): TintPainter {
+      return object : TintPainter() {
         override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {}
         override fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {}
         override fun drawTint(canvas: Canvas) {}

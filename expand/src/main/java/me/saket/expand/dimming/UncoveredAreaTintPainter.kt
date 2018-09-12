@@ -15,9 +15,9 @@ import me.saket.expand.page.PageStateChangeCallbacks
  * This allows the page content to not have another background of its own, thus reducing
  * overdraw by a level.
  *
- * If the tinted area appears incorrect, try using [ItemTintPainter.allItems] instead.
+ * If the tinted area appears incorrect, try using [TintPainter.completeList] instead.
  */
-open class UncoveredItemsTintPainter(color: Int, intensity: Float) : ItemTintPainter(), PageStateChangeCallbacks {
+open class UncoveredAreaTintPainter(color: Int, intensity: Float) : TintPainter(), PageStateChangeCallbacks {
 
   private val minIntensity = 0
   private val maxIntensity = (255 * intensity).toInt()    // [0..255]
