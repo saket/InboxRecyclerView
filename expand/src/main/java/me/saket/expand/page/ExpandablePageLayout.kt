@@ -615,7 +615,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       InterceptResult.INTERCEPTED
 
     } else run {
-      pullToCollapseInterceptor.onIntercept(event, downX, downY, deltaUpwardSwipe)
+      pullToCollapseInterceptor.onIntercept(downX, downY, deltaUpwardSwipe)
     }
   }
 

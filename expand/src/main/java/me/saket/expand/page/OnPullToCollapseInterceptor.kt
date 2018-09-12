@@ -1,7 +1,5 @@
 package me.saket.expand.page
 
-import android.view.MotionEvent
-
 interface OnPullToCollapseInterceptor {
 
   /**
@@ -23,9 +21,9 @@ interface OnPullToCollapseInterceptor {
    *
    * @return True to consume this touch event. False otherwise.
    */
-  fun onIntercept(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean): InterceptResult
+  fun onIntercept(downX: Float, downY: Float, upwardPull: Boolean): InterceptResult
 
   class IgnoreAll : OnPullToCollapseInterceptor {
-    override fun onIntercept(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean) = InterceptResult.IGNORED
+    override fun onIntercept(downX: Float, downY: Float, upwardPull: Boolean) = InterceptResult.IGNORED
   }
 }

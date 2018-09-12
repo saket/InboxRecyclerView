@@ -3,7 +3,6 @@ package me.saket.expand.sample.email
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -63,7 +62,7 @@ class EmailThreadFragment : Fragment() {
     }
 
     emailThreadPage.pullToCollapseInterceptor = object : OnPullToCollapseInterceptor {
-      override fun onIntercept(event: MotionEvent, downX: Float, downY: Float, upwardPull: Boolean): InterceptResult {
+      override fun onIntercept(downX: Float, downY: Float, upwardPull: Boolean): InterceptResult {
         val directionInt = if (upwardPull) +1 else -1
         val canScrollFurther = scrollableContainer.canScrollVertically(directionInt)
         return when {
