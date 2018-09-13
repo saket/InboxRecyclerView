@@ -10,9 +10,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
-import me.saket.expand.Views.executeOnNextLayout
 import me.saket.expand.animation.ItemExpandAnimator
 import me.saket.expand.dimming.TintPainter
 import me.saket.expand.page.ExpandablePageLayout
@@ -77,26 +77,20 @@ class InboxRecyclerView(
   }
 
   /**
-   * Set the [ExpandablePageLayout] and [Toolbar] to be used with this list. The toolbar
-   * gets pushed up when the page is expanding.
-   *
-   * The [toolbar]'s height is also used as the pull-to-collapse distance threshold.
+   * Set the [ExpandablePageLayout] to be used with this list.
+   * The pull-to-collapse threshold is set to 85% of the standard toolbar height.
    */
-  fun setExpandablePage(expandablePage: ExpandablePageLayout, toolbar: View) {
-    setExpandablePageInternal(expandablePage)
-
-    expandablePage.parentToolbar = toolbar
-    toolbar.post {
-      expandablePage.pullToCollapseThresholdDistance = (toolbar.height * 0.85F).toInt()
-    }
+  fun setExpandablePage(page: ExpandablePageLayout) {
+    setExpandablePage(page, (Views.toolbarHeight(context) * 0.85F).toInt())
   }
 
   /**
-   * [collapseDistanceThreshold] Minimum Y-distance the page has to be pulled to collapse.
+   * Set the [ExpandablePageLayout] to be used with this list.
+   * @param collapseDistanceThreshold Minimum Y-distance the page has to be pulled before it's eligible for collapse.
    */
-  fun setExpandablePage(expandablePage: ExpandablePageLayout, collapseDistanceThreshold: Int) {
-    setExpandablePageInternal(expandablePage)
-    expandablePage.pullToCollapseThresholdDistance = collapseDistanceThreshold
+  fun setExpandablePage(page: ExpandablePageLayout, @Px collapseDistanceThreshold: Int) {
+    setExpandablePageInternal(page)
+    page.pullToCollapseThresholdDistance = collapseDistanceThreshold
   }
 
   private fun setExpandablePageInternal(expandablePage: ExpandablePageLayout) {

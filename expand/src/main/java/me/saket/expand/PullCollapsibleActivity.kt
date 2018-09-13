@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import me.saket.expand.Views.executeOnMeasure
 import me.saket.expand.page.StandaloneExpandablePageLayout
 
 /**
@@ -40,9 +39,7 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
       overridePendingTransition(0, 0)
     }
 
-    val typedArray = obtainStyledAttributes(intArrayOf(android.R.attr.actionBarSize))
-    standardToolbarHeight = typedArray.getDimensionPixelSize(0, 0)
-    typedArray.recycle()
+    standardToolbarHeight = Views.toolbarHeight(this)
   }
 
   override fun onStart() {

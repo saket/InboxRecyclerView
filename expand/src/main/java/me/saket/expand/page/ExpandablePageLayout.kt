@@ -9,9 +9,10 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import me.saket.expand.InboxRecyclerView
 import me.saket.expand.InternalPageCallbacks
-import me.saket.expand.Views.executeOnMeasure
+import me.saket.expand.executeOnMeasure
 import me.saket.expand.withEndAction
 import java.lang.reflect.Method
 import java.util.ArrayList
@@ -24,7 +25,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener {
 
-  /** Toolbar inside the parent page, not in this page. */
   var parentToolbar: View? = null
 
   /** Alpha of this page when it's collapsed. */
@@ -32,7 +32,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   var pullToCollapseInterceptor: OnPullToCollapseInterceptor = { _, _, _ -> InterceptResult.IGNORED }
 
-  /** Pull distance after which the page can collapse, in pixels. */
+  /** Minimum Y-distance the page has to be pulled before it's eligible for collapse. */
   var pullToCollapseThresholdDistance: Int
     get() = pullToCollapseListener.collapseDistanceThreshold
     set(value) {
@@ -271,7 +271,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     translationY = expandedItem.expandedItemLocationRect.top.toFloat()
   }
 
-  fun alignPageToCoverScreen() {
+  internal fun alignPageToCoverScreen() {
     resetClipping()
     translationY = 0F
   }
@@ -448,7 +448,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   override fun draw(canvas: Canvas) {
-    // Or if the page is collapsed.
     if (currentState == PageState.COLLAPSED) {
       return
     }
@@ -618,6 +617,15 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     } else run {
       pullToCollapseInterceptor(downX, downY, deltaUpwardSwipe)
     }
+  }
+
+  /**
+   * Push [toolbar] out of the screen during expansion when this page reaches the
+   * bottom of the toolbar. When this page is collapsing or being pulled downwards.
+   * the toolbar will be animated back to its position.
+   */
+  fun pushParentToolbarOnExpand(toolbar: Toolbar) {
+    this.parentToolbar = toolbar
   }
 
   fun addStateChangeCallbacks(callbacks: PageStateChangeCallbacks) {
