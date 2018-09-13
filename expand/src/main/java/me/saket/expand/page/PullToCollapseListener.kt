@@ -138,8 +138,8 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
         var deltaYWithFriction = deltaY / frictionFactor
 
         if (eligibleForCollapse) {
-          val extraFriction = collapseDistanceThreshold / Math.abs(expandablePage.translationY)
-          deltaYWithFriction *= extraFriction / 2F
+          val extraFriction = collapseDistanceThreshold / (2F * Math.abs(expandablePage.translationY))
+          deltaYWithFriction *= extraFriction
         }
 
         val translationY = expandablePage.translationY + deltaYWithFriction
@@ -153,8 +153,8 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
       MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
         val totalSwipeDistanceY = event.rawY - downY
         if (Math.abs(totalSwipeDistanceY) >= touchSlop) {
-          // The page is responsible for animating back into
-          // position if the page wasn't eligible for collapse.
+          // The page is responsible for animating back into position if the page
+          // wasn't eligible for collapse. I no longer remember why I did this.
           dispatchReleaseCallback()
         }
       }

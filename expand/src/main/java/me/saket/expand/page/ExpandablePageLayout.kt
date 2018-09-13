@@ -575,17 +575,17 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   @Suppress("MemberVisibilityCanBePrivate")
-  protected fun onPageExpanded() {
+  protected open fun onPageAboutToExpand(expandAnimDuration: Long) {
     // For rent.
   }
 
   @Suppress("MemberVisibilityCanBePrivate")
-  protected fun onPageAboutToExpand(expandAnimDuration: Long) {
+  protected open fun onPageExpanded() {
     // For rent.
   }
 
   @Suppress("MemberVisibilityCanBePrivate")
-  protected fun onPageAboutToCollapse(collapseAnimDuration: Long) {
+  protected open fun onPageAboutToCollapse(collapseAnimDuration: Long) {
     // For rent.
   }
 
@@ -593,7 +593,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * Page is totally invisible to the user when this is called.
    */
   @Suppress("MemberVisibilityCanBePrivate")
-  protected fun onPageCollapsed() {
+  protected open fun onPageCollapsed() {
     // For rent.
   }
 

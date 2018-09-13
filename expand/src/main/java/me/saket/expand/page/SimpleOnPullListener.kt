@@ -7,6 +7,9 @@ package me.saket.expand.page
  */
 abstract class SimpleOnPullListener : PullToCollapseListener.OnPullListener {
 
+  /**
+   * See [PullToCollapseListener.OnPullListener.onPull]
+   */
   override fun onPull(
       deltaY: Float,
       currentTranslationY: Float,
