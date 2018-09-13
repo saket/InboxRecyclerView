@@ -1,7 +1,7 @@
 InboxRecyclerView is a library for building expandable descendant navigation, inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html). You can read [my blog post](https://saket.me/inbox-recyclerview) to learn how it was created.
 
 ```
-implementation 'me.saket.inboxrecyclerview:1.0.0-beta1'
+implementation 'me.saket:inboxrecyclerview:1.0.0-beta1'
 ```
 
 ### Usage
