@@ -1,4 +1,6 @@
-InboxRecyclerView is a library for building expandable descendant navigation, inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html). You can read [my blog post](https://saket.me/inbox-recyclerview) to learn how it was created.
+[![](https://github.com/saket/InboxRecyclerView/blob/master/images/static_thumbnail.jpg)](https://youtu.be/aI9wX91m3Qs)
+
+InboxRecyclerView is a library for building expandable descendant navigation, inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html). If you're interested in learning how it was created, [here's a detailed blog post](https://saket.me/inbox-recyclerview).
 
 ```
 implementation 'me.saket:inboxrecyclerview:1.0.0-beta1'
@@ -41,9 +43,7 @@ recyclerViewAdapter.setOnItemClickListener { clickedItem ->
 
 ### Pull collapsible activities
 
-To maintain consistency across the whole app, the library also includes a `PullCollapsibleActivity` that brings the same animations and gesture to activities with little effort.
-
-**Usage**
+To maintain consistency across the whole app, this library also includes a `PullCollapsibleActivity` that brings the same animations and gesture to activities with little effort.
 
 Step 1. Extend `PullCollapsibleActivity`.
 
