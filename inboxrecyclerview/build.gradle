@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 
 android {
   compileSdkVersion versions.compileSdk
+  resourcePrefix "irv_"
 
   defaultConfig {
     minSdkVersion 21
