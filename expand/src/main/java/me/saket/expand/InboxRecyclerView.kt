@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
@@ -132,10 +133,20 @@ class InboxRecyclerView(
 
   private fun ensureSetup() {
     if (pageSetupDone.not()) {
-      throw IllegalAccessError("Did you forget to call InboxRecyclerView.setup()?")
+      throw IllegalStateException("Did you forget to call InboxRecyclerView.setup()?")
     }
     if (adapter == null) {
-      throw AssertionError("Adapter isn't attached yet.")
+      throw IllegalStateException("Adapter isn't attached yet.")
+    }
+
+    // The page must always have a higher z-index so that InboxRecyclerView does not
+    // block its touch events. Plus, having an elevation that gets drawn on top of
+    // this RV will look nice.
+    val parentLayout = parent as ViewGroup
+    val thisIndex = parentLayout.indexOfChild(this)
+    val pageIndex = parentLayout.indexOfChild(page)
+    if (thisIndex > pageIndex || z > page.z) {
+      throw IllegalStateException("ExpandablePageLayout must have a higher z-index than InboxRecyclerView")
     }
   }
 
