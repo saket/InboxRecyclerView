@@ -56,7 +56,7 @@ Step 2. Add these attributes to the activity’s theme:
 
 ### License
 ```
-Copyright 2019 Saket Narayan.
+Copyright 2018 Saket Narayan.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
