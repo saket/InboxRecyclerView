@@ -4,9 +4,9 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context="me.saket.expand.sample.inbox.InboxActivity">
+  tools:context="me.saket.inboxrecyclerview.sample.inbox.InboxActivity">
 
-  <me.saket.expand.InboxRecyclerView
+  <me.saket.inboxrecyclerview.InboxRecyclerView
     android:id="@+id/inbox_recyclerview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,7 +14,7 @@
     android:paddingBottom="@dimen/bottom_spacing_for_bottomappbar"
     android:paddingTop="@dimen/emailthread_item_vertical_margin" />
 
-  <me.saket.expand.page.ExpandablePageLayout
+  <me.saket.inboxrecyclerview.page.ExpandablePageLayout
     android:id="@+id/inbox_email_thread_page"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

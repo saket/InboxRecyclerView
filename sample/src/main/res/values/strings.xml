@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">Expand</string>
+  <string name="app_name">InboxRecyclerView</string>
 
   <string name="about_body">
     This sample app is a recreation of <a href="https://material.io/design/material-studies/reply.html">Reply</a>,

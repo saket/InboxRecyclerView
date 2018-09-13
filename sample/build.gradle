@@ -11,7 +11,7 @@ android {
   compileSdkVersion versions.compileSdk
 
   defaultConfig {
-    applicationId "me.saket.expand.sample"
+    applicationId "me.saket.inboxrecyclerview.sample"
     minSdkVersion 23
     targetSdkVersion 27
     versionCode 1
