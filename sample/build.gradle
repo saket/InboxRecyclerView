@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-  implementation project(path: ':expand')
+  implementation project(path: ':inboxrecyclerview')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 
