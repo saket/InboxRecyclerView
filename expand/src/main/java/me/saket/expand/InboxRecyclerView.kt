@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
@@ -52,11 +51,11 @@ class InboxRecyclerView(
   lateinit var page: ExpandablePageLayout
     private set
 
-  private var pageSetupDone: Boolean = false
-
+  internal var pageSetupDone: Boolean = false
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
+  private val restorer = StateRestorer(this)
 
   init {
     // For drawing dimming using TintPainter.
@@ -67,21 +66,13 @@ class InboxRecyclerView(
     tintPainter = TintPainter.uncoveredArea()
   }
 
-  fun saveExpandableState(outState: Bundle) {
-    outState.putParcelable(KEY_EXPAND_INFO, expandedItem)
+  override fun onSaveInstanceState(): Parcelable {
+    return restorer.save(super.onSaveInstanceState())
   }
 
-  /**
-   * Letting Activities handle restoration manually so that the setup can optionally
-   * happen before onRestore gets called.
-   * */
-  fun restoreExpandableState(savedInstance: Bundle) {
-    expandedItem = savedInstance.getParcelable(KEY_EXPAND_INFO) as ExpandedItem
-
-    if (expandedItem.isEmpty().not()) {
-      ensureSetup()
-      expandItem(expandedItem.itemId, immediate = true)
-    }
+  override fun onRestoreInstanceState(state: Parcelable) {
+    val superState = restorer.restore(state)
+    super.onRestoreInstanceState(superState)
   }
 
   /**
@@ -114,6 +105,7 @@ class InboxRecyclerView(
     pageSetupDone = true
     page = expandablePage
 
+    restorer.restoreIfPossible()
     expandablePage.internalStateCallbacksForRecyclerView = this
     tintPainter.onAttachRecyclerView(this)
     itemExpandAnimator.onAttachRecyclerView(this)
@@ -297,13 +289,17 @@ class InboxRecyclerView(
 
     // isLayoutFrozen is reset when the adapter is changed.
     isLayoutFrozen = isLayoutFrozenBak
+
+    restorer.restoreIfPossible()
   }
 
   override fun swapAdapter(adapter: Adapter<*>?, removeAndRecycleExistingViews: Boolean) {
     ensureStableIds(adapter)
     val isLayoutFrozenBak = isLayoutFrozen
     super.swapAdapter(adapter, removeAndRecycleExistingViews)
+
     isLayoutFrozen = isLayoutFrozenBak
+    restorer.restoreIfPossible()
   }
 
   private fun ensureStableIds(adapter: Adapter<*>?) {
@@ -341,7 +337,6 @@ class InboxRecyclerView(
   }
 
   companion object {
-    private const val KEY_EXPAND_INFO = "expand_info"
     const val animationStartDelay: Int = 0  // Only used for debugging.
   }
 }

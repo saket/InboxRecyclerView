@@ -47,16 +47,6 @@ class InboxActivity : AppCompatActivity() {
     super.onDestroy()
   }
 
-  override fun onSaveInstanceState(outState: Bundle) {
-    recyclerView.saveExpandableState(outState)
-    super.onSaveInstanceState(outState)
-  }
-
-  override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-    super.onRestoreInstanceState(savedInstanceState)
-    recyclerView.restoreExpandableState(savedInstanceState)
-  }
-
   override fun onBackPressed() {
     if (emailPageLayout.isExpandedOrExpanding) {
       recyclerView.collapse()
