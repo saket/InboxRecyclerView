@@ -8,7 +8,7 @@ implementation 'me.saket:inboxrecyclerview:1.0.0-beta1'
 
 ### Usage
 
-`InboxRecyclerView` can be dropped in existing projects without requiring any effort. You can take a look at the sample app for best practices or download its APK for trying it out on your phone.
+`InboxRecyclerView` can be dropped in existing projects without requiring any effort. You can take a look at the [sample app](https://github.com/saket/InboxRecyclerView/tree/master/sample) for best practices or [download its APK](https://github.com/saket/InboxRecyclerView/releases) for trying it out on your phone.
 
 **Layout**
 
