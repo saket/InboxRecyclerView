@@ -17,6 +17,11 @@ implementation 'me.saket:inboxrecyclerview:1.0.0-beta1'
   android:layout_width="match_parent"
   android:layout_height="match_parent" />
 
+<!--
+  It's recommended that the content page has a higher z-index
+  than the list. This can be achieved by either giving it a
+  higher view position or a higher elevation.
+-->
 <me.saket.expand.page.ExpandablePageLayout
   android:layout_width="match_parent"
   android:layout_height="match_parent" />
@@ -32,7 +37,6 @@ recyclerViewAdapter.itemClickListener = { clickedItem ->
   recyclerView.expandItem(clickedItem.adapterId)
 }
 ```
-
 
 ### How do I…
 
