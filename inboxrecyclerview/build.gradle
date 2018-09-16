@@ -1,9 +1,9 @@
 buildscript {
   repositories {
-    mavenCentral()
+    jcenter()
   }
   dependencies {
-    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.4.0'
+    classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$versions.dokka"
   }
 }
 
@@ -11,7 +11,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: "com.vanniktech.maven.publish"
+apply plugin: 'org.jetbrains.dokka-android'
 
 android {
   compileSdkVersion versions.compileSdk
@@ -39,7 +39,4 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
 }
 
-mavenPublish {
-  releaseRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-  snapshotRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-}
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
