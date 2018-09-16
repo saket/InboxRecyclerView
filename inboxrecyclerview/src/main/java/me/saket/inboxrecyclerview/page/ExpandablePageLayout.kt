@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
+import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.executeOnMeasure
@@ -316,7 +317,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
             }
           }
         }
-        .setStartDelay(InboxRecyclerView.animationStartDelay.toLong())
+        .setStartDelay(ANIMATION_START_DELAY)
         .start()
 
     // Show the toolbar fully even if the page is going to collapse behind it
@@ -358,7 +359,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     toolbarAnimator.addUpdateListener { animation -> updateToolbarTranslationY(show, animation.animatedValue as Float) }
     toolbarAnimator.duration = animationDurationMillis * speedFactor
     toolbarAnimator.interpolator = animationInterpolator
-    toolbarAnimator.startDelay = InboxRecyclerView.animationStartDelay.toLong()
+    toolbarAnimator.startDelay = ANIMATION_START_DELAY
     toolbarAnimator.start()
   }
 

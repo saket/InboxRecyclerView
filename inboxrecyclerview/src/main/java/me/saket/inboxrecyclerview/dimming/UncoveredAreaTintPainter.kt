@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.ViewTreeObserver
+import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 import me.saket.inboxrecyclerview.page.PageStateChangeCallbacks
@@ -118,7 +119,7 @@ open class UncoveredAreaTintPainter(color: Int, opacity: Float) : TintPainter(),
     tintAnimator = ObjectAnimator.ofInt(tintPaint.alpha, toAlpha).apply {
       duration = dimDuration
       interpolator = recyclerView.page.animationInterpolator
-      startDelay = InboxRecyclerView.animationStartDelay.toLong()
+      startDelay = ANIMATION_START_DELAY
     }
     tintAnimator.addUpdateListener {
       tintPaint.alpha = it.animatedValue as Int

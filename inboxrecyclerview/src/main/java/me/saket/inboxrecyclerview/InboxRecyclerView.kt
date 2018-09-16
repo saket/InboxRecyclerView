@@ -340,8 +340,7 @@ class InboxRecyclerView(
       internal val EMPTY = ExpandedItem(itemId = -1, viewIndex = -1, expandedItemLocationRect = Rect(0, 0, 0, 0))
     }
   }
-
-  companion object {
-    const val animationStartDelay: Int = 0  // Only used for debugging.
-  }
 }
+
+// Only used for debugging.
+internal const val ANIMATION_START_DELAY = 0L
