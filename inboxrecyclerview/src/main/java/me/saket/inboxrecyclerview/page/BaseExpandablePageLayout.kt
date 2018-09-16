@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.RelativeLayout
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 
 /**
  * Animating change in dimensions by changing the actual width and height is expensive.
@@ -57,7 +57,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     dimensionAnimator = ObjectAnimator.ofFloat(0F, 1F).apply {
       duration = animationDurationMillis
       interpolator = animationInterpolator
-      startDelay = InboxRecyclerView.animationStartDelay.toLong()
+      startDelay = ANIMATION_START_DELAY
 
       val fromWidth = clipBounds.width()
       val fromHeight = clipBounds.height()
