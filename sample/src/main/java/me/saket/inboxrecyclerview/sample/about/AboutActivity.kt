@@ -38,7 +38,7 @@ class AboutActivity : PullCollapsibleActivity() {
     BetterLinkMovementMethod.linkifyHtml(bodyTextView)
 
     githubLinkView.setOnClickListener {
-      startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/saket/expand")))
+      startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/saket/inboxrecyclerview")))
     }
   }
 }
