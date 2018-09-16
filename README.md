@@ -6,7 +6,7 @@ InboxRecyclerView is a library for building expandable descendant navigation, in
 implementation 'me.saket:inboxrecyclerview:1.0.0-beta2'
 ```
 
-FYI, `InboxRecyclerView` has a dependency on `androidx` for using `RecyclerView`. If you haven't [migrated](https://android-developers.googleblog.com/2018/05/hello-world-androidx.html) from the support library already, this would be a good opportunity.
+FYI, `InboxRecyclerView` has a dependency on `androidx`. If you haven't [migrated](https://android-developers.googleblog.com/2018/05/hello-world-androidx.html) from the support library already, this would be a good opportunity.
 
 ### Usage
 
