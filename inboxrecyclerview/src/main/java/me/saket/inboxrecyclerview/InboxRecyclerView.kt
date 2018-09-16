@@ -7,8 +7,8 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
 import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -125,22 +125,22 @@ class InboxRecyclerView(
     }
   }
 
+  override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+    return if (pageSetupDone && page.isExpandedOrExpanding) {
+      // Intentionally leak touch events behind just in case the
+      // content page has a lower z-index than than this list.
+      false
+    } else {
+      super.dispatchTouchEvent(ev)
+    }
+  }
+
   private fun ensureSetup() {
     if (pageSetupDone.not()) {
       throw IllegalStateException("Did you forget to call InboxRecyclerView.setup()?")
     }
     if (adapter == null) {
       throw IllegalStateException("Adapter isn't attached yet.")
-    }
-
-    // The page must always have a higher z-index so that InboxRecyclerView does not
-    // block its touch events. Plus, having an elevation that gets drawn on top of
-    // this RV will look nice.
-    val parentLayout = parent as ViewGroup
-    val thisIndex = parentLayout.indexOfChild(this)
-    val pageIndex = parentLayout.indexOfChild(page)
-    if (thisIndex > pageIndex || z > page.z) {
-      throw IllegalStateException("ExpandablePageLayout must have a higher z-index than InboxRecyclerView")
     }
   }
 
