@@ -27,9 +27,9 @@ implementation 'me.saket:inboxrecyclerview:1.0.0-beta1'
 ```java
 recyclerView.setExpandablePage(contentPage)
 
-recyclerViewAdapter.setOnItemClickListener { clickedItem ->
-  expandablePageFragment.loadContent(clickedItem)
-  recyclerView.expandItem(clickedItem.adapterId)`
+recyclerViewAdapter.itemClickListener = { clickedItem ->
+  expandableFragment.loadContent(clickedItem)
+  recyclerView.expandItem(clickedItem.adapterId)
 }
 ```
 
