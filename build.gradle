@@ -6,6 +6,7 @@ buildscript {
       androidx  : '1.0.0-rc01',
       timber    : '4.7.0',
       kotlin    : '1.2.60',
+      dokka     : '0.9.17'
   ]
 
   repositories {
