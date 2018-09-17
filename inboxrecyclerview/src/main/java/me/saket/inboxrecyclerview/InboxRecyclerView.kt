@@ -126,12 +126,18 @@ class InboxRecyclerView(
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+    val dispatched = super.dispatchTouchEvent(ev)
+
     return if (pageSetupDone && page.isExpanded) {
-      // Intentionally leak touch events behind just in case the
-      // content page has a lower z-index than than this list.
+      // Intentionally leak touch events behind just in case the content page has
+      // a lower z-index than than this list. This is an ugly hack, but I cannot
+      // think of a way to enforce view positions. Fortunately this hack will not
+      // have any effect when the page is positioned at a higher z-index, where
+      // it'll consume all touch events before they even reach this list.
       false
+
     } else {
-      super.dispatchTouchEvent(ev)
+      dispatched
     }
   }
 
@@ -165,7 +171,7 @@ class InboxRecyclerView(
     for (i in 0 until adapter.itemCount) {
       if (adapter.getItemId(i) == itemId) {
         itemAdapterPosition = i
-        break;
+        break
       }
     }
 
