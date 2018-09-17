@@ -126,7 +126,7 @@ class InboxRecyclerView(
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-    return if (pageSetupDone && page.isExpandedOrExpanding) {
+    return if (pageSetupDone && page.isExpanded) {
       // Intentionally leak touch events behind just in case the
       // content page has a lower z-index than than this list.
       false
