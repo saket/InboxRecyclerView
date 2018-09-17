@@ -165,6 +165,7 @@ class InboxRecyclerView(
     for (i in 0 until adapter.itemCount) {
       if (adapter.getItemId(i) == itemId) {
         itemAdapterPosition = i
+        break;
       }
     }
 
