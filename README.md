@@ -15,7 +15,7 @@ FYI, `InboxRecyclerView` has a dependency on `androidx`. If you haven't [migrate
 **Layout**
 
 ```xml
-<me.saket.expand.InboxRecyclerView
+<me.saket.inboxrecyclerview.InboxRecyclerView
   android:layout_width="match_parent"
   android:layout_height="match_parent" />
 
@@ -24,7 +24,7 @@ FYI, `InboxRecyclerView` has a dependency on `androidx`. If you haven't [migrate
   than the list. This can be achieved by either giving it a
   higher view position or a higher elevation.
 -->
-<me.saket.expand.page.ExpandablePageLayout
+<me.saket.inboxrecyclerview.page.ExpandablePageLayout
   android:layout_width="match_parent"
   android:layout_height="match_parent" />
 ```
