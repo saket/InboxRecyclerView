@@ -57,6 +57,7 @@ abstract class ItemExpandAnimator {
 
   companion object {
 
+    @JvmStatic
     fun split() = SplitExpandAnimator()
   }
 }

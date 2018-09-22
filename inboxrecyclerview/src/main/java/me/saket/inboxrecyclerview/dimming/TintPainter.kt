@@ -23,6 +23,7 @@ abstract class TintPainter {
     /**
      * See [UncoveredAreaTintPainter].
      */
+    @JvmStatic
     @JvmOverloads
     fun uncoveredArea(
         @ColorInt color: Int = Color.BLACK,
@@ -34,6 +35,7 @@ abstract class TintPainter {
     /**
      * See [CompleteListTintPainter].
      */
+    @JvmStatic
     @JvmOverloads
     fun completeList(
         @ColorInt color: Int = Color.BLACK,
@@ -42,6 +44,7 @@ abstract class TintPainter {
       return CompleteListTintPainter(color, opacity)
     }
 
+    @JvmStatic
     fun noOp(): TintPainter {
       return object : TintPainter() {
         override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {}
