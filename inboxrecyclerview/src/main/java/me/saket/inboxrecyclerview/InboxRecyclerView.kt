@@ -1,5 +1,3 @@
-@file:JvmName("InboxRecyclerView")
-
 package me.saket.inboxrecyclerview
 
 import android.app.Activity
