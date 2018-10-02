@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import me.saket.inboxrecyclerview.page.OnPullToCollapseInterceptor
 import me.saket.inboxrecyclerview.page.StandaloneExpandablePageLayout
 
 /**
@@ -30,6 +31,12 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
   private var pullCollapsibleEnabled = true
   private var wasActivityRecreated: Boolean = false
   private var entryAnimationEnabled = true
+
+  /**
+   * Possibility to use nested collapse
+   * @return if activity should collapse
+   */
+  var pullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -99,6 +106,10 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
           overridePendingTransition(0, 0)
         }
       }
+
+    if (pullToCollapseInterceptor != null) {
+      pageLayout.pullToCollapseInterceptor = pullToCollapseInterceptor!!
+    }
 
     } else {
       pageLayout.pullToCollapseEnabled = false
