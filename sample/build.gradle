@@ -47,4 +47,6 @@ dependencies {
   implementation 'com.jakewharton.rxrelay2:rxrelay:2.0.0'
   implementation 'de.hdodenhof:circleimageview:2.2.0'
   implementation 'me.saket:better-link-movement-method:2.2.0'
+  debugImplementation "com.squareup.leakcanary:leakcanary-android:$versions.leakcanary"
+  releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$versions.leakcanary"
 }
