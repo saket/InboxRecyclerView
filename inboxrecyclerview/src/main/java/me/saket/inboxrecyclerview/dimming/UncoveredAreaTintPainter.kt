@@ -68,6 +68,7 @@ open class UncoveredAreaTintPainter(color: Int, opacity: Float) : TintPainter(),
     recyclerView.page.removeStateChangeCallbacks(this)
     recyclerView.page.viewTreeObserver.removeOnGlobalLayoutListener(pageLayoutChangeListener)
     recyclerView.page.viewTreeObserver.removeOnPreDrawListener(pagePreDrawListener)
+    tintAnimator.cancel()
   }
 
   private fun onPageMove() {

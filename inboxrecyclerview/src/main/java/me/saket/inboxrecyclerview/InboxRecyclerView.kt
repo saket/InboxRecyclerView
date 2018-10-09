@@ -79,6 +79,14 @@ class InboxRecyclerView(
     super.onRestoreInstanceState(superState)
   }
 
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    if (pageSetupDone) {
+      itemExpandAnimator.onDetachRecyclerView(this)
+      tintPainter.onDetachRecyclerView(this)
+    }
+  }
+
   /**
    * Set the [ExpandablePageLayout] to be used with this list.
    * The pull-to-collapse threshold is set to 85% of the standard toolbar height.
