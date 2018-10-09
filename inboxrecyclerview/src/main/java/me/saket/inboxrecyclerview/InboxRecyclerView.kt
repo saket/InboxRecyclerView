@@ -40,9 +40,12 @@ class InboxRecyclerView(
   /** Controls how items are dimmed when the page is expanding/collapsing. */
   var tintPainter: TintPainter = TintPainter.noOp()
     set(value) {
+      val old = field
       field = value
+
       if (pageSetupDone) {
-        tintPainter.onAttachRecyclerView(this)
+        old.onDetachRecyclerView(this)
+        field.onAttachRecyclerView(this)
       }
     }
 
