@@ -1,9 +1,6 @@
 package me.saket.inboxrecyclerview.animation
 
-import android.graphics.Rect
-import android.view.ViewTreeObserver
 import me.saket.inboxrecyclerview.InboxRecyclerView
-import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
  * Controls how [InboxRecyclerView] items are animated when its page is moving.
@@ -11,40 +8,20 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  */
 abstract class ItemExpandAnimator {
 
-  private val pagePreDrawListener = object : ViewTreeObserver.OnPreDrawListener {
-    private var lastTranslationY = 0F
-    private var lastClippedDimens = Rect()
-    private var lastState = ExpandablePageLayout.PageState.COLLAPSED
-
-    override fun onPreDraw(): Boolean {
-      val page = recyclerView.page
-      if (lastTranslationY != page.translationY || lastClippedDimens != page.clippedDimens || lastState != page.currentState) {
-        onPageMove()
-      }
-
-      lastTranslationY = page.translationY
-      lastClippedDimens = page.clippedDimens
-      lastState = page.currentState
-      return true
-    }
-  }
-
-  private val pageLayoutChangeListener = {
-    // Changes in the page's dimensions will get handled here.
-    onPageMove()
-  }
-
   protected lateinit var recyclerView: InboxRecyclerView
+  private lateinit var changeDetector: PageLocationChangeDetector
 
   fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {
     this.recyclerView = recyclerView
-    recyclerView.page.viewTreeObserver.addOnGlobalLayoutListener(pageLayoutChangeListener)
-    recyclerView.page.viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
+    this.changeDetector = PageLocationChangeDetector(recyclerView.page, changeListener = ::onPageMove)
+
+    recyclerView.page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
+    recyclerView.page.viewTreeObserver.addOnPreDrawListener(changeDetector)
   }
 
   fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {
-    recyclerView.page.viewTreeObserver.removeOnGlobalLayoutListener(pageLayoutChangeListener)
-    recyclerView.page.viewTreeObserver.removeOnPreDrawListener(pagePreDrawListener)
+    recyclerView.page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
+    recyclerView.page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
   }
 
   /**
@@ -57,6 +34,9 @@ abstract class ItemExpandAnimator {
 
   companion object {
 
+    /**
+     * See [SplitExpandAnimator].
+     */
     @JvmStatic
     fun split() = SplitExpandAnimator()
   }
