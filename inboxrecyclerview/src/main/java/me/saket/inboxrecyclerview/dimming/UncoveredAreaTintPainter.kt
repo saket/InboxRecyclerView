@@ -4,11 +4,9 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Rect
-import android.view.ViewTreeObserver
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
-import me.saket.inboxrecyclerview.page.ExpandablePageLayout
+import me.saket.inboxrecyclerview.animation.PageLocationChangeDetector
 import me.saket.inboxrecyclerview.page.PageStateChangeCallbacks
 
 /**
@@ -28,46 +26,26 @@ open class UncoveredAreaTintPainter(color: Int, opacity: Float) : TintPainter(),
 
   protected val tintPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
   protected lateinit var recyclerView: InboxRecyclerView
+  private lateinit var changeDetector: PageLocationChangeDetector
 
   init {
     tintPaint.color = color
     tintPaint.alpha = minIntensity
   }
 
-  private val pagePreDrawListener = object : ViewTreeObserver.OnPreDrawListener {
-    private var lastTranslationY = 0F
-    private var lastClippedDimens = Rect()
-    private var lastState = ExpandablePageLayout.PageState.COLLAPSED
-
-    override fun onPreDraw(): Boolean {
-      val page = recyclerView.page
-      if (lastTranslationY != page.translationY || lastClippedDimens != page.clippedDimens || lastState != page.currentState) {
-        onPageMove()
-      }
-
-      lastTranslationY = page.translationY
-      lastClippedDimens = page.clippedDimens
-      lastState = page.currentState
-      return true
-    }
-  }
-
-  private val pageLayoutChangeListener = {
-    // Changes in the page's dimensions will get handled here.
-    onPageMove()
-  }
-
   override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {
     this.recyclerView = recyclerView
+    this.changeDetector = PageLocationChangeDetector(recyclerView.page, changeListener = ::onPageMove)
+
+    recyclerView.page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
+    recyclerView.page.viewTreeObserver.addOnPreDrawListener(changeDetector)
     recyclerView.page.addStateChangeCallbacks(this)
-    recyclerView.page.viewTreeObserver.addOnGlobalLayoutListener(pageLayoutChangeListener)
-    recyclerView.page.viewTreeObserver.addOnPreDrawListener(pagePreDrawListener)
   }
 
   override fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {
     recyclerView.page.removeStateChangeCallbacks(this)
-    recyclerView.page.viewTreeObserver.removeOnGlobalLayoutListener(pageLayoutChangeListener)
-    recyclerView.page.viewTreeObserver.removeOnPreDrawListener(pagePreDrawListener)
+    recyclerView.page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
+    recyclerView.page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
     tintAnimator.cancel()
   }
 
