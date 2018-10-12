@@ -11,7 +11,7 @@ internal class PageLocationChangeDetector(
 
   private var lastTranslationY = 0F
   private var lastClippedDimens = Rect()
-  private var lastState = ExpandablePageLayout.PageState.COLLAPSED
+  private var lastState = page.currentState
 
   override fun onPreDraw(): Boolean {
     dispatchCallbackIfNeeded()
