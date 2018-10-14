@@ -43,8 +43,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   val pullToCollapseListener: PullToCollapseListener
   lateinit var currentState: PageState
 
-  internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks? = null
-  private var internalStateCallbacksForNestedPage: InternalPageCallbacks? = null
+  internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks = InternalPageCallbacks.NoOp()
+  private var internalStateCallbacksForNestedPage: InternalPageCallbacks = InternalPageCallbacks.NoOp()
   private var stateChangeCallbacks: MutableList<PageStateChangeCallbacks> = ArrayList(4)
 
   private var nestedPage: ExpandablePageLayout? = null
@@ -405,7 +405,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   fun setNestedExpandablePage(nestedPage: ExpandablePageLayout) {
     val old = this.nestedPage
     if (old != null) {
-      old.internalStateCallbacksForNestedPage = null
+      old.internalStateCallbacksForNestedPage = InternalPageCallbacks.NoOp()
     }
 
     this.nestedPage = nestedPage
@@ -464,30 +464,18 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   private fun dispatchOnPagePullCallbacks(deltaY: Float) {
-    if (internalStateCallbacksForNestedPage != null) {
-      internalStateCallbacksForNestedPage!!.onPagePull(deltaY)
-    }
-    if (internalStateCallbacksForRecyclerView != null) {
-      internalStateCallbacksForRecyclerView!!.onPagePull(deltaY)
-    }
+    internalStateCallbacksForNestedPage.onPagePull(deltaY)
+    internalStateCallbacksForRecyclerView.onPagePull(deltaY)
   }
 
   private fun dispatchOnPageReleaseCallback(collapseEligible: Boolean) {
-    if (internalStateCallbacksForNestedPage != null) {
-      internalStateCallbacksForNestedPage!!.onPageRelease(collapseEligible)
-    }
-    if (internalStateCallbacksForRecyclerView != null) {
-      internalStateCallbacksForRecyclerView!!.onPageRelease(collapseEligible)
-    }
+    internalStateCallbacksForNestedPage.onPageRelease(collapseEligible)
+    internalStateCallbacksForRecyclerView.onPageRelease(collapseEligible)
   }
 
   private fun dispatchOnPageAboutToExpandCallback(expandAnimDuration: Long) {
-    if (internalStateCallbacksForNestedPage != null) {
-      internalStateCallbacksForNestedPage!!.onPageAboutToExpand()
-    }
-    if (internalStateCallbacksForRecyclerView != null) {
-      internalStateCallbacksForRecyclerView!!.onPageAboutToExpand()
-    }
+    internalStateCallbacksForNestedPage.onPageAboutToExpand()
+    internalStateCallbacksForRecyclerView.onPageAboutToExpand()
 
     for (i in stateChangeCallbacks.indices.reversed()) {
       stateChangeCallbacks[i].onPageAboutToExpand(expandAnimDuration)
@@ -517,21 +505,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * usually when the user is pulling the page.
    */
   private fun dispatchOnPageFullyCoveredCallback() {
-    if (internalStateCallbacksForNestedPage != null) {
-      internalStateCallbacksForNestedPage!!.onPageFullyCovered()
-    }
-    if (internalStateCallbacksForRecyclerView != null) {
-      internalStateCallbacksForRecyclerView!!.onPageFullyCovered()
-    }
+    internalStateCallbacksForNestedPage.onPageFullyCovered()
+    internalStateCallbacksForRecyclerView.onPageFullyCovered()
   }
 
   private fun dispatchOnPageAboutToCollapseCallback() {
-    if (internalStateCallbacksForNestedPage != null) {
-      internalStateCallbacksForNestedPage!!.onPageAboutToCollapse()
-    }
-    if (internalStateCallbacksForRecyclerView != null) {
-      internalStateCallbacksForRecyclerView!!.onPageAboutToCollapse()
-    }
+    internalStateCallbacksForNestedPage.onPageAboutToCollapse()
+    internalStateCallbacksForRecyclerView.onPageAboutToCollapse()
 
     for (i in stateChangeCallbacks.indices.reversed()) {
       stateChangeCallbacks[i].onPageAboutToCollapse(animationDurationMillis)
@@ -547,12 +527,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private fun dispatchOnPageCollapsedCallback() {
     changeState(PageState.COLLAPSED)
 
-    if (internalStateCallbacksForNestedPage != null) {
-      internalStateCallbacksForNestedPage!!.onPageCollapsed()
-    }
-    if (internalStateCallbacksForRecyclerView != null) {
-      internalStateCallbacksForRecyclerView!!.onPageCollapsed()
-    }
+    internalStateCallbacksForNestedPage.onPageCollapsed()
+    internalStateCallbacksForRecyclerView.onPageCollapsed()
 
     for (i in stateChangeCallbacks.indices.reversed()) {
       stateChangeCallbacks[i].onPageCollapsed()

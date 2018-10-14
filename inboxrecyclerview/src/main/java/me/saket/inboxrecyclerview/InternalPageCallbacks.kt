@@ -22,4 +22,19 @@ internal interface InternalPageCallbacks {
 
   /** Called when this page was released after being pulled. */
   fun onPageRelease(collapseEligible: Boolean)
+
+  class NoOp : InternalPageCallbacks {
+
+    override fun onPageAboutToExpand() {}
+
+    override fun onPageFullyCovered() {}
+
+    override fun onPageAboutToCollapse() {}
+
+    override fun onPageCollapsed() {}
+
+    override fun onPagePull(deltaY: Float) {}
+
+    override fun onPageRelease(collapseEligible: Boolean) {}
+  }
 }
