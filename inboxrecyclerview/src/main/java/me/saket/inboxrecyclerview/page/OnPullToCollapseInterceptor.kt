@@ -20,3 +20,5 @@ package me.saket.inboxrecyclerview.page
  * @return True to consume this touch event. False otherwise.
  */
 typealias OnPullToCollapseInterceptor = (downX: Float, downY: Float, upwardPull: Boolean) -> InterceptResult
+
+val IGNORE_ALL_PULL_TO_COLLAPSE_INTERCEPTOR : OnPullToCollapseInterceptor = { _, _, _ -> InterceptResult.IGNORED }
