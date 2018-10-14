@@ -16,7 +16,6 @@ import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.executeOnMeasure
 import me.saket.inboxrecyclerview.withEndAction
 import java.lang.reflect.Method
-import java.util.ArrayList
 
 /**
  * An expandable / collapsible layout for use with a [InboxRecyclerView].
@@ -46,7 +45,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks? = null
   private var internalStateCallbacksForNestedPage: InternalPageCallbacks? = null
-  private var stateChangeCallbacks: MutableList<PageStateChangeCallbacks>? = null
+  private var stateChangeCallbacks: MutableList<PageStateChangeCallbacks> = ArrayList(4)
 
   private var nestedPage: ExpandablePageLayout? = null
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
@@ -490,11 +489,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       internalStateCallbacksForRecyclerView!!.onPageAboutToExpand()
     }
 
-    if (stateChangeCallbacks != null) {
-      // Reverse loop to let listeners remove themselves while in the loop.
-      for (i in stateChangeCallbacks!!.indices.reversed()) {
-        stateChangeCallbacks!![i].onPageAboutToExpand(expandAnimDuration)
-      }
+    for (i in stateChangeCallbacks.indices.reversed()) {
+      stateChangeCallbacks[i].onPageAboutToExpand(expandAnimDuration)
     }
 
     onPageAboutToExpand(animationDurationMillis)
@@ -508,11 +504,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     changeState(PageState.EXPANDED)
     dispatchOnPageFullyCoveredCallback()
 
-    if (stateChangeCallbacks != null) {
-      // Reverse loop to let listeners remove themselves while in the loop.
-      for (i in stateChangeCallbacks!!.indices.reversed()) {
-        stateChangeCallbacks!![i].onPageExpanded()
-      }
+    for (i in stateChangeCallbacks.indices.reversed()) {
+      stateChangeCallbacks[i].onPageExpanded()
     }
 
     onPageExpanded()
@@ -540,12 +533,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       internalStateCallbacksForRecyclerView!!.onPageAboutToCollapse()
     }
 
-    if (stateChangeCallbacks != null) {
-      // Reverse loop to let listeners remove themselves while in the loop.
-      for (i in stateChangeCallbacks!!.indices.reversed()) {
-        val callback = stateChangeCallbacks!![i]
-        callback.onPageAboutToCollapse(animationDurationMillis)
-      }
+    for (i in stateChangeCallbacks.indices.reversed()) {
+      stateChangeCallbacks[i].onPageAboutToCollapse(animationDurationMillis)
     }
 
     onPageAboutToCollapse(animationDurationMillis)
@@ -565,12 +554,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       internalStateCallbacksForRecyclerView!!.onPageCollapsed()
     }
 
-    if (stateChangeCallbacks != null) {
-      // Reverse loop to let listeners remove themselves while in the loop.
-      for (i in stateChangeCallbacks!!.indices.reversed()) {
-        val callback = stateChangeCallbacks!![i]
-        callback.onPageCollapsed()
-      }
+    for (i in stateChangeCallbacks.indices.reversed()) {
+      stateChangeCallbacks[i].onPageCollapsed()
     }
     onPageCollapsed()
   }
@@ -630,14 +615,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   fun addStateChangeCallbacks(callbacks: PageStateChangeCallbacks) {
-    if (this.stateChangeCallbacks == null) {
-      this.stateChangeCallbacks = ArrayList(4)
-    }
-    stateChangeCallbacks!!.add(callbacks)
+    stateChangeCallbacks.add(callbacks)
   }
 
   fun removeStateChangeCallbacks(callbacks: PageStateChangeCallbacks) {
-    stateChangeCallbacks!!.remove(callbacks)
+    stateChangeCallbacks.remove(callbacks)
   }
 
   /**
