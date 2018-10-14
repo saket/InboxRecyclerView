@@ -20,6 +20,10 @@ FYI, `InboxRecyclerView` has a dependency on `androidx`. If you haven't [migrate
   android:layout_height="match_parent" />
 
 <!--
+  This is where your expandable content will be present. One
+  way of using it would be to add a Fragment inside the layout
+  and update it when any list item is clicked.
+
   It's recommended that the content page has a higher z-index
   than the list. This can be achieved by either giving it a
   higher view position or a higher elevation.
