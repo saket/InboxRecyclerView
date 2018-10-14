@@ -80,11 +80,11 @@ class InboxRecyclerView(
   }
 
   override fun onDetachedFromWindow() {
-    super.onDetachedFromWindow()
     if (pageSetupDone) {
       itemExpandAnimator.onDetachRecyclerView(this)
       tintPainter.onDetachRecyclerView(this)
     }
+    super.onDetachedFromWindow()
   }
 
   /**

@@ -30,7 +30,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /** Alpha of this page when it's collapsed. */
   internal var collapsedAlpha = 0F
 
-  var pullToCollapseInterceptor: OnPullToCollapseInterceptor = { _, _, _ -> InterceptResult.IGNORED }
+  var pullToCollapseInterceptor: OnPullToCollapseInterceptor = IGNORE_ALL_PULL_TO_COLLAPSE_INTERCEPTOR
 
   /** Minimum Y-distance the page has to be pulled before it's eligible for collapse. */
   var pullToCollapseThresholdDistance: Int
@@ -100,6 +100,16 @@ open class ExpandablePageLayout @JvmOverloads constructor(
         setSuppressLayoutMethodUsingReflection(this, false)
       }
     }.start()
+  }
+
+  override fun onDetachedFromWindow() {
+    pullToCollapseInterceptor = IGNORE_ALL_PULL_TO_COLLAPSE_INTERCEPTOR
+    parentToolbar = null
+    nestedPage = null
+    internalStateCallbacksForNestedPage = InternalPageCallbacks.NoOp()
+    internalStateCallbacksForRecyclerView = InternalPageCallbacks.NoOp()
+    stateChangeCallbacks.clear()
+    super.onDetachedFromWindow()
   }
 
   private fun changeState(newPageState: PageState) {
