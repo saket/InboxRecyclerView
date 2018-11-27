@@ -6,13 +6,38 @@
   android:layout_height="match_parent"
   tools:context="me.saket.inboxrecyclerview.sample.inbox.InboxActivity">
 
-  <me.saket.inboxrecyclerview.InboxRecyclerView
-    android:id="@+id/inbox_recyclerview"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:paddingBottom="@dimen/bottom_spacing_for_bottomappbar"
-    android:paddingTop="@dimen/emailthread_item_vertical_margin" />
+
+  <androidx.core.widget.NestedScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="32dp"
+            android:text="REPLY" />
+      </androidx.constraintlayout.widget.ConstraintLayout>
+
+      <me.saket.inboxrecyclerview.InboxRecyclerView
+          android:id="@+id/inbox_recyclerview"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:clipToPadding="false"
+          android:paddingTop="@dimen/emailthread_item_vertical_margin"
+          android:paddingBottom="@dimen/bottom_spacing_for_bottomappbar" />
+    </LinearLayout>
+  </androidx.core.widget.NestedScrollView>
 
   <me.saket.inboxrecyclerview.page.ExpandablePageLayout
     android:id="@+id/inbox_email_thread_page"

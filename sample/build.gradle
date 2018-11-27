@@ -49,4 +49,5 @@ dependencies {
   implementation 'me.saket:better-link-movement-method:2.2.0'
   debugImplementation "com.squareup.leakcanary:leakcanary-android:$versions.leakcanary"
   releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$versions.leakcanary"
+  implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 }
