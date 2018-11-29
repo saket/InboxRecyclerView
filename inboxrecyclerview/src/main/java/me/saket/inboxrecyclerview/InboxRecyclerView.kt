@@ -205,7 +205,7 @@ class InboxRecyclerView(
     if (immediate) {
       page.expandImmediately()
     } else {
-      page.expand(expandedItem)
+      page.expand(expandedItem, this)
     }
   }
 
@@ -230,7 +230,7 @@ class InboxRecyclerView(
     if (immediate) {
       page.expandImmediately()
     } else {
-      page.expand(expandedItem)
+      page.expand(expandedItem, this)
     }
   }
 

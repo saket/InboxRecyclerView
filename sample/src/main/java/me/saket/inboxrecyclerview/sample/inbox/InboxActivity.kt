@@ -10,6 +10,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxrelay2.PublishRelay
 import kotterknife.bindView
 import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.animation.NestedExpandAnimator
 import me.saket.inboxrecyclerview.dimming.TintPainter
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
@@ -18,6 +19,7 @@ import me.saket.inboxrecyclerview.sample.R
 import me.saket.inboxrecyclerview.sample.about.AboutActivity
 import me.saket.inboxrecyclerview.sample.email.EmailThreadFragment
 import me.saket.inboxrecyclerview.sample.widgets.ReversibleAnimatedVectorDrawable
+import timber.log.Timber
 
 class InboxActivity : AppCompatActivity() {
 
@@ -59,6 +61,7 @@ class InboxActivity : AppCompatActivity() {
     recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.setExpandablePage(emailPageLayout)
     recyclerView.tintPainter = TintPainter.uncoveredArea(color = Color.WHITE, opacity = 0.65F)
+    recyclerView.itemExpandAnimator = NestedExpandAnimator()
 
     threadsAdapter.submitList(EmailRepository.threads())
     recyclerView.adapter = threadsAdapter

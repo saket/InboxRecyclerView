@@ -39,5 +39,6 @@ abstract class ItemExpandAnimator {
      */
     @JvmStatic
     fun split() = SplitExpandAnimator()
+    fun nested() = NestedExpandAnimator()
   }
 }
