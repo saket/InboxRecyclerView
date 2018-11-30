@@ -33,11 +33,12 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
             return
         }
 
+
         val (anchorIndex) = recyclerView.expandedItem
         val anchorView: View? = recyclerView.getChildAt(anchorIndex)
 
-        val pageTop = page.translationY - recyclerView.top
-        val pageBottom = page.translationY + page.clippedDimens.height() - recyclerView.top
+        val pageTop = page.translationY - recyclerView.top + nest.scrollY
+        val pageBottom = page.translationY + page.clippedDimens.height() - recyclerView.top + nest.scrollY
 
         // Move the RecyclerView rows with the page.
         if (anchorView != null) {

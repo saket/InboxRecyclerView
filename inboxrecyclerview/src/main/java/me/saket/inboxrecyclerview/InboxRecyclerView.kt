@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import androidx.annotation.Px
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
@@ -195,9 +196,16 @@ class InboxRecyclerView(
     }
 
     val itemViewPosition = indexOfChild(itemView)
+    val nest = parent.parent;
+    var scrollExtra = 0;
+    if(nest is NestedScrollView){
+      scrollExtra = nest.scrollY
+      isNestedScrollingEnabled = true
+    }
+
     val itemRect = Rect(
         left + itemView.left,
-        top + itemView.top,
+        top + itemView.top ,
         width - right + itemView.right,
         top + itemView.bottom)
 
@@ -205,8 +213,11 @@ class InboxRecyclerView(
     if (immediate) {
       page.expandImmediately()
     } else {
-      page.expand(expandedItem, this)
+      page.expand(expandedItem, scrollExtra)
     }
+
+    Timber.i("Top: " + itemRect.left + ", Bottom: " + itemRect.bottom)
+
   }
 
   /**
@@ -230,7 +241,7 @@ class InboxRecyclerView(
     if (immediate) {
       page.expandImmediately()
     } else {
-      page.expand(expandedItem, this)
+      page.expand(expandedItem, top)
     }
   }
 

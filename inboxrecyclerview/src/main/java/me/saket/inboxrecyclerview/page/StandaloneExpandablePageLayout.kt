@@ -61,7 +61,7 @@ class StandaloneExpandablePageLayout(
    */
   internal fun expandFrom(fromShapeRect: Rect) {
     setClippedDimensions(width, 0)
-    expand(InboxRecyclerView.ExpandedItem(-1, -1, fromShapeRect))
+    expand(InboxRecyclerView.ExpandedItem(-1, -1, fromShapeRect), 0)
   }
 
   /**

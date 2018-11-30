@@ -9,12 +9,9 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.Nullable
 import androidx.appcompat.widget.Toolbar
-import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
-import me.saket.inboxrecyclerview.InboxRecyclerView
-import me.saket.inboxrecyclerview.InternalPageCallbacks
-import me.saket.inboxrecyclerview.executeOnMeasure
-import me.saket.inboxrecyclerview.withEndAction
+import me.saket.inboxrecyclerview.*
 import java.lang.reflect.Method
 
 /**
@@ -207,7 +204,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Expands this page (with animation) so that it fills the whole screen.
    */
-  internal fun expand(expandedItem: InboxRecyclerView.ExpandedItem) {
+  internal fun expand(expandedItem: InboxRecyclerView.ExpandedItem, recyclerViewTop: Int) {
     if (isLaidOut.not() && visibility != View.GONE) {
       throw IllegalAccessError("Width / Height not available to expand")
     }
@@ -218,7 +215,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
 
     // Place the expandable page on top of the expanding item.
-    alignPageWithExpandingItem(expandedItem)
+    alignPageWithExpandingItem(expandedItem, recyclerViewTop)
 
     // Callbacks, just before the animation starts.
     dispatchOnPageAboutToExpandCallback(animationDurationMillis)
@@ -272,13 +269,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Place the expandable page exactly on top of the expanding item.
    */
-  private fun alignPageWithExpandingItem(expandedItem: InboxRecyclerView.ExpandedItem) {
+  private fun alignPageWithExpandingItem(expandedItem: InboxRecyclerView.ExpandedItem, scrollAmount: Int) {
     // Match height and location.
     setClippedDimensions(
         expandedItem.expandedItemLocationRect.width(),
         expandedItem.expandedItemLocationRect.height()
     )
-    translationY = expandedItem.expandedItemLocationRect.top.toFloat()
+    translationY = (expandedItem.expandedItemLocationRect.top - scrollAmount).toFloat()
   }
 
   internal fun alignPageToCoverScreen() {
