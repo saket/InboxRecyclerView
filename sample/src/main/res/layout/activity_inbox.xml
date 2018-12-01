@@ -32,7 +32,7 @@
       <me.saket.inboxrecyclerview.InboxRecyclerView
           android:id="@+id/inbox_recyclerview"
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_height="wrap_content"
           android:clipToPadding="false"
           android:paddingTop="@dimen/emailthread_item_vertical_margin"
           android:paddingBottom="@dimen/bottom_spacing_for_bottomappbar" />

@@ -1,7 +1,11 @@
 package me.saket.inboxrecyclerview.animation
 
 import android.view.View
+import android.widget.LinearLayout
 import androidx.core.widget.NestedScrollView
+import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.Timber
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
  * When the page is expanding, this pushes all RecyclerView items out of the Window.
@@ -40,17 +44,18 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
         val pageTop = page.translationY - recyclerView.top + nest.scrollY
         val pageBottom = page.translationY + page.clippedDimens.height() - recyclerView.top + nest.scrollY
 
+
         // Move the RecyclerView rows with the page.
         if (anchorView != null) {
             val distanceExpandedTowardsTop = pageTop - anchorView.top
             val distanceExpandedTowardsBottom = pageBottom - anchorView.bottom
-            moveListItems(anchorIndex, distanceExpandedTowardsTop, distanceExpandedTowardsBottom, nest)
+            moveListItems(anchorIndex, distanceExpandedTowardsTop, distanceExpandedTowardsBottom, nest, page)
 
 
         } else {
             // Anchor View can be null when the page was expanded from
             // an arbitrary location. See InboxRecyclerView#expandFromTop().
-            moveListItems(anchorIndex, 0F, pageBottom, nest)
+            moveListItems(anchorIndex, 0F, pageBottom, nest, page)
         }
 
         // Fade in the anchor row with the expanding/collapsing page.
@@ -66,7 +71,7 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
         anchorView.alpha = 1F - expandRatio
     }
 
-    open fun moveListItems(anchorIndex: Int, distanceExpandedTowardsTop: Float, distanceExpandedTowardsBottom: Float, nest: NestedScrollView) {
+    open fun moveListItems(anchorIndex: Int, distanceExpandedTowardsTop: Float, distanceExpandedTowardsBottom: Float, nest: NestedScrollView, page: ExpandablePageLayout) {
         recyclerView.apply {
             for (childIndex in 0 until childCount) {
                 getChildAt(childIndex).translationY = when {
@@ -75,5 +80,9 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
                 }
             }
         }
+       nest.apply {
+           scrollY -= distanceExpandedTowardsTop.toInt()
+        }
+
     }
 }
