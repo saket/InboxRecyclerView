@@ -15,6 +15,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
+import me.saket.inboxrecyclerview.animation.NestedExpandAnimator
 import me.saket.inboxrecyclerview.dimming.TintPainter
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
@@ -60,6 +61,7 @@ class InboxRecyclerView(
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
+  private var isNested: Boolean = false
   private val restorer = StateRestorer(this)
 
   init {
@@ -196,9 +198,12 @@ class InboxRecyclerView(
     }
 
     val itemViewPosition = indexOfChild(itemView)
-    val nest = parent.parent;
-    var scrollExtra = 0;
-    if(nest is NestedScrollView){
+
+
+    var scrollExtra = 0
+
+    if(isNested) {
+      val nest: NestedScrollView = (parent.parent as NestedScrollView)
       scrollExtra = nest.scrollY
       isNestedScrollingEnabled = true
     }
@@ -252,6 +257,13 @@ class InboxRecyclerView(
       page.collapse(expandedItem)
     }
   }
+
+  fun setNested(boolean: Boolean = true){
+      isNested = boolean
+      if(boolean)
+        itemExpandAnimator = NestedExpandAnimator()
+  }
+
 
   override fun onPageAboutToExpand() {
     isLayoutFrozen = true
