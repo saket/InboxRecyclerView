@@ -89,11 +89,7 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
             }
         }
         nest.getChildAt(0).apply {
-            when(page.isExpandedOrExpanding) {
-                true -> translationY = distanceExpandedTowardsTop
-                false -> translationY = if (distanceExpandedTowardsTop <= 0)  distanceExpandedTowardsTop else 0f
-            }
-
+                translationY = distanceExpandedTowardsTop
         }
 
 
