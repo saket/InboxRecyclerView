@@ -269,13 +269,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Place the expandable page exactly on top of the expanding item.
    */
-  private fun alignPageWithExpandingItem(expandedItem: InboxRecyclerView.ExpandedItem, scrollOffset: Int) {
+  private fun alignPageWithExpandingItem(expandedItem: InboxRecyclerView.ExpandedItem, nestedOffset: Int) {
     // Match height and location.
     setClippedDimensions(
         expandedItem.expandedItemLocationRect.width(),
         expandedItem.expandedItemLocationRect.height()
     )
-    translationY = (expandedItem.expandedItemLocationRect.top - scrollOffset).toFloat()
+    translationY = (expandedItem.expandedItemLocationRect.top - nestedOffset).toFloat()
   }
 
   internal fun alignPageToCoverScreen() {
