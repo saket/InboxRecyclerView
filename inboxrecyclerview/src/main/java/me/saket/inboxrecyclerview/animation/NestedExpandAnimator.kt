@@ -51,7 +51,6 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
             pageTop += nest.scrollY
             pageBottom += nest.scrollY
         }
-        Log.d("NestedTranslation", "pageTop: $pageTop, pageBottom: $pageBottom")
 
 
 
@@ -91,13 +90,10 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
         }
         nest.getChildAt(0).apply {
             when(page.isExpandedOrExpanding) {
-                true->translationY = distanceExpandedTowardsTop
-                false->if( distanceExpandedTowardsTop<=0) translationY = distanceExpandedTowardsTop
+                true -> translationY = distanceExpandedTowardsTop
+                false -> translationY = if (distanceExpandedTowardsTop <= 0)  distanceExpandedTowardsTop else 0f
             }
 
-
-
-            Log.d("NestedTranslation", "Y: $translationY, distanceExpandedTowardsTop: $distanceExpandedTowardsTop")
         }
 
 

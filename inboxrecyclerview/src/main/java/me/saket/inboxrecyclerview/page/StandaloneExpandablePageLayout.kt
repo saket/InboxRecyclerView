@@ -68,6 +68,6 @@ class StandaloneExpandablePageLayout(
    * @param toShapeRect Final dimensions of this page, when it fully collapses.
    */
   internal fun collapseTo(toShapeRect: Rect) {
-    collapse(InboxRecyclerView.ExpandedItem(-1, -1, toShapeRect))
+    collapse(InboxRecyclerView.ExpandedItem(-1, -1, toShapeRect), 0)
   }
 }

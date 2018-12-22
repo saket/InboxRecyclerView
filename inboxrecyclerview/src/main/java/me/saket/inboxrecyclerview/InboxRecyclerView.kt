@@ -131,7 +131,7 @@ class InboxRecyclerView(
     if (pageSetupDone) {
       executeOnNextLayout {
         if (page.currentState === ExpandablePageLayout.PageState.EXPANDING) {
-          page.animatePageExpandCollapse(true, width, height, expandedItem)
+          page.animatePageExpandCollapse(true, width, height, expandedItem, 0)
 
         } else if (page.currentState === ExpandablePageLayout.PageState.EXPANDED) {
           page.alignPageToCoverScreen()
@@ -253,9 +253,9 @@ class InboxRecyclerView(
 
   fun collapse() {
     ensureSetup()
-
+      val offset = if(isNested) (parent.parent as NestedScrollView).scrollY else 0
     if (page.isCollapsedOrCollapsing.not()) {
-      page.collapse(expandedItem)
+      page.collapse(expandedItem, offset)
     }
   }
 

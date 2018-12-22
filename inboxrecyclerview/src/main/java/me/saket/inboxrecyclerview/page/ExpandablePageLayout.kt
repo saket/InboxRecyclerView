@@ -221,7 +221,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     dispatchOnPageAboutToExpandCallback(animationDurationMillis)
 
     // Animate!
-    animatePageExpandCollapse(true, width, height, expandedItem)
+    animatePageExpandCollapse(true, width, height, expandedItem, 0)
   }
 
   /**
@@ -249,7 +249,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Collapses this page, back to its original state.
    */
-  internal fun collapse(expandedItem: InboxRecyclerView.ExpandedItem) {
+  internal fun collapse(expandedItem: InboxRecyclerView.ExpandedItem, offset: Int) {
     if (currentState == PageState.COLLAPSED || currentState == PageState.COLLAPSING) {
       return
     }
@@ -260,7 +260,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       // Page must have expanded immediately after a state restoration.
       targetWidth = width
     }
-    animatePageExpandCollapse(false, targetWidth, targetHeight, expandedItem)
+    animatePageExpandCollapse(false, targetWidth, targetHeight, expandedItem, offset)
 
     // Send state callbacks that the city is going to collapse.
     dispatchOnPageAboutToCollapseCallback()
@@ -283,8 +283,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     translationY = 0F
   }
 
-  internal fun animatePageExpandCollapse(expand: Boolean, targetWidth: Int, targetHeight: Int, expandedItem: InboxRecyclerView.ExpandedItem) {
-    var targetPageTranslationY = if (expand) 0F else expandedItem.expandedItemLocationRect.top.toFloat()
+  internal fun animatePageExpandCollapse(expand: Boolean, targetWidth: Int, targetHeight: Int, expandedItem: InboxRecyclerView.ExpandedItem, offset: Int) {
+    var targetPageTranslationY = if (expand) 0F else expandedItem.expandedItemLocationRect.top.toFloat() - offset
     val targetPageTranslationX = if (expand) 0F else expandedItem.expandedItemLocationRect.left.toFloat()
 
     // If there's no record about the expanded list item (from whose place this page was expanded),
