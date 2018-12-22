@@ -1,5 +1,6 @@
 package me.saket.inboxrecyclerview.animation
 
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import androidx.core.widget.NestedScrollView
@@ -18,7 +19,7 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
 
     override fun onPageMove() {
         val page = recyclerView.page
-        val nest = recyclerView.parent.parent;
+        val nest = recyclerView.parent.parent
 
         if(nest !is NestedScrollView){
             throw ClassCastException("InboxRecyclerView is not a direct child in a NestedScrollView; switch to SplitExpandAnimator or a custom ItemExpandAnimation")
@@ -41,8 +42,17 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
         val (anchorIndex) = recyclerView.expandedItem
         val anchorView: View? = recyclerView.getChildAt(anchorIndex)
 
-        val pageTop = page.translationY - recyclerView.top + nest.scrollY
-        val pageBottom = page.translationY + page.clippedDimens.height() - recyclerView.top + nest.scrollY
+        var pageTop = page.translationY - recyclerView.top
+        var pageBottom = page.translationY + page.clippedDimens.height() - recyclerView.top
+        if(page.isExpandedOrExpanding){
+            pageTop += nest.scrollY
+            pageBottom += nest.scrollY
+        }else{
+            pageTop += nest.scrollY
+            pageBottom += nest.scrollY
+        }
+        Log.d("NestedTranslation", "pageTop: $pageTop, pageBottom: $pageBottom")
+
 
 
         // Move the RecyclerView rows with the page.
@@ -74,15 +84,22 @@ open class NestedExpandAnimator : ItemExpandAnimator() {
     open fun moveListItems(anchorIndex: Int, distanceExpandedTowardsTop: Float, distanceExpandedTowardsBottom: Float, nest: NestedScrollView, page: ExpandablePageLayout) {
         recyclerView.apply {
             for (childIndex in 0 until childCount) {
-                getChildAt(childIndex).translationY = when {
-                    childIndex <= anchorIndex -> distanceExpandedTowardsTop
-                    else -> distanceExpandedTowardsBottom
+                when(childIndex > anchorIndex) {
+                    true->getChildAt(childIndex).translationY = distanceExpandedTowardsBottom + -distanceExpandedTowardsTop
                 }
             }
         }
-       nest.apply {
-           scrollY -= distanceExpandedTowardsTop.toInt()
+        nest.getChildAt(0).apply {
+            when(page.isExpandedOrExpanding) {
+                true->translationY = distanceExpandedTowardsTop
+                false->if( distanceExpandedTowardsTop<=0) translationY = distanceExpandedTowardsTop
+            }
+
+
+
+            Log.d("NestedTranslation", "Y: $translationY, distanceExpandedTowardsTop: $distanceExpandedTowardsTop")
         }
+
 
     }
 }

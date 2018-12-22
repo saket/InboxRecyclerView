@@ -62,6 +62,7 @@ class InboxRecyclerView(
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
   private var isNested: Boolean = false
+  var scrollRestore: Int = 0
   private val restorer = StateRestorer(this)
 
   init {
@@ -267,15 +268,20 @@ class InboxRecyclerView(
 
   override fun onPageAboutToExpand() {
     isLayoutFrozen = true
+    if(isNested){
+      scrollRestore = (parent.parent as NestedScrollView).scrollY
+    }
   }
 
   override fun onPageAboutToCollapse() {
     isLayoutFrozen = false
     onPageBackgroundVisible()
+    Timber.i("AboutToCollapse Scroll Amount: ${(parent.parent as NestedScrollView).scrollY}")
   }
 
   override fun onPageCollapsed() {
     expandedItem = ExpandedItem.EMPTY
+    Timber.i("Collapsed Scroll Amount: ${(parent.parent as NestedScrollView).scrollY}")
   }
 
   override fun onPagePull(deltaY: Float) {
