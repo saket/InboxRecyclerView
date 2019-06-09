@@ -87,6 +87,7 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
 
     if (pullCollapsibleEnabled) {
       pageLayout.pullToCollapseThresholdDistance = standardToolbarHeight
+      val superFinish = { super.finish() }
       pageLayout.callbacks = object : StandaloneExpandablePageLayout.Callbacks {
         override fun onPageRelease(collapseEligible: Boolean) {
           if (collapseEligible) {
@@ -140,12 +141,6 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
     } else {
       super.finish()
     }
-  }
-
-  // Not sure how to inline this function in the call site.
-  // Someone with better Kotlin skills, please help?
-  private fun superFinish() {
-    super.finish()
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
