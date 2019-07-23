@@ -30,7 +30,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /** Alpha of this page when it's collapsed. */
   internal var collapsedAlpha = 0F
 
-  var pullToCollapseInterceptor: OnPullToCollapseInterceptor = IGNORE_ALL_PULL_TO_COLLAPSE_INTERCEPTOR
+  var pullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
 
   /** Minimum Y-distance the page has to be pulled before it's eligible for collapse. */
   var pullToCollapseThresholdDistance: Int
@@ -103,7 +103,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   override fun onDetachedFromWindow() {
-    pullToCollapseInterceptor = IGNORE_ALL_PULL_TO_COLLAPSE_INTERCEPTOR
+    pullToCollapseInterceptor = null
     parentToolbar = null
     nestedPage = null
     internalStateCallbacksForNestedPage = InternalPageCallbacks.NoOp()
@@ -576,7 +576,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   internal fun handleOnPullToCollapseIntercept(event: MotionEvent, downX: Float, downY: Float, deltaUpwardSwipe: Boolean): InterceptResult {
     val nestedPageCopy = nestedPage
 
-    return if (nestedPageCopy != null
+    if (nestedPageCopy != null
         && nestedPageCopy.isExpandedOrExpanding
         && nestedPageCopy.clippedDimens.contains(downX.toInt(), downY.toInt())) {
       // Block this pull if it was made inside a nested page. Let the nested
@@ -584,10 +584,15 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       // in the future to make this smarter.
       // TODO: 20/03/17 Do we even need to call the nested page's listener?
       nestedPageCopy.handleOnPullToCollapseIntercept(event, downX, downY, deltaUpwardSwipe)
-      InterceptResult.INTERCEPTED
+      return InterceptResult.INTERCEPTED
 
-    } else run {
-      pullToCollapseInterceptor(downX, downY, deltaUpwardSwipe)
+    } else {
+      val interceptor = pullToCollapseInterceptor
+
+      return when {
+        interceptor != null -> interceptor(downX, downY, deltaUpwardSwipe)
+        else -> InterceptResult.IGNORED
+      }
     }
   }
 
