@@ -103,9 +103,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   override fun onDetachedFromWindow() {
-    pullToCollapseInterceptor = null
     parentToolbar = null
     nestedPage = null
+    pullToCollapseInterceptor = null
+    pullToCollapseListener.removeAllOnPullListeners()
     internalStateCallbacksForNestedPage = InternalPageCallbacks.NoOp()
     internalStateCallbacksForRecyclerView = InternalPageCallbacks.NoOp()
     stateChangeCallbacks.clear()
