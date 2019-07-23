@@ -7,12 +7,15 @@ import android.view.View
 import android.view.ViewConfiguration
 import java.util.ArrayList
 
-class PullToCollapseListener(context: Context, private val expandablePage: ExpandablePageLayout) : View.OnTouchListener {
+class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) : View.OnTouchListener {
+
+  @Deprecated(message = "Passing context is no longer needed")
+  constructor(context: Context, expandablePage: ExpandablePageLayout) : this(expandablePage)
 
   /** Minimum Y-distance the page has to be pulled before it's eligible for collapse. */
   var collapseDistanceThreshold: Int = 0
 
-  private val touchSlop: Int = ViewConfiguration.get(context).scaledTouchSlop
+  private val touchSlop: Int = ViewConfiguration.get(expandablePage.context).scaledTouchSlop
   private val onPullListeners = ArrayList<OnPullListener>(3)
   private var downX: Float = 0F
   private var downY: Float = 0F
