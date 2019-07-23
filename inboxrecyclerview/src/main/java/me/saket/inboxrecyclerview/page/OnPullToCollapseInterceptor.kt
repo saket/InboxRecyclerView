@@ -21,4 +21,8 @@ package me.saket.inboxrecyclerview.page
  */
 typealias OnPullToCollapseInterceptor = (downX: Float, downY: Float, upwardPull: Boolean) -> InterceptResult
 
+@Deprecated(
+    message = "ExpandablePageLayout#pullToCollapseInterceptor is now nullable so this is no longer required",
+    replaceWith = ReplaceWith("null")
+)
 val IGNORE_ALL_PULL_TO_COLLAPSE_INTERCEPTOR : OnPullToCollapseInterceptor = { _, _, _ -> InterceptResult.IGNORED }
