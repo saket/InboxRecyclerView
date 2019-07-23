@@ -56,6 +56,10 @@ class PullToCollapseListener(context: Context, private val expandablePage: Expan
     onPullListeners.remove(listener)
   }
 
+  fun removeAllOnPullListeners() {
+    onPullListeners.clear()
+  }
+
   @SuppressLint("ClickableViewAccessibility")
   override fun onTouch(v: View, event: MotionEvent): Boolean {
     when (event.actionMasked) {
