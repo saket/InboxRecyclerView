@@ -64,13 +64,14 @@ class EmailThreadFragment : Fragment() {
     emailThreadPage.pullToCollapseInterceptor = { downX, downY, upwardPull ->
       if (scrollableContainer.globalVisibleRect().contains(downX, downY).not()) {
         InterceptResult.IGNORED
-      }
 
-      val directionInt = if (upwardPull) +1 else -1
-      val canScrollFurther = scrollableContainer.canScrollVertically(directionInt)
-      when {
-        canScrollFurther -> InterceptResult.INTERCEPTED
-        else -> InterceptResult.IGNORED
+      } else {
+        val directionInt = if (upwardPull) +1 else -1
+        val canScrollFurther = scrollableContainer.canScrollVertically(directionInt)
+        when {
+          canScrollFurther -> InterceptResult.INTERCEPTED
+          else -> InterceptResult.IGNORED
+        }
       }
     }
 
