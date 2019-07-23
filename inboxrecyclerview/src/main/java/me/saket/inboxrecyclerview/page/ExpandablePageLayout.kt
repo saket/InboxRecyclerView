@@ -87,7 +87,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     changeState(PageState.COLLAPSED)
 
     pullToCollapseEnabled = true
-    pullToCollapseListener = PullToCollapseListener(getContext(), this)
+    pullToCollapseListener = PullToCollapseListener(this)
     pullToCollapseListener.addOnPullListener(this)
   }
 
