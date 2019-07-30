@@ -111,6 +111,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForNestedPage = InternalPageCallbacks.NoOp()
     internalStateCallbacksForRecyclerView = InternalPageCallbacks.NoOp()
     stateChangeCallbacks.clear()
+    stopAnyOngoingPageAnimation()
     super.onDetachedFromWindow()
   }
 
