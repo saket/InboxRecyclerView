@@ -173,7 +173,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   override fun onRelease(collapseEligible: Boolean) {
     dispatchOnPageReleaseCallback(collapseEligible)
 
-    if (!collapseEligible.not()) {  // TODO: remove double negation.
+    if (collapseEligible) {
       return
     }
 
