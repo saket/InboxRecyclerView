@@ -20,7 +20,7 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 /**
  * A RecyclerView where items can expand and collapse to and from an [ExpandablePageLayout].
  */
-class InboxRecyclerView(
+open class InboxRecyclerView(
     context: Context,
     attrs: AttributeSet
 ) : ScrollSuppressibleRecyclerView(context, attrs), InternalPageCallbacks {
