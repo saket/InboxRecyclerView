@@ -87,7 +87,6 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
 
     if (pullCollapsibleEnabled) {
       pageLayout.pullToCollapseThresholdDistance = standardToolbarHeight
-      val superFinish = { super.finish() }
       pageLayout.callbacks = object : StandaloneExpandablePageLayout.Callbacks {
         override fun onPageRelease(collapseEligible: Boolean) {
           if (collapseEligible) {
@@ -96,7 +95,7 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
         }
 
         override fun onPageCollapsed() {
-          superFinish()
+          super@PullCollapsibleActivity.finish()
           overridePendingTransition(0, 0)
         }
       }
