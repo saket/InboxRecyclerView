@@ -25,7 +25,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener {
 
-  var parentToolbar: View? = null
+  /** See [pushParentToolbarOnExpand]. */
+  private var parentToolbar: View? = null
 
   /** Alpha of this page when it's collapsed. */
   internal var collapsedAlpha = 0F
