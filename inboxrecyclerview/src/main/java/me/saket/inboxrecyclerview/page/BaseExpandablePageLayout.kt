@@ -43,6 +43,11 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     }
   }
 
+  override fun onDetachedFromWindow() {
+    dimensionAnimator.cancel()
+    super.onDetachedFromWindow()
+  }
+
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
 
