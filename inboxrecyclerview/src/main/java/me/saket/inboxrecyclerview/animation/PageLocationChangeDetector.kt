@@ -5,8 +5,8 @@ import android.view.ViewTreeObserver
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 internal class PageLocationChangeDetector(
-    private val page: ExpandablePageLayout,
-    private val changeListener: () -> Unit
+  private val page: ExpandablePageLayout,
+  private val changeListener: () -> Unit
 ) : ViewTreeObserver.OnPreDrawListener, ViewTreeObserver.OnGlobalLayoutListener {
 
   private var lastTranslationY = 0F
@@ -28,7 +28,7 @@ internal class PageLocationChangeDetector(
     val dimensionsChanged = lastClippedDimens != page.clippedDimens
     val stateChanged = lastState != page.currentState
 
-    if (page.isCollapsed.not() && (moved || dimensionsChanged || stateChanged)) {
+    if (moved || dimensionsChanged || stateChanged) {
       changeListener()
     }
 
