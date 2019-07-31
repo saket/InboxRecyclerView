@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InternalPageCallbacks
@@ -604,7 +603,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * bottom of the toolbar. When this page is collapsing or being pulled downwards.
    * the toolbar will be animated back to its position.
    */
-  fun pushParentToolbarOnExpand(toolbar: Toolbar) {
+  fun pushParentToolbarOnExpand(toolbar: View) {
     this.parentToolbar = toolbar
   }
 
