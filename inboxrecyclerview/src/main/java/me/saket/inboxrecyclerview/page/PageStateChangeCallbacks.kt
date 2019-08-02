@@ -5,11 +5,21 @@ package me.saket.inboxrecyclerview.page
  */
 interface PageStateChangeCallbacks {
 
-  fun onPageAboutToExpand(expandAnimDuration: Long)
+  fun onPageAboutToExpand(
+    page: ExpandablePageLayout,
+    expandAnimDuration: Long
+  )
 
-  fun onPageExpanded()
+  fun onPageExpanded(
+    page: ExpandablePageLayout
+  )
 
-  fun onPageAboutToCollapse(collapseAnimDuration: Long)
+  fun onPageAboutToCollapse(
+    page: ExpandablePageLayout,
+    collapseAnimDuration: Long
+  )
 
-  fun onPageCollapsed()
+  fun onPageCollapsed(
+    page: ExpandablePageLayout
+  )
 }

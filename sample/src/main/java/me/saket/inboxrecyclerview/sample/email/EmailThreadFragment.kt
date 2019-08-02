@@ -76,7 +76,7 @@ class EmailThreadFragment : Fragment() {
     }
 
     emailThreadPage.addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
-      override fun onPageCollapsed() {
+      override fun onPageCollapsed(page: ExpandablePageLayout) {
         scrollableContainer.scrollTo(0, 0)
       }
     })
