@@ -57,7 +57,7 @@ class InboxActivity : AppCompatActivity() {
 
   private fun setupThreadList() {
     recyclerView.layoutManager = LinearLayoutManager(this)
-    recyclerView.setExpandablePage(emailPageLayout)
+    recyclerView.expandablePage = emailPageLayout
     recyclerView.tintPainter = TintPainter.uncoveredArea(color = Color.WHITE, opacity = 0.65F)
 
     threadsAdapter.submitList(EmailRepository.threads())
