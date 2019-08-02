@@ -56,7 +56,26 @@ open class InboxRecyclerView(
   var expandedItem: ExpandedItem = ExpandedItem.EMPTY
 
   var page: ExpandablePageLayout? = null
-    private set
+    set(newPage) {
+      val oldPage = field
+      field = newPage
+
+      if (oldPage == null) {
+        restorer.restoreIfPossible()
+      }
+
+      if (oldPage != null) {
+        tintPainter.onDetachRecyclerView(oldPage)
+        itemExpandAnimator.onDetachRecyclerView(oldPage)
+        oldPage.internalStateCallbacksForRecyclerView = NoOp()
+      }
+
+      if (newPage != null) {
+        tintPainter.onAttachRecyclerView(this, newPage)
+        itemExpandAnimator.onAttachRecyclerView(this, newPage)
+        newPage.internalStateCallbacksForRecyclerView = this
+      }
+    }
 
   //internal var pageSetupDone: Boolean = false
   private var activityWindow: Window? = null
@@ -96,7 +115,7 @@ open class InboxRecyclerView(
    * The pull-to-collapse threshold is set to 85% of the standard toolbar height.
    */
   fun setExpandablePage(page: ExpandablePageLayout?) {
-    setExpandablePageInternal(page)
+    this.page = page
     page?.pullToCollapseThresholdDistance = (Views.toolbarHeight(context) * 0.85F).toInt()
   }
 
@@ -105,29 +124,8 @@ open class InboxRecyclerView(
    * @param collapseDistanceThreshold Minimum Y-distance the page has to be pulled before it's eligible for collapse.
    */
   fun setExpandablePage(page: ExpandablePageLayout?, @Px collapseDistanceThreshold: Int) {
-    setExpandablePageInternal(page)
+    this.page = page
     page?.pullToCollapseThresholdDistance = collapseDistanceThreshold
-  }
-
-  private fun setExpandablePageInternal(expandablePage: ExpandablePageLayout?) {
-    val oldPage = page
-    page = expandablePage
-
-    if (oldPage == null) {
-      restorer.restoreIfPossible()
-    }
-
-    if (oldPage != null) {
-      tintPainter.onDetachRecyclerView(oldPage)
-      itemExpandAnimator.onDetachRecyclerView(oldPage)
-      oldPage.internalStateCallbacksForRecyclerView = NoOp()
-    }
-
-    if (expandablePage != null) {
-      tintPainter.onAttachRecyclerView(this, expandablePage)
-      itemExpandAnimator.onAttachRecyclerView(this, expandablePage)
-      expandablePage.internalStateCallbacksForRecyclerView = this
-    }
   }
 
   override fun onSizeChanged(
