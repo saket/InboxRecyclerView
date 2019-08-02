@@ -31,7 +31,7 @@ open class InboxRecyclerView(
       val old = field
       field = value
 
-      val page = page
+      val page = expandablePage
       if (page != null) {
         old.onDetachRecyclerView(page)
         value.onAttachRecyclerView(this, page)
@@ -44,7 +44,7 @@ open class InboxRecyclerView(
       val old = field
       field = value
 
-      val page = page
+      val page = expandablePage
       if (page != null) {
         old.onDetachRecyclerView(page)
         field.onAttachRecyclerView(this, page)
@@ -58,7 +58,7 @@ open class InboxRecyclerView(
    * The expandable page to be used with this list.
    * Setting it to null will reset the older page's state.
    */
-  var page: ExpandablePageLayout? = null
+  var expandablePage: ExpandablePageLayout? = null
     set(newPage) {
       val oldPage = field
       field = newPage
@@ -80,7 +80,6 @@ open class InboxRecyclerView(
       }
     }
 
-  //internal var pageSetupDone: Boolean = false
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
@@ -105,7 +104,7 @@ open class InboxRecyclerView(
   }
 
   override fun onDetachedFromWindow() {
-    val page = page
+    val page = expandablePage
     if (page != null) {
       itemExpandAnimator.onDetachRecyclerView(page)
       tintPainter.onDetachRecyclerView(page)
@@ -125,7 +124,7 @@ open class InboxRecyclerView(
     // Android to draw the child Views. Calling getChildCount() right now will return
     // old values (that is, no. of children that were present before this height
     // change happened.
-    val page = page
+    val page = expandablePage
     if (page != null) {
       executeOnNextLayout {
         if (page.currentState === ExpandablePageLayout.PageState.EXPANDING) {
@@ -141,7 +140,7 @@ open class InboxRecyclerView(
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
     val dispatched = super.dispatchTouchEvent(ev)
 
-    val page = page
+    val page = expandablePage
     return if (page != null && page.isExpanded) {
       // Intentionally leak touch events behind just in case the content page has
       // a lower z-index than than this list. This is an ugly hack, but I cannot
@@ -156,7 +155,7 @@ open class InboxRecyclerView(
   }
 
   private fun ensureSetup(page: ExpandablePageLayout?): ExpandablePageLayout {
-    requireNotNull(page) { "Did you forget to set InboxRecyclerView#page?" }
+    requireNotNull(page) { "Did you forget to set InboxRecyclerView#expandablePage?" }
     requireNotNull(adapter) { "Adapter isn't attached yet!" }
     return page!!
   }
@@ -169,7 +168,7 @@ open class InboxRecyclerView(
     itemId: Long,
     immediate: Boolean = false
   ) {
-    val page = ensureSetup(page)
+    val page = ensureSetup(expandablePage)
 
     if (isLaidOut.not()) {
       post { expandItem(itemId, immediate) }
@@ -219,7 +218,7 @@ open class InboxRecyclerView(
    */
   @JvmOverloads
   fun expandFromTop(immediate: Boolean = false) {
-    val page = ensureSetup(page)
+    val page = ensureSetup(expandablePage)
 
     if (isLaidOut.not()) {
       post { expandFromTop(immediate) }
@@ -240,7 +239,7 @@ open class InboxRecyclerView(
   }
 
   fun collapse() {
-    val page = ensureSetup(page)
+    val page = ensureSetup(expandablePage)
 
     if (page.isCollapsedOrCollapsing.not()) {
       page.collapse(expandedItem)
@@ -291,11 +290,11 @@ open class InboxRecyclerView(
     super.draw(canvas)
 
     // Dimming behind the expandable page.
-    page?.run { tintPainter.drawTint(canvas, this) }
+    expandablePage?.run { tintPainter.drawTint(canvas, this) }
   }
 
   override fun canScrollProgrammatically(): Boolean {
-    val page = page
+    val page = expandablePage
     return page == null || page.isCollapsed
   }
 
