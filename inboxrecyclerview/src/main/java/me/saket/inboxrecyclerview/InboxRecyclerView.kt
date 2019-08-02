@@ -10,7 +10,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
-import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
@@ -55,6 +54,10 @@ open class InboxRecyclerView(
   /** Details about the currently expanded item. */
   var expandedItem: ExpandedItem = ExpandedItem.EMPTY
 
+  /**
+   * The expandable page to be used with this list.
+   * Setting it to null will reset the older page's state.
+   */
   var page: ExpandablePageLayout? = null
     set(newPage) {
       val oldPage = field
@@ -110,24 +113,6 @@ open class InboxRecyclerView(
     super.onDetachedFromWindow()
   }
 
-  /**
-   * Set the [ExpandablePageLayout] to be used with this list.
-   * The pull-to-collapse threshold is set to 85% of the standard toolbar height.
-   */
-  fun setExpandablePage(page: ExpandablePageLayout?) {
-    this.page = page
-    page?.pullToCollapseThresholdDistance = (Views.toolbarHeight(context) * 0.85F).toInt()
-  }
-
-  /**
-   * Set the [ExpandablePageLayout] to be used with this list.
-   * @param collapseDistanceThreshold Minimum Y-distance the page has to be pulled before it's eligible for collapse.
-   */
-  fun setExpandablePage(page: ExpandablePageLayout?, @Px collapseDistanceThreshold: Int) {
-    this.page = page
-    page?.pullToCollapseThresholdDistance = collapseDistanceThreshold
-  }
-
   override fun onSizeChanged(
     w: Int,
     h: Int,
@@ -171,7 +156,7 @@ open class InboxRecyclerView(
   }
 
   private fun ensureSetup(page: ExpandablePageLayout?): ExpandablePageLayout {
-    requireNotNull(page) { "Did you forget to call InboxRecyclerView.setExpandablePage()?" }
+    requireNotNull(page) { "Did you forget to set InboxRecyclerView#page?" }
     requireNotNull(adapter) { "Adapter isn't attached yet!" }
     return page!!
   }
