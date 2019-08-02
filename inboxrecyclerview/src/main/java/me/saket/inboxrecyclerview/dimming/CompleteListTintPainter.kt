@@ -2,6 +2,7 @@ package me.saket.inboxrecyclerview.dimming
 
 import android.graphics.Canvas
 import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
  * Draws a tint on the entire [InboxRecyclerView]. Unlike [UncoveredAreaTintPainter],
@@ -10,7 +11,7 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
  */
 class CompleteListTintPainter(color: Int, opacity: Float) : UncoveredAreaTintPainter(color, opacity) {
 
-  override fun drawTint(canvas: Canvas) {
+  override fun drawTint(canvas: Canvas, page: ExpandablePageLayout) {
     recyclerView.apply {
       canvas.drawRect(0F, 0F, right.toFloat(), bottom.toFloat(), tintPaint)
     }

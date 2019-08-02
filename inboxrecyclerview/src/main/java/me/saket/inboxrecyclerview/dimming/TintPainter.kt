@@ -12,11 +12,17 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  */
 abstract class TintPainter {
 
-  abstract fun onAttachRecyclerView(recyclerView: InboxRecyclerView)
+  abstract fun onAttachRecyclerView(
+    recyclerView: InboxRecyclerView,
+    page: ExpandablePageLayout
+  )
 
-  abstract fun onDetachRecyclerView(recyclerView: InboxRecyclerView)
+  abstract fun onDetachRecyclerView(page: ExpandablePageLayout)
 
-  abstract fun drawTint(canvas: Canvas)
+  abstract fun drawTint(
+    canvas: Canvas,
+    page: ExpandablePageLayout
+  )
 
   companion object {
 
@@ -26,8 +32,8 @@ abstract class TintPainter {
     @JvmStatic
     @JvmOverloads
     fun uncoveredArea(
-        @ColorInt color: Int = Color.BLACK,
-        @FloatRange(from = 0.0, to = 1.0) opacity: Float = 0.15F
+      @ColorInt color: Int = Color.BLACK,
+      @FloatRange(from = 0.0, to = 1.0) opacity: Float = 0.15F
     ): TintPainter {
       return UncoveredAreaTintPainter(color, opacity)
     }
@@ -38,8 +44,8 @@ abstract class TintPainter {
     @JvmStatic
     @JvmOverloads
     fun completeList(
-        @ColorInt color: Int = Color.BLACK,
-        @FloatRange(from = 0.0, to = 1.0) opacity: Float = 0.15F
+      @ColorInt color: Int = Color.BLACK,
+      @FloatRange(from = 0.0, to = 1.0) opacity: Float = 0.15F
     ): TintPainter {
       return CompleteListTintPainter(color, opacity)
     }
@@ -47,9 +53,19 @@ abstract class TintPainter {
     @JvmStatic
     fun noOp(): TintPainter {
       return object : TintPainter() {
-        override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {}
-        override fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {}
-        override fun drawTint(canvas: Canvas) {}
+        override fun onAttachRecyclerView(
+          recyclerView: InboxRecyclerView,
+          page: ExpandablePageLayout
+        ) = Unit
+
+        override fun onDetachRecyclerView(
+          page: ExpandablePageLayout
+        ) = Unit
+
+        override fun drawTint(
+          canvas: Canvas,
+          page: ExpandablePageLayout
+        ) = Unit
       }
     }
   }

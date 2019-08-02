@@ -7,7 +7,9 @@ import android.graphics.Paint
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.animation.PageLocationChangeDetector
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 import me.saket.inboxrecyclerview.page.PageStateChangeCallbacks
+import kotlin.math.abs
 
 /**
  * Draws a tint on [InboxRecyclerView] only in the area that's not covered by its page.
@@ -33,31 +35,31 @@ open class UncoveredAreaTintPainter(color: Int, opacity: Float) : TintPainter(),
     tintPaint.alpha = minIntensity
   }
 
-  override fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {
+  override fun onAttachRecyclerView(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) {
     this.recyclerView = recyclerView
-    this.changeDetector = PageLocationChangeDetector(recyclerView.page, changeListener = ::onPageMove)
+    this.changeDetector = PageLocationChangeDetector(page, changeListener = ::onPageMove)
 
-    recyclerView.page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
-    recyclerView.page.viewTreeObserver.addOnPreDrawListener(changeDetector)
-    recyclerView.page.addStateChangeCallbacks(this)
+    page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
+    page.viewTreeObserver.addOnPreDrawListener(changeDetector)
+    page.addStateChangeCallbacks(this)
   }
 
-  override fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {
-    recyclerView.page.removeStateChangeCallbacks(this)
-    recyclerView.page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
-    recyclerView.page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
+  override fun onDetachRecyclerView(page: ExpandablePageLayout) {
+    page.removeStateChangeCallbacks(this)
+    page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
+    page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
     tintAnimator.cancel()
   }
 
-  private fun onPageMove() {
+  private fun onPageMove(page: ExpandablePageLayout) {
     // Remove dimming when the page is being pulled and is eligible for collapse.
-    if (recyclerView.page.isExpanded) {
-      val collapseThreshold = recyclerView.page.pullToCollapseThresholdDistance
-      val translationYAbs = Math.abs(recyclerView.page.translationY)
+    if (page.isExpanded) {
+      val collapseThreshold = page.pullToCollapseThresholdDistance
+      val translationYAbs = abs(page.translationY)
       val isCollapseEligible = translationYAbs >= collapseThreshold
 
       if (isCollapseEligible != lastIsCollapseEligible) {
-        animateDimming(
+        page.animateDimming(
             toAlpha = if (isCollapseEligible) minIntensity else maxIntensity,
             dimDuration = 300)
       }
@@ -68,7 +70,7 @@ open class UncoveredAreaTintPainter(color: Int, opacity: Float) : TintPainter(),
     }
   }
 
-  override fun drawTint(canvas: Canvas) {
+  override fun drawTint(canvas: Canvas, page: ExpandablePageLayout) {
     recyclerView.apply {
       // Content above the page.
       canvas.drawRect(0F, 0F, right.toFloat(), page.translationY, tintPaint)
@@ -84,20 +86,26 @@ open class UncoveredAreaTintPainter(color: Int, opacity: Float) : TintPainter(),
     }
   }
 
-  override fun onPageAboutToExpand(expandAnimDuration: Long) {
+  override fun onPageAboutToExpand(
+    page: ExpandablePageLayout,
+    expandAnimDuration: Long
+  ) {
     tintAnimator.cancel()
-    animateDimming(maxIntensity, expandAnimDuration)
+    page.animateDimming(maxIntensity, expandAnimDuration)
   }
 
-  override fun onPageAboutToCollapse(collapseAnimDuration: Long) {
+  override fun onPageAboutToCollapse(
+    page: ExpandablePageLayout,
+    collapseAnimDuration: Long
+  ) {
     tintAnimator.cancel()
-    animateDimming(minIntensity, collapseAnimDuration)
+    page.animateDimming(minIntensity, collapseAnimDuration)
   }
 
-  private fun animateDimming(toAlpha: Int, dimDuration: Long) {
+  private fun ExpandablePageLayout.animateDimming(toAlpha: Int, dimDuration: Long) {
     tintAnimator = ObjectAnimator.ofInt(tintPaint.alpha, toAlpha).apply {
       duration = dimDuration
-      interpolator = recyclerView.page.animationInterpolator
+      interpolator = animationInterpolator
       startDelay = ANIMATION_START_DELAY
     }
     tintAnimator.addUpdateListener {
@@ -107,7 +115,7 @@ open class UncoveredAreaTintPainter(color: Int, opacity: Float) : TintPainter(),
     tintAnimator.start()
   }
 
-  override fun onPageExpanded() {}
+  override fun onPageExpanded(page: ExpandablePageLayout) = Unit
 
-  override fun onPageCollapsed() {}
+  override fun onPageCollapsed(page: ExpandablePageLayout) = Unit
 }

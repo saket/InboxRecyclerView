@@ -1,6 +1,8 @@
 package me.saket.inboxrecyclerview.animation
 
 import android.view.View
+import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
  * When the page is expanding, this pushes all RecyclerView items out of the Window.
@@ -11,8 +13,7 @@ import android.view.View
  */
 open class SplitExpandAnimator : ItemExpandAnimator() {
 
-  override fun onPageMove() {
-    val page = recyclerView.page
+  override fun onPageMove(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) {
     if (page.isCollapsed) {
       // Reset everything. This is also useful when the content size
       // changes, say as a result of the soft-keyboard getting dismissed.
@@ -36,12 +37,12 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
     if (anchorView != null) {
       val distanceExpandedTowardsTop = pageTop - anchorView.top
       val distanceExpandedTowardsBottom = pageBottom - anchorView.bottom
-      moveListItems(anchorIndex, distanceExpandedTowardsTop, distanceExpandedTowardsBottom)
+      recyclerView.moveListItems(anchorIndex, distanceExpandedTowardsTop, distanceExpandedTowardsBottom)
 
     } else {
       // Anchor View can be null when the page was expanded from
       // an arbitrary location. See InboxRecyclerView#expandFromTop().
-      moveListItems(anchorIndex, 0F, pageBottom)
+      recyclerView.moveListItems(anchorIndex, 0F, pageBottom)
     }
 
     // Fade in the anchor row with the expanding/collapsing page.
@@ -57,13 +58,15 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
     anchorView.alpha = 1F - expandRatio
   }
 
-  open fun moveListItems(anchorIndex: Int, distanceExpandedTowardsTop: Float, distanceExpandedTowardsBottom: Float) {
-    recyclerView.apply {
-      for (childIndex in 0 until childCount) {
-        getChildAt(childIndex).translationY = when {
-          childIndex <= anchorIndex -> distanceExpandedTowardsTop
-          else -> distanceExpandedTowardsBottom
-        }
+  open fun InboxRecyclerView.moveListItems(
+    anchorIndex: Int,
+    distanceExpandedTowardsTop: Float,
+    distanceExpandedTowardsBottom: Float
+  ) {
+    for (childIndex in 0 until childCount) {
+      getChildAt(childIndex).translationY = when {
+        childIndex <= anchorIndex -> distanceExpandedTowardsTop
+        else -> distanceExpandedTowardsBottom
       }
     }
   }

@@ -6,7 +6,7 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 internal class PageLocationChangeDetector(
   private val page: ExpandablePageLayout,
-  private val changeListener: () -> Unit
+  private val changeListener: (ExpandablePageLayout) -> Unit
 ) : ViewTreeObserver.OnPreDrawListener, ViewTreeObserver.OnGlobalLayoutListener {
 
   private var lastTranslationY = 0F
@@ -29,7 +29,7 @@ internal class PageLocationChangeDetector(
     val stateChanged = lastState != page.currentState
 
     if (moved || dimensionsChanged || stateChanged) {
-      changeListener()
+      changeListener(page)
     }
 
     lastTranslationY = page.translationY

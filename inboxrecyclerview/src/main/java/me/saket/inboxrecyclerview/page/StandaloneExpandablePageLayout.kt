@@ -39,7 +39,7 @@ class StandaloneExpandablePageLayout(
     })
 
     addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
-      override fun onPageCollapsed() {
+      override fun onPageCollapsed(page: ExpandablePageLayout) {
         callbacks.onPageCollapsed()
       }
     })

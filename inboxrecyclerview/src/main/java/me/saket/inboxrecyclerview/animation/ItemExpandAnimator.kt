@@ -1,6 +1,7 @@
 package me.saket.inboxrecyclerview.animation
 
 import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
  * Controls how [InboxRecyclerView] items are animated when its page is moving.
@@ -8,20 +9,19 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
  */
 abstract class ItemExpandAnimator {
 
-  protected lateinit var recyclerView: InboxRecyclerView
+  //protected lateinit var recyclerView: InboxRecyclerView
   private lateinit var changeDetector: PageLocationChangeDetector
 
-  fun onAttachRecyclerView(recyclerView: InboxRecyclerView) {
-    this.recyclerView = recyclerView
-    this.changeDetector = PageLocationChangeDetector(recyclerView.page, changeListener = ::onPageMove)
+  fun onAttachRecyclerView(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) {
+    this.changeDetector = PageLocationChangeDetector(page) { onPageMove(recyclerView, page) }
 
-    recyclerView.page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
-    recyclerView.page.viewTreeObserver.addOnPreDrawListener(changeDetector)
+    page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
+    page.viewTreeObserver.addOnPreDrawListener(changeDetector)
   }
 
-  fun onDetachRecyclerView(recyclerView: InboxRecyclerView) {
-    recyclerView.page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
-    recyclerView.page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
+  fun onDetachRecyclerView(page: ExpandablePageLayout) {
+    page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
+    page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
   }
 
   /**
@@ -30,7 +30,7 @@ abstract class ItemExpandAnimator {
    *
    * Override this to animate the [InboxRecyclerView] items with the page's movement.
    */
-  abstract fun onPageMove()
+  abstract fun onPageMove(recyclerView: InboxRecyclerView, page: ExpandablePageLayout)
 
   companion object {
 

@@ -490,7 +490,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForRecyclerView.onPageAboutToExpand()
 
     for (i in stateChangeCallbacks.indices.reversed()) {
-      stateChangeCallbacks[i].onPageAboutToExpand(expandAnimDuration)
+      stateChangeCallbacks[i].onPageAboutToExpand(this, expandAnimDuration)
     }
 
     onPageAboutToExpand(animationDurationMillis)
@@ -505,7 +505,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     dispatchOnPageFullyCoveredCallback()
 
     for (i in stateChangeCallbacks.indices.reversed()) {
-      stateChangeCallbacks[i].onPageExpanded()
+      stateChangeCallbacks[i].onPageExpanded(this)
     }
 
     onPageExpanded()
@@ -526,7 +526,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForRecyclerView.onPageAboutToCollapse()
 
     for (i in stateChangeCallbacks.indices.reversed()) {
-      stateChangeCallbacks[i].onPageAboutToCollapse(animationDurationMillis)
+      stateChangeCallbacks[i].onPageAboutToCollapse(this, animationDurationMillis)
     }
 
     onPageAboutToCollapse(animationDurationMillis)
@@ -543,7 +543,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForRecyclerView.onPageCollapsed()
 
     for (i in stateChangeCallbacks.indices.reversed()) {
-      stateChangeCallbacks[i].onPageCollapsed()
+      stateChangeCallbacks[i].onPageCollapsed(this)
     }
     onPageCollapsed()
   }
