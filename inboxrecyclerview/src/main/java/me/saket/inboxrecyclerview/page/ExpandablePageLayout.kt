@@ -489,7 +489,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForNestedPage.onPageAboutToExpand()
     internalStateCallbacksForRecyclerView.onPageAboutToExpand()
 
-    for (i in stateChangeCallbacks.indices.reversed()) {
+    // Reverse loop to let listeners remove themselves while in the loop.
+    for (i in stateChangeCallbacks.size - 1 downTo 0) {
       stateChangeCallbacks[i].onPageAboutToExpand(this, expandAnimDuration)
     }
 
@@ -504,7 +505,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     changeState(PageState.EXPANDED)
     dispatchOnPageFullyCoveredCallback()
 
-    for (i in stateChangeCallbacks.indices.reversed()) {
+    // Reverse loop to let listeners remove themselves while in the loop.
+    for (i in stateChangeCallbacks.size - 1 downTo 0) {
       stateChangeCallbacks[i].onPageExpanded(this)
     }
 
@@ -525,7 +527,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForNestedPage.onPageAboutToCollapse()
     internalStateCallbacksForRecyclerView.onPageAboutToCollapse()
 
-    for (i in stateChangeCallbacks.indices.reversed()) {
+    // Reverse loop to let listeners remove themselves while in the loop.
+    for (i in stateChangeCallbacks.size - 1 downTo 0) {
       stateChangeCallbacks[i].onPageAboutToCollapse(this, animationDurationMillis)
     }
 
@@ -542,7 +545,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForNestedPage.onPageCollapsed()
     internalStateCallbacksForRecyclerView.onPageCollapsed()
 
-    for (i in stateChangeCallbacks.indices.reversed()) {
+    // Reverse loop to let listeners remove themselves while in the loop.
+    for (i in stateChangeCallbacks.size - 1 downTo 0) {
       stateChangeCallbacks[i].onPageCollapsed(this)
     }
     onPageCollapsed()
