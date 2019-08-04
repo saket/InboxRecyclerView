@@ -17,6 +17,7 @@ import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.executeOnMeasure
 import me.saket.inboxrecyclerview.withEndAction
 import java.lang.reflect.Method
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -49,7 +50,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks = NoOp()
   private var internalStateCallbacksForNestedPage: InternalPageCallbacks = NoOp()
-  private var stateChangeCallbacks = ArrayList<PageStateChangeCallbacks>(4)
+  private var stateChangeCallbacks = CopyOnWriteArrayList<PageStateChangeCallbacks>()
 
   private var nestedPage: ExpandablePageLayout? = null
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
@@ -538,11 +539,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForNestedPage.onPageAboutToExpand()
     internalStateCallbacksForRecyclerView.onPageAboutToExpand()
 
-    // Reverse loop to let listeners remove themselves while in the loop.
-    for (i in stateChangeCallbacks.size - 1 downTo 0) {
-      stateChangeCallbacks[i].onPageAboutToExpand(this, expandAnimDuration)
+    for (callback in stateChangeCallbacks) {
+      callback.onPageAboutToExpand(this, expandAnimDuration)
     }
-
     onPageAboutToExpand(animationDurationMillis)
 
     // The state change must happen after the subscribers have been
@@ -554,9 +553,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     changeState(PageState.EXPANDED)
     dispatchOnPageFullyCoveredCallback()
 
-    // Reverse loop to let listeners remove themselves while in the loop.
-    for (i in stateChangeCallbacks.size - 1 downTo 0) {
-      stateChangeCallbacks[i].onPageExpanded(this)
+    for (callback in stateChangeCallbacks) {
+      callback.onPageExpanded(this)
     }
 
     onPageExpanded()
@@ -576,11 +574,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForNestedPage.onPageAboutToCollapse()
     internalStateCallbacksForRecyclerView.onPageAboutToCollapse()
 
-    // Reverse loop to let listeners remove themselves while in the loop.
-    for (i in stateChangeCallbacks.size - 1 downTo 0) {
-      stateChangeCallbacks[i].onPageAboutToCollapse(this, animationDurationMillis)
+    for (callback in stateChangeCallbacks) {
+      callback.onPageAboutToCollapse(this, animationDurationMillis)
     }
-
     onPageAboutToCollapse(animationDurationMillis)
 
     // The state change must happen after the subscribers have been
@@ -594,9 +590,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForNestedPage.onPageCollapsed()
     internalStateCallbacksForRecyclerView.onPageCollapsed()
 
-    // Reverse loop to let listeners remove themselves while in the loop.
-    for (i in stateChangeCallbacks.size - 1 downTo 0) {
-      stateChangeCallbacks[i].onPageCollapsed(this)
+    for (callback in stateChangeCallbacks) {
+      callback.onPageCollapsed(this)
     }
     onPageCollapsed()
   }
