@@ -13,16 +13,19 @@ import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 import me.saket.inboxrecyclerview.InternalPageCallbacks
+import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.executeOnMeasure
 import me.saket.inboxrecyclerview.withEndAction
 import java.lang.reflect.Method
+import kotlin.math.abs
+import kotlin.math.max
 
 /**
  * An expandable / collapsible layout for use with a [InboxRecyclerView].
  */
 open class ExpandablePageLayout @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null
+  context: Context,
+  attrs: AttributeSet? = null
 ) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener {
 
   /** See [pushParentToolbarOnExpand]. */
@@ -44,9 +47,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   val pullToCollapseListener: PullToCollapseListener
   lateinit var currentState: PageState
 
-  internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks = InternalPageCallbacks.NoOp()
-  private var internalStateCallbacksForNestedPage: InternalPageCallbacks = InternalPageCallbacks.NoOp()
-  private var stateChangeCallbacks: MutableList<PageStateChangeCallbacks> = ArrayList(4)
+  internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks = NoOp()
+  private var internalStateCallbacksForNestedPage: InternalPageCallbacks = NoOp()
+  private var stateChangeCallbacks = ArrayList<PageStateChangeCallbacks>(4)
 
   private var nestedPage: ExpandablePageLayout? = null
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
@@ -109,8 +112,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     nestedPage = null
     pullToCollapseInterceptor = null
     pullToCollapseListener.removeAllOnPullListeners()
-    internalStateCallbacksForNestedPage = InternalPageCallbacks.NoOp()
-    internalStateCallbacksForRecyclerView = InternalPageCallbacks.NoOp()
+    internalStateCallbacksForNestedPage = NoOp()
+    internalStateCallbacksForRecyclerView = NoOp()
     stateChangeCallbacks.clear()
     stopAnyOngoingPageAnimation()
     super.onDetachedFromWindow()
@@ -153,11 +156,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   override fun onPull(
-      deltaY: Float,
-      currentTranslationY: Float,
-      upwardPull: Boolean,
-      deltaUpwardPull: Boolean,
-      collapseEligible: Boolean
+    deltaY: Float,
+    currentTranslationY: Float,
+    upwardPull: Boolean,
+    deltaUpwardPull: Boolean,
+    collapseEligible: Boolean
   ) {
     // In case the user pulled the page before it could fully
     // open (and while the toolbar was still hiding).
@@ -314,7 +317,12 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     translationY = 0F
   }
 
-  internal fun animatePageExpandCollapse(expand: Boolean, targetWidth: Int, targetHeight: Int, expandedItem: ExpandedItem) {
+  internal fun animatePageExpandCollapse(
+    expand: Boolean,
+    targetWidth: Int,
+    targetHeight: Int,
+    expandedItem: ExpandedItem
+  ) {
     val targetPageTranslationX = if (expand) 0F else distanceXTo(expandedItem)
     var targetPageTranslationY = if (expand) 0F else distanceYTo(expandedItem)
 
@@ -374,26 +382,34 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     animateDimensions(targetWidth, targetHeight)
   }
 
-  private fun animateToolbar(show: Boolean, targetPageTranslationY: Float) {
+  private fun animateToolbar(
+    show: Boolean,
+    targetPageTranslationY: Float
+  ) {
     if (translationY == targetPageTranslationY) {
       return
     }
 
-    val toolbarCurrentBottom = if (parentToolbar != null) parentToolbar!!.bottom + parentToolbar!!.translationY else 0F
-    val fromTy = Math.max(toolbarCurrentBottom, translationY)
+    val toolbarCurrentBottom = when {
+      parentToolbar != null -> parentToolbar!!.bottom + parentToolbar!!.translationY
+      else -> 0F
+    }
+    val fromTy = max(toolbarCurrentBottom, translationY)
 
     // The hide animation happens a bit too quickly if the page has to travel a large
     // distance (when using the current interpolator: EASE). Let's try slowing it down.
-    var speedFactor = 1L
-    if (show && Math.abs(targetPageTranslationY - fromTy) > clippedDimens.height() * 2 / 5) {
-      speedFactor *= 2L
+    val speedFactor = when {
+      show && abs(targetPageTranslationY - fromTy) > clippedDimens.height() * 2 / 5 -> 2L
+      else -> 1L
     }
 
     stopToolbarAnimation()
 
     // If the page lies behind the toolbar, use toolbar's current bottom position instead
     toolbarAnimator = ObjectAnimator.ofFloat(fromTy, targetPageTranslationY)
-    toolbarAnimator.addUpdateListener { animation -> updateToolbarTranslationY(show, animation.animatedValue as Float) }
+    toolbarAnimator.addUpdateListener { animation ->
+      updateToolbarTranslationY(show, animation.animatedValue as Float)
+    }
     toolbarAnimator.duration = animationDurationMillis * speedFactor
     toolbarAnimator.interpolator = animationInterpolator
     toolbarAnimator.startDelay = ANIMATION_START_DELAY
@@ -403,7 +419,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Helper method for showing / hiding the toolbar depending upon this page's current translationY.
    */
-  private fun updateToolbarTranslationY(show: Boolean, pageTranslationY: Float) {
+  private fun updateToolbarTranslationY(
+    show: Boolean,
+    pageTranslationY: Float
+  ) {
     val toolbarHeight = parentToolbar!!.bottom
     var targetTranslationY = pageTranslationY - toolbarHeight
 
@@ -443,7 +462,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   fun setNestedExpandablePage(nestedPage: ExpandablePageLayout) {
     val old = this.nestedPage
     if (old != null) {
-      old.internalStateCallbacksForNestedPage = InternalPageCallbacks.NoOp()
+      old.internalStateCallbacksForNestedPage = NoOp()
     }
 
     this.nestedPage = nestedPage
@@ -492,7 +511,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     super.draw(canvas)
   }
 
-  override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
+  override fun drawChild(
+    canvas: Canvas,
+    child: View,
+    drawingTime: Long
+  ): Boolean {
     // When this page is fully covered by a nested ExpandablePage, avoid drawing any other child Views.
     return if (isFullyCoveredByNestedPage && child !is ExpandablePageLayout) {
       false
@@ -605,12 +628,18 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * Offer a pull-to-collapse to a listener if it wants to block it. If a nested page is registered
    * and the touch was made on it, block it right away.
    */
-  internal fun handleOnPullToCollapseIntercept(event: MotionEvent, downX: Float, downY: Float, deltaUpwardSwipe: Boolean): InterceptResult {
+  internal fun handleOnPullToCollapseIntercept(
+    event: MotionEvent,
+    downX: Float,
+    downY: Float,
+    deltaUpwardSwipe: Boolean
+  ): InterceptResult {
     val nestedPageCopy = nestedPage
 
     if (nestedPageCopy != null
         && nestedPageCopy.isExpandedOrExpanding
-        && nestedPageCopy.clippedDimens.contains(downX.toInt(), downY.toInt())) {
+        && nestedPageCopy.clippedDimens.contains(downX.toInt(), downY.toInt())
+    ) {
       // Block this pull if it was made inside a nested page. Let the nested
       // page's pull-listener consume this event. I should use nested scrolling
       // in the future to make this smarter.
@@ -661,10 +690,14 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     private var suppressLayoutMethod: Method? = null
 
     // TODO: Move to a different class.
-    private fun setSuppressLayoutMethodUsingReflection(layout: ExpandablePageLayout, suppress: Boolean) {
+    private fun setSuppressLayoutMethodUsingReflection(
+      layout: ExpandablePageLayout,
+      suppress: Boolean
+    ) {
       try {
         if (suppressLayoutMethod == null) {
-          suppressLayoutMethod = ViewGroup::class.java.getMethod("suppressLayout", Boolean::class.javaPrimitiveType)
+          suppressLayoutMethod = ViewGroup::class.java
+              .getMethod("suppressLayout", Boolean::class.javaPrimitiveType)
         }
         suppressLayoutMethod!!.invoke(layout, suppress)
       } catch (e: Throwable) {
