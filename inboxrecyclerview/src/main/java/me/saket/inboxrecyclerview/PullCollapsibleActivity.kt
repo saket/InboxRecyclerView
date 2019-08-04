@@ -80,7 +80,7 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
 
   private fun wrapInExpandablePage(view: View): StandaloneExpandablePageLayout {
     val pageLayout = StandaloneExpandablePageLayout(this)
-    pageLayout.elevation = resources.getDimensionPixelSize(R.dimen.pull_collapsible_activity_elevation).toFloat()
+    pageLayout.elevation = resources.getDimensionPixelSize(R.dimen.irv_pull_collapsible_activity_elevation).toFloat()
     pageLayout.background = windowBackgroundFromTheme()
 
     window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
