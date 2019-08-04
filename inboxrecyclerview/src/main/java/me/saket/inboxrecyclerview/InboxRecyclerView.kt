@@ -21,8 +21,8 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  * A RecyclerView where items can expand and collapse to and from an [ExpandablePageLayout].
  */
 open class InboxRecyclerView(
-    context: Context,
-    attrs: AttributeSet
+  context: Context,
+  attrs: AttributeSet
 ) : ScrollSuppressibleRecyclerView(context, attrs), InternalPageCallbacks {
 
   /** Controls how [InboxRecyclerView] items are animated when the page is moving. */
@@ -158,7 +158,7 @@ open class InboxRecyclerView(
   private fun ensureSetup(page: ExpandablePageLayout?): ExpandablePageLayout {
     requireNotNull(page) { "Did you forget to set InboxRecyclerView#expandablePage?" }
     requireNotNull(adapter) { "Adapter isn't attached yet!" }
-    return page!!
+    return page
   }
 
   /**
@@ -330,9 +330,10 @@ open class InboxRecyclerView(
   private fun ensureStableIds(adapter: Adapter<*>?) {
     adapter?.apply {
       if (hasStableIds().not()) {
-        // Stable IDs are required because the expanded item's adapter position can change, but ID cannot.
         throw AssertionError(
-            "Adapter needs to have stable IDs so that the expanded item can be restored across orientation changes."
+            "$adapter needs to have stable IDs so that the expanded item can be restored across " +
+                "orientation changes. Unlike adapter positions, IDs remain unchanged across " +
+                "data-set updates."
         )
       }
     }
@@ -354,7 +355,10 @@ open class InboxRecyclerView(
   ) : Parcelable {
 
     internal fun isEmpty(): Boolean {
-      return viewIndex == -1 && adapterId == -1L && locationOnScreen.width() == 0 && locationOnScreen.height() == 0
+      return viewIndex == -1
+          && adapterId == -1L
+          && locationOnScreen.width() == 0
+          && locationOnScreen.height() == 0
     }
 
     companion object {
