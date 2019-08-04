@@ -24,7 +24,7 @@ internal class StateRestorer(private val recyclerView: InboxRecyclerView) {
     val page = recyclerView.expandablePage
 
     if (itemToRestore.isEmpty().not() && page != null && adapter != null) {
-      recyclerView.expandItem(itemToRestore.itemId, immediate = true)
+      recyclerView.expandItem(itemToRestore.adapterId, immediate = true)
     }
   }
 }
