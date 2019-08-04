@@ -29,7 +29,7 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
 
     val anchorIndex = recyclerView.expandedItem.viewIndex
     val anchorView: View? = recyclerView.getChildAt(anchorIndex)
-    val anchorViewLocation = recyclerView.expandedItem.expandedItemLocationRect
+    val anchorViewLocation = recyclerView.expandedItem.locationOnScreen
 
     val pageLocationOnScreen = page.locationOnScreen()
     val pageTop = pageLocationOnScreen[1]

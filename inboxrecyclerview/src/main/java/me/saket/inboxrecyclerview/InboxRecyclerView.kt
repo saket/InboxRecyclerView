@@ -225,7 +225,7 @@ open class InboxRecyclerView(
       return
     }
 
-    expandedItem = ExpandedItem.EMPTY.copy(expandedItemLocationRect = Rect(left, top, right, top))
+    expandedItem = ExpandedItem.EMPTY.copy(locationOnScreen = Rect(left, top, right, top))
 
     if (immediate) {
       page.expandImmediately()
@@ -341,26 +341,26 @@ open class InboxRecyclerView(
   /** Details of the currently expanded item. */
   @Parcelize
   data class ExpandedItem(
-      // Index of the currently expanded item's
-      // View. This is not the adapter index.
+    // Index of the currently expanded item's
+    // View. This is not the adapter index.
     val viewIndex: Int,
 
-      // Adapter ID of the currently expanded item.
+    // Adapter ID of the currently expanded item.
     val itemId: Long,
 
-      // Original location of the currently expanded item (that is, when the user
-      // selected this item). Can be used for restoring states after collapsing.
-    val expandedItemLocationRect: Rect
+    // Original location of the currently expanded item.
+    // Used for restoring states after collapsing.
+    val locationOnScreen: Rect
 
   ) : Parcelable {
 
     internal fun isEmpty(): Boolean {
-      return viewIndex == -1 && itemId == -1L && expandedItemLocationRect.width() == 0 && expandedItemLocationRect.height() == 0
+      return viewIndex == -1 && itemId == -1L && locationOnScreen.width() == 0 && locationOnScreen.height() == 0
     }
 
     companion object {
       internal val EMPTY =
-        ExpandedItem(itemId = -1, viewIndex = -1, expandedItemLocationRect = Rect(0, 0, 0, 0))
+        ExpandedItem(itemId = -1, viewIndex = -1, locationOnScreen = Rect(0, 0, 0, 0))
     }
   }
 }
