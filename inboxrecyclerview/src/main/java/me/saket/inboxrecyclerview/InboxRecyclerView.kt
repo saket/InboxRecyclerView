@@ -338,7 +338,6 @@ open class InboxRecyclerView(
     }
   }
 
-  /** Details of the currently expanded item. */
   @Parcelize
   data class ExpandedItem(
     // Index of the currently expanded item's
@@ -346,7 +345,7 @@ open class InboxRecyclerView(
     val viewIndex: Int,
 
     // Adapter ID of the currently expanded item.
-    val itemId: Long,
+    val adapterId: Long,
 
     // Original location of the currently expanded item.
     // Used for restoring states after collapsing.
@@ -355,12 +354,12 @@ open class InboxRecyclerView(
   ) : Parcelable {
 
     internal fun isEmpty(): Boolean {
-      return viewIndex == -1 && itemId == -1L && locationOnScreen.width() == 0 && locationOnScreen.height() == 0
+      return viewIndex == -1 && adapterId == -1L && locationOnScreen.width() == 0 && locationOnScreen.height() == 0
     }
 
     companion object {
       internal val EMPTY =
-        ExpandedItem(itemId = -1, viewIndex = -1, locationOnScreen = Rect(0, 0, 0, 0))
+        ExpandedItem(adapterId = -1, viewIndex = -1, locationOnScreen = Rect(0, 0, 0, 0))
     }
   }
 }
