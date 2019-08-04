@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
 import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 
 /** Standalone because this page can live without an [InboxRecyclerView]. */
 class StandaloneExpandablePageLayout(
@@ -61,13 +62,13 @@ class StandaloneExpandablePageLayout(
    */
   internal fun expandFrom(fromShapeRect: Rect) {
     setClippedDimensions(width, 0)
-    expand(InboxRecyclerView.ExpandedItem(-1, -1, fromShapeRect))
+    expand(ExpandedItem(-1, -1, fromShapeRect))
   }
 
   /**
    * @param toShapeRect Final dimensions of this page, when it fully collapses.
    */
   internal fun collapseTo(toShapeRect: Rect) {
-    collapse(InboxRecyclerView.ExpandedItem(-1, -1, toShapeRect))
+    collapse(ExpandedItem(-1, -1, toShapeRect))
   }
 }
