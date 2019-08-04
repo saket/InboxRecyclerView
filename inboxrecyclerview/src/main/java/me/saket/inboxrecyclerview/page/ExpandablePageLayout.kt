@@ -261,8 +261,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       return
     }
 
-    var targetWidth = expandedItem.expandedItemLocationRect.width()
-    val targetHeight = expandedItem.expandedItemLocationRect.height()
+    var targetWidth = expandedItem.locationOnScreen.width()
+    val targetHeight = expandedItem.locationOnScreen.height()
     if (targetWidth == 0) {
       // Page must have expanded immediately after a state restoration.
       targetWidth = width
@@ -279,8 +279,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private fun alignPageWithExpandingItem(expandedItem: ExpandedItem) {
     // Match height and location.
     setClippedDimensions(
-        expandedItem.expandedItemLocationRect.width(),
-        expandedItem.expandedItemLocationRect.height()
+        expandedItem.locationOnScreen.width(),
+        expandedItem.locationOnScreen.height()
     )
     translationY = distanceYTo(expandedItem)
   }
@@ -294,13 +294,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    */
   private fun distanceYTo(expandedItem: ExpandedItem): Float {
     val pageYOnScreen = locationOnScreen()[1]
-    val itemYOnScreen = expandedItem.expandedItemLocationRect.top.toFloat()
+    val itemYOnScreen = expandedItem.locationOnScreen.top.toFloat()
     return itemYOnScreen - (pageYOnScreen - translationY)
   }
 
   private fun distanceXTo(expandedItem: ExpandedItem): Float {
     val pageXOnScreen = locationOnScreen()[0]
-    val itemXOnScreen = expandedItem.expandedItemLocationRect.left.toFloat()
+    val itemXOnScreen = expandedItem.locationOnScreen.left.toFloat()
     return itemXOnScreen - (pageXOnScreen - translationX)
   }
 
@@ -320,7 +320,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
     // If there's no record about the expanded list item (from whose place this page was expanded),
     // collapse just below the toolbar and not the window top to avoid closing the toolbar upon hiding.
-    if (!expand && expandedItem.expandedItemLocationRect.height() == 0) {
+    if (!expand && expandedItem.locationOnScreen.height() == 0) {
       val toolbarBottom = if (parentToolbar != null) parentToolbar!!.bottom else 0
       targetPageTranslationY = Math.max(targetPageTranslationY, toolbarBottom.toFloat())
     }
