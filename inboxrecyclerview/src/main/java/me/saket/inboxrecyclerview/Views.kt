@@ -82,3 +82,8 @@ fun View.globalVisibleRect(): RectF {
   getGlobalVisibleRect(rect)
   return RectF(rect.left.toFloat(), rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat())
 }
+
+fun View.locationOnScreen(loc: IntArray): Rect {
+  getLocationOnScreen(loc)
+  return Rect(loc[0], loc[1], loc[0] + width, loc[1] + height)
+}

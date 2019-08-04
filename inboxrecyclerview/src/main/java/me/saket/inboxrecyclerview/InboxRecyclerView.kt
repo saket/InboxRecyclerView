@@ -84,6 +84,7 @@ open class InboxRecyclerView(
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
   private val restorer = StateRestorer(this)
+  private val locationOnScreenBuffer = IntArray(2)
 
   init {
     // For drawing dimming using TintPainter.
@@ -198,12 +199,7 @@ open class InboxRecyclerView(
     }
 
     val itemViewPosition = indexOfChild(itemView)
-    val itemRect = Rect(
-        left + itemView.left,
-        top + itemView.top,
-        width - right + itemView.right,
-        top + itemView.bottom
-    )
+    val itemRect = itemView.locationOnScreen(locationOnScreenBuffer)
 
     expandedItem = ExpandedItem(itemViewPosition, itemId, itemRect)
     if (immediate) {

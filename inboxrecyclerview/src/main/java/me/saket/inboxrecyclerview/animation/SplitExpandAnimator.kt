@@ -27,22 +27,24 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
       return
     }
 
-    val (anchorIndex) = recyclerView.expandedItem
+    val anchorIndex = recyclerView.expandedItem.viewIndex
     val anchorView: View? = recyclerView.getChildAt(anchorIndex)
+    val anchorViewLocation = recyclerView.expandedItem.expandedItemLocationRect
 
-    val pageTop = page.translationY
-    val pageBottom = page.translationY + page.clippedDimens.height()
+    val pageLocationOnScreen = page.locationOnScreen()
+    val pageTop = pageLocationOnScreen[1]
+    val pageBottom = pageTop + page.clippedDimens.height()
 
     // Move the RecyclerView rows with the page.
     if (anchorView != null) {
-      val distanceExpandedTowardsTop = pageTop - anchorView.top
-      val distanceExpandedTowardsBottom = pageBottom - anchorView.bottom
+      val distanceExpandedTowardsTop = pageTop - anchorViewLocation.top
+      val distanceExpandedTowardsBottom = pageBottom - anchorViewLocation.bottom
       recyclerView.moveListItems(anchorIndex, distanceExpandedTowardsTop, distanceExpandedTowardsBottom)
 
     } else {
       // Anchor View can be null when the page was expanded from
       // an arbitrary location. See InboxRecyclerView#expandFromTop().
-      recyclerView.moveListItems(anchorIndex, 0F, pageBottom)
+      recyclerView.moveListItems(anchorIndex, 0, pageBottom)
     }
 
     // Fade in the anchor row with the expanding/collapsing page.
@@ -60,13 +62,13 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
 
   open fun InboxRecyclerView.moveListItems(
     anchorIndex: Int,
-    distanceExpandedTowardsTop: Float,
-    distanceExpandedTowardsBottom: Float
+    distanceExpandedTowardsTop: Int,
+    distanceExpandedTowardsBottom: Int
   ) {
     for (childIndex in 0 until childCount) {
       getChildAt(childIndex).translationY = when {
-        childIndex <= anchorIndex -> distanceExpandedTowardsTop
-        else -> distanceExpandedTowardsBottom
+        childIndex <= anchorIndex -> distanceExpandedTowardsTop.toFloat()
+        else -> distanceExpandedTowardsBottom.toFloat()
       }
     }
   }

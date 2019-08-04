@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.executeOnMeasure
 import me.saket.inboxrecyclerview.withEndAction
@@ -51,6 +52,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
   private val expandedAlpha = 1F
   private var isFullyCoveredByNestedPage = false
+  private val locationOnScreenBuffer = IntArray(2)
 
   val isExpanded: Boolean
     get() = currentState == PageState.EXPANDED
@@ -209,7 +211,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Expands this page (with animation) so that it fills the whole screen.
    */
-  internal fun expand(expandedItem: InboxRecyclerView.ExpandedItem) {
+  internal fun expand(expandedItem: ExpandedItem) {
     if (isLaidOut.not() && visibility != View.GONE) {
       throw IllegalAccessError("Width / Height not available to expand")
     }
@@ -254,7 +256,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Collapses this page, back to its original state.
    */
-  internal fun collapse(expandedItem: InboxRecyclerView.ExpandedItem) {
+  internal fun collapse(expandedItem: ExpandedItem) {
     if (currentState == PageState.COLLAPSED || currentState == PageState.COLLAPSING) {
       return
     }
@@ -274,13 +276,37 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Place the expandable page exactly on top of the expanding item.
    */
-  private fun alignPageWithExpandingItem(expandedItem: InboxRecyclerView.ExpandedItem) {
+  private fun alignPageWithExpandingItem(expandedItem: ExpandedItem) {
     // Match height and location.
     setClippedDimensions(
         expandedItem.expandedItemLocationRect.width(),
         expandedItem.expandedItemLocationRect.height()
     )
-    translationY = expandedItem.expandedItemLocationRect.top.toFloat()
+    translationY = distanceYTo(expandedItem)
+  }
+
+  /**
+   * Calculates the distance between a [InboxRecyclerView.ExpandedItem] and this page
+   * by using their raw coordinates on the screen. Useful when [InboxRecyclerView] and
+   * [ExpandablePageLayout] do not share the same parent or same bounds. For e.g., the
+   * [InboxRecyclerView] may be below a toolbar whereas the [ExpandablePageLayout]
+   * in front of the toolbar.
+   */
+  private fun distanceYTo(expandedItem: ExpandedItem): Float {
+    val pageYOnScreen = locationOnScreen()[1]
+    val itemYOnScreen = expandedItem.expandedItemLocationRect.top.toFloat()
+    return itemYOnScreen - (pageYOnScreen - translationY)
+  }
+
+  private fun distanceXTo(expandedItem: ExpandedItem): Float {
+    val pageXOnScreen = locationOnScreen()[0]
+    val itemXOnScreen = expandedItem.expandedItemLocationRect.left.toFloat()
+    return itemXOnScreen - (pageXOnScreen - translationX)
+  }
+
+  fun locationOnScreen(): IntArray {
+    getLocationOnScreen(locationOnScreenBuffer)
+    return locationOnScreenBuffer
   }
 
   internal fun alignPageToCoverScreen() {
@@ -288,9 +314,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     translationY = 0F
   }
 
-  internal fun animatePageExpandCollapse(expand: Boolean, targetWidth: Int, targetHeight: Int, expandedItem: InboxRecyclerView.ExpandedItem) {
-    var targetPageTranslationY = if (expand) 0F else expandedItem.expandedItemLocationRect.top.toFloat()
-    val targetPageTranslationX = if (expand) 0F else expandedItem.expandedItemLocationRect.left.toFloat()
+  internal fun animatePageExpandCollapse(expand: Boolean, targetWidth: Int, targetHeight: Int, expandedItem: ExpandedItem) {
+    val targetPageTranslationX = if (expand) 0F else distanceXTo(expandedItem)
+    var targetPageTranslationY = if (expand) 0F else distanceYTo(expandedItem)
 
     // If there's no record about the expanded list item (from whose place this page was expanded),
     // collapse just below the toolbar and not the window top to avoid closing the toolbar upon hiding.
