@@ -93,17 +93,11 @@ class InboxActivity : AppCompatActivity() {
     val editToReplyAllIcon = ReversibleAnimatedVectorDrawable(fab.drawable as AnimatedVectorDrawable)
 
     emailPageLayout.addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
-      override fun onPageAboutToExpand(
-        page: ExpandablePageLayout,
-        expandAnimDuration: Long
-      ) {
+      override fun onPageAboutToExpand(expandAnimDuration: Long) {
         editToReplyAllIcon.play()
       }
 
-      override fun onPageAboutToCollapse(
-        page: ExpandablePageLayout,
-        collapseAnimDuration: Long
-      ) {
+      override fun onPageAboutToCollapse(collapseAnimDuration: Long) {
         editToReplyAllIcon.reverse()
       }
     })

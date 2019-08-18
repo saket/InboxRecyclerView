@@ -7,25 +7,19 @@ package me.saket.inboxrecyclerview.page
  */
 abstract class SimplePageStateChangeCallbacks : PageStateChangeCallbacks {
 
-  override fun onPageAboutToExpand(
-    page: ExpandablePageLayout,
-    expandAnimDuration: Long
-  ) {
+  override fun onPageAboutToExpand(expandAnimDuration: Long) {
     // For rent. Broker free.
   }
 
-  override fun onPageExpanded(page: ExpandablePageLayout) {
+  override fun onPageExpanded() {
     // For rent. Broker free.
   }
 
-  override fun onPageAboutToCollapse(
-    page: ExpandablePageLayout,
-    collapseAnimDuration: Long
-  ) {
+  override fun onPageAboutToCollapse(collapseAnimDuration: Long) {
     // For rent. Broker free.
   }
 
-  override fun onPageCollapsed(page: ExpandablePageLayout) {
+  override fun onPageCollapsed() {
     // For rent. Broker free.
   }
 }

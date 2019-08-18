@@ -9,19 +9,22 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  */
 abstract class ItemExpandAnimator {
 
-  //protected lateinit var recyclerView: InboxRecyclerView
-  private lateinit var changeDetector: PageLocationChangeDetector
+  private lateinit var onDetach: () -> Unit
 
   fun onAttachRecyclerView(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) {
-    this.changeDetector = PageLocationChangeDetector(page) { onPageMove(recyclerView, page) }
+    val changeDetector = PageLocationChangeDetector(page) { onPageMove(recyclerView, page) }
 
     page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
     page.viewTreeObserver.addOnPreDrawListener(changeDetector)
+
+    onDetach = {
+      page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
+      page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
+    }
   }
 
-  fun onDetachRecyclerView(page: ExpandablePageLayout) {
-    page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
-    page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
+  fun onDetachRecyclerView() {
+    onDetach()
   }
 
   /**

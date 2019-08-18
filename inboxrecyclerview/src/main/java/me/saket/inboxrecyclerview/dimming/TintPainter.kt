@@ -12,17 +12,11 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  */
 abstract class TintPainter {
 
-  abstract fun onAttachRecyclerView(
-    recyclerView: InboxRecyclerView,
-    page: ExpandablePageLayout
-  )
+  abstract fun onAttachRecyclerView(recyclerView: InboxRecyclerView, page: ExpandablePageLayout)
 
-  abstract fun onDetachRecyclerView(page: ExpandablePageLayout)
+  abstract fun onDetachRecyclerView()
 
-  abstract fun drawTint(
-    canvas: Canvas,
-    page: ExpandablePageLayout
-  )
+  abstract fun drawTint(canvas: Canvas)
 
   companion object {
 
@@ -58,14 +52,9 @@ abstract class TintPainter {
           page: ExpandablePageLayout
         ) = Unit
 
-        override fun onDetachRecyclerView(
-          page: ExpandablePageLayout
-        ) = Unit
+        override fun onDetachRecyclerView() = Unit
 
-        override fun drawTint(
-          canvas: Canvas,
-          page: ExpandablePageLayout
-        ) = Unit
+        override fun drawTint(canvas: Canvas) = Unit
       }
     }
   }
