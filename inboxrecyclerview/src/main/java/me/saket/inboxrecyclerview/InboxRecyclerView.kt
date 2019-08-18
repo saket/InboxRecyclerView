@@ -33,7 +33,7 @@ open class InboxRecyclerView(
 
       val page = expandablePage
       if (page != null) {
-        old.onDetachRecyclerView(page)
+        old.onDetachRecyclerView()
         value.onAttachRecyclerView(this, page)
       }
     }
@@ -46,7 +46,7 @@ open class InboxRecyclerView(
 
       val page = expandablePage
       if (page != null) {
-        old.onDetachRecyclerView(page)
+        old.onDetachRecyclerView()
         field.onAttachRecyclerView(this, page)
       }
     }
@@ -68,8 +68,8 @@ open class InboxRecyclerView(
       }
 
       if (oldPage != null) {
-        tintPainter.onDetachRecyclerView(oldPage)
-        itemExpandAnimator.onDetachRecyclerView(oldPage)
+        tintPainter.onDetachRecyclerView()
+        itemExpandAnimator.onDetachRecyclerView()
         oldPage.internalStateCallbacksForRecyclerView = NoOp()
       }
 
@@ -107,8 +107,8 @@ open class InboxRecyclerView(
   override fun onDetachedFromWindow() {
     val page = expandablePage
     if (page != null) {
-      itemExpandAnimator.onDetachRecyclerView(page)
-      tintPainter.onDetachRecyclerView(page)
+      itemExpandAnimator.onDetachRecyclerView()
+      tintPainter.onDetachRecyclerView()
     }
     super.onDetachedFromWindow()
   }
@@ -286,7 +286,7 @@ open class InboxRecyclerView(
     super.draw(canvas)
 
     // Dimming behind the expandable page.
-    expandablePage?.run { tintPainter.drawTint(canvas, this) }
+    expandablePage?.run { tintPainter.drawTint(canvas) }
   }
 
   override fun canScrollProgrammatically(): Boolean {
