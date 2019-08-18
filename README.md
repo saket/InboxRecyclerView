@@ -3,7 +3,7 @@
 InboxRecyclerView is a library for building expandable descendant navigation, inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html). If you're interested in learning how it was created, [here's a detailed blog post](https://saket.me/inbox-recyclerview).
 
 ```groovy
-implementation 'me.saket:inboxrecyclerview:1.0.0'
+implementation 'me.saket:inboxrecyclerview:2.0.0-beta1'
 ```
 
 FYI, `InboxRecyclerView` has a dependency on `androidx`. If you haven't [migrated](https://android-developers.googleblog.com/2018/05/hello-world-androidx.html) from the support library already, this would be a good opportunity.
@@ -35,8 +35,9 @@ FYI, `InboxRecyclerView` has a dependency on `androidx`. If you haven't [migrate
 
 **Expanding content**
 
-```java
-recyclerView.setExpandablePage(contentPage)
+```kotlin
+recyclerView.expandablePage = findViewById(...)
+recyclerView.tintPainter = TintPainter.uncoveredArea(Color.WHITE, opacity = 0.65f)
 
 recyclerViewAdapter.itemClickListener = { clickedItem ->
   expandableFragment.loadContent(clickedItem)
