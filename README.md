@@ -29,18 +29,22 @@ FYI, `InboxRecyclerView` has a dependency on `androidx`. If you haven't [migrate
   higher view position or a higher elevation.
 -->
 <me.saket.inboxrecyclerview.page.ExpandablePageLayout
-  android:layout_width="match_parent"
-  android:layout_height="match_parent" />
+  android:layout_width="match_parent"                                                     
+  android:layout_height="match_parent"
+  android:background="@color/window_background" />
 ```
 
 **Expanding content**
 
 ```kotlin
-recyclerView.expandablePage = findViewById(...)
+val expandablePage = findViewById(...)
+expandablePage.pushParentToolbarOnExpand(toolbar)
+
+recyclerView.expandablePage = expandablePage
 recyclerView.tintPainter = TintPainter.uncoveredArea(Color.WHITE, opacity = 0.65f)
 
 recyclerViewAdapter.itemClickListener = { clickedItem ->
-  expandableFragment.loadContent(clickedItem)
+  // Load content inside expandablePage.
   recyclerView.expandItem(clickedItem.adapterId)
 }
 ```
