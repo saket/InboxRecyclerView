@@ -20,9 +20,9 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 /**
  * A RecyclerView where items can expand and collapse to and from an [ExpandablePageLayout].
  */
-open class InboxRecyclerView(
+open class InboxRecyclerView @JvmOverloads constructor(
   context: Context,
-  attrs: AttributeSet
+  attrs: AttributeSet? = null
 ) : ScrollSuppressibleRecyclerView(context, attrs), InternalPageCallbacks {
 
   /** Controls how [InboxRecyclerView] items are animated when the page is moving. */
