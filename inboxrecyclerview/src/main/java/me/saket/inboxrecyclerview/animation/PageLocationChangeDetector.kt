@@ -16,6 +16,8 @@ internal class PageLocationChangeDetector(
   private var lastClippedDimens = Rect()
   private var lastState = page.currentState
 
+  private val rectBuffer = Rect()
+
   override fun onPreDraw(): Boolean {
     dispatchCallbackIfNeeded()
     return true
@@ -31,7 +33,7 @@ internal class PageLocationChangeDetector(
     val stateChanged = lastState != page.currentState
     val dimensionsChanged = lastWidth != page.width
         || lastHeight != page.height
-        || lastClippedDimens != page.clippedDimens
+        || lastClippedDimens != page.clippedDimens(rectBuffer)
 
     if (moved || dimensionsChanged || stateChanged) {
       changeListener()
@@ -41,7 +43,7 @@ internal class PageLocationChangeDetector(
     lastTranslationY = page.translationY
     lastWidth = page.width
     lastHeight = page.height
-    lastClippedDimens = page.clippedDimens
+    lastClippedDimens.set(rectBuffer)
     lastState = page.currentState
   }
 }

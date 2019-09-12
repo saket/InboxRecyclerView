@@ -5,6 +5,7 @@ import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
+import android.graphics.Rect
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.animation.PageLocationChangeDetector
@@ -67,6 +68,7 @@ open class UncoveredAreaTintPainter(
 
     private val minIntensity = 0
     private val maxIntensity = (255 * opacity).toInt()    // [0..255]
+    private val rectBuffer = Rect()
 
     private var tintAnimator: ValueAnimator = ObjectAnimator()
     private var lastIsCollapseEligible = false
@@ -107,7 +109,7 @@ open class UncoveredAreaTintPainter(
           canvas.drawRect(0F, (bottom + page.translationY), right.toFloat(), bottom.toFloat(), tintPaint)
 
         } else if (page.isExpandingOrCollapsing) {
-          val pageBottom = page.translationY + page.clippedDimens.height().toFloat()
+          val pageBottom = page.translationY + page.clippedDimens(rectBuffer).height().toFloat()
           canvas.drawRect(0F, pageBottom, right.toFloat(), bottom.toFloat(), tintPaint)
         }
       }

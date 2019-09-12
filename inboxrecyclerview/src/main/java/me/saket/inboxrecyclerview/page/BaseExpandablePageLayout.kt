@@ -6,6 +6,8 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Outline
 import android.graphics.Rect
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
@@ -23,9 +25,22 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
 ) : RelativeLayout(context, attrs) {
 
   /** The visible portion of this layout. */
-  // TODO: This creates a new Rect internally everytime. Optimize this.
+  @Deprecated(
+      message = "Use clippedDimens(Rect) instead, which avoids allocating a new Rect on every call",
+      replaceWith = ReplaceWith("this.clippedDimens(rectBuffer)")
+  )
   val clippedDimens: Rect
     get() = clipBounds
+
+  /** The visible portion of this layout. */
+  fun clippedDimens(buffer: Rect): Rect {
+    return if (VERSION.SDK_INT >= VERSION_CODES.M) {
+      getClipBounds(buffer)
+      buffer
+    } else {
+      clipBounds
+    }
+  }
 
   private var dimensionAnimator: ValueAnimator = ObjectAnimator()
   private var isFullyVisible: Boolean = false

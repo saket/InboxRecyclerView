@@ -399,6 +399,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
     // The hide animation happens a bit too quickly if the page has to travel a large
     // distance (when using the current interpolator: EASE). Let's try slowing it down.
+    @Suppress("DEPRECATION")
     val speedFactor = when {
       show && abs(targetPageTranslationY - fromTy) > clippedDimens.height() * 2 / 5 -> 2L
       else -> 1L
@@ -631,6 +632,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   ): InterceptResult {
     val nestedPageCopy = nestedPage
 
+    @Suppress("DEPRECATION")
     if (nestedPageCopy != null
         && nestedPageCopy.isExpandedOrExpanding
         && nestedPageCopy.clippedDimens.contains(downX.toInt(), downY.toInt())
