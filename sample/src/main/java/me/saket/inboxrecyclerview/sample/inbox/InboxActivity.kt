@@ -1,10 +1,12 @@
 package me.saket.inboxrecyclerview.sample.inbox
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxrelay2.PublishRelay
@@ -17,7 +19,6 @@ import me.saket.inboxrecyclerview.sample.EmailRepository
 import me.saket.inboxrecyclerview.sample.R
 import me.saket.inboxrecyclerview.sample.about.AboutActivity
 import me.saket.inboxrecyclerview.sample.email.EmailThreadFragment
-import me.saket.inboxrecyclerview.sample.widgets.ReversibleAnimatedVectorDrawable
 
 class InboxActivity : AppCompatActivity() {
 
@@ -55,6 +56,7 @@ class InboxActivity : AppCompatActivity() {
     }
   }
 
+  @SuppressLint("CheckResult")
   private fun setupThreadList() {
     recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.expandablePage = emailPageLayout
@@ -70,6 +72,7 @@ class InboxActivity : AppCompatActivity() {
         }
   }
 
+  @SuppressLint("CheckResult")
   private fun setupThreadPage() {
     var threadFragment = supportFragmentManager.findFragmentById(emailPageLayout.id) as EmailThreadFragment?
     if (threadFragment == null) {
@@ -90,15 +93,20 @@ class InboxActivity : AppCompatActivity() {
   }
 
   private fun setupFab() {
-    val editToReplyAllIcon = ReversibleAnimatedVectorDrawable(fab.drawable as AnimatedVectorDrawable)
+    val avd = { iconRes: Int -> getDrawable(this, iconRes) as AnimatedVectorDrawable }
+    fab.setImageDrawable(avd(R.drawable.avd_edit_to_reply_all))
 
     emailPageLayout.addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
       override fun onPageAboutToExpand(expandAnimDuration: Long) {
-        editToReplyAllIcon.play()
+        val icon = avd(R.drawable.avd_edit_to_reply_all)
+        fab.setImageDrawable(icon)
+        icon.start()
       }
 
       override fun onPageAboutToCollapse(collapseAnimDuration: Long) {
-        editToReplyAllIcon.reverse()
+        val icon = avd(R.drawable.avd_reply_all_to_edit)
+        fab.setImageDrawable(icon)
+        icon.start()
       }
     })
   }
