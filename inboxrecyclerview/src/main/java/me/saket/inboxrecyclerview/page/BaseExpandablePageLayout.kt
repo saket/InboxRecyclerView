@@ -23,6 +23,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
 ) : RelativeLayout(context, attrs) {
 
   /** The visible portion of this layout. */
+  // TODO: This creates a new Rect internally everytime. Optimize this.
   val clippedDimens: Rect
     get() = clipBounds
 

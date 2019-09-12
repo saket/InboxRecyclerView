@@ -9,7 +9,10 @@ internal class PageLocationChangeDetector(
   private val changeListener: () -> Unit
 ) : ViewTreeObserver.OnPreDrawListener, ViewTreeObserver.OnGlobalLayoutListener {
 
+  private var lastTranslationX = 0F
   private var lastTranslationY = 0F
+  private var lastWidth = 0
+  private var lastHeight = 0
   private var lastClippedDimens = Rect()
   private var lastState = page.currentState
 
@@ -24,15 +27,20 @@ internal class PageLocationChangeDetector(
   }
 
   private fun dispatchCallbackIfNeeded() {
-    val moved = lastTranslationY != page.translationY
-    val dimensionsChanged = lastClippedDimens != page.clippedDimens
+    val moved = lastTranslationX != page.translationX || lastTranslationY != page.translationY
     val stateChanged = lastState != page.currentState
+    val dimensionsChanged = lastWidth != page.width
+        || lastHeight != page.height
+        || lastClippedDimens != page.clippedDimens
 
     if (moved || dimensionsChanged || stateChanged) {
       changeListener()
     }
 
+    lastTranslationX = page.translationX
     lastTranslationY = page.translationY
+    lastWidth = page.width
+    lastHeight = page.height
     lastClippedDimens = page.clippedDimens
     lastState = page.currentState
   }
