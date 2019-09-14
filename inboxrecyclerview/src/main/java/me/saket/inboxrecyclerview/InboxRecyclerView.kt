@@ -113,31 +113,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
     super.onDetachedFromWindow()
   }
 
-  override fun onSizeChanged(
-    w: Int,
-    h: Int,
-    oldw: Int,
-    oldh: Int
-  ) {
-    super.onSizeChanged(w, h, oldw, oldh)
-
-    // The items must maintain their positions, relative to the new bounds. Wait for
-    // Android to draw the child Views. Calling getChildCount() right now will return
-    // old values (that is, no. of children that were present before this height
-    // change happened.
-    val page = expandablePage
-    if (page != null) {
-      executeOnNextLayout {
-        if (page.currentState === ExpandablePageLayout.PageState.EXPANDING) {
-          page.animatePageExpandCollapse(true, width, height, expandedItem)
-
-        } else if (page.currentState === ExpandablePageLayout.PageState.EXPANDED) {
-          page.alignPageToCoverScreen()
-        }
-      }
-    }
-  }
-
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
     val dispatched = super.dispatchTouchEvent(ev)
 

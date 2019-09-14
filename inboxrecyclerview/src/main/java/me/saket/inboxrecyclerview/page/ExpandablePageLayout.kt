@@ -15,6 +15,8 @@ import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.executeOnMeasure
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDING
 import me.saket.inboxrecyclerview.withEndAction
 import java.lang.reflect.Method
 import java.util.concurrent.CopyOnWriteArrayList
@@ -154,6 +156,16 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   override fun onTouchEvent(event: MotionEvent): Boolean {
     val handled = pullToCollapseEnabled && pullToCollapseListener.onTouch(this, event)
     return handled || super.onTouchEvent(event)
+  }
+
+  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    super.onSizeChanged(w, h, oldw, oldh)
+
+    @Suppress("NON_EXHAUSTIVE_WHEN")
+    when (currentState) {
+      EXPANDING -> animateDimensions(toWidth = width, toHeight = height)
+      EXPANDED -> alignPageToCoverScreen()
+    }
   }
 
   override fun onPull(
@@ -318,7 +330,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     translationY = 0F
   }
 
-  internal fun animatePageExpandCollapse(
+  private fun animatePageExpandCollapse(
     expand: Boolean,
     targetWidth: Int,
     targetHeight: Int,

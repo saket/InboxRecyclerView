@@ -48,14 +48,6 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     super.onDetachedFromWindow()
   }
 
-  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-    super.onSizeChanged(w, h, oldw, oldh)
-
-    if (isFullyVisible) {
-      setClippedDimensions(w, h)
-    }
-  }
-
   fun animateDimensions(toWidth: Int, toHeight: Int) {
     dimensionAnimator.cancel()
 
