@@ -342,7 +342,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       visibility = View.VISIBLE
     }
 
-    alpha = if (expand) collapsedAlpha else expandedAlpha
     stopAnyOngoingPageAnimation()
     animate()
         .withLayer()
