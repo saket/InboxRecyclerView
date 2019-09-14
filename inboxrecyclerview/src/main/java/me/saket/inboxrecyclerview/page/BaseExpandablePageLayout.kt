@@ -6,8 +6,6 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Outline
 import android.graphics.Rect
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
@@ -24,23 +22,8 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : RelativeLayout(context, attrs) {
 
-  /** The visible portion of this layout. */
-  @Deprecated(
-      message = "Use clippedDimens(Rect) instead, which avoids allocating a new Rect on every call",
-      replaceWith = ReplaceWith("this.clippedDimens(rectBuffer)")
-  )
-  val clippedDimens: Rect
-    get() = clipBounds
-
-  /** The visible portion of this layout. */
-  fun clippedDimens(buffer: Rect): Rect {
-    return if (VERSION.SDK_INT >= VERSION_CODES.M) {
-      getClipBounds(buffer)
-      buffer
-    } else {
-      clipBounds
-    }
-  }
+  /** The visible portion of this layout. Warning: this is mutable. Use wisely! */
+  internal val clippedDimens: Rect = Rect()
 
   private var dimensionAnimator: ValueAnimator = ObjectAnimator()
   private var isFullyVisible: Boolean = false
@@ -49,12 +32,13 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   var animationInterpolator: TimeInterpolator = DEFAULT_ANIM_INTERPOLATOR
 
   init {
-    clipBounds = Rect()
+    clipBounds = clippedDimens
 
     outlineProvider = object : ViewOutlineProvider() {
       override fun getOutline(view: View, outline: Outline) {
-        outline.setRect(0, 0, clipBounds.width(), clipBounds.height())
-        outline.alpha = clipBounds.height().toFloat() / height
+        val clippedDimens = clippedDimens
+        outline.setRect(0, 0, clippedDimens.width(), clippedDimens.height())
+        outline.alpha = clippedDimens.height().toFloat() / height
       }
     }
   }
@@ -80,8 +64,8 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
       interpolator = animationInterpolator
       startDelay = ANIMATION_START_DELAY
 
-      val fromWidth = clipBounds.width()
-      val fromHeight = clipBounds.height()
+      val fromWidth = clippedDimens.width()
+      val fromHeight = clippedDimens.height()
 
       addUpdateListener {
         val scale = it.animatedValue as Float
@@ -94,8 +78,11 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   }
 
   fun setClippedDimensions(newClippedWidth: Int, newClippedHeight: Int) {
-    isFullyVisible = newClippedWidth > 0 && newClippedHeight > 0 && newClippedWidth == width && newClippedHeight == height
-    clipBounds = Rect(0, 0, newClippedWidth, newClippedHeight)
+    isFullyVisible = newClippedWidth > 0 && newClippedHeight > 0
+        && newClippedWidth == width
+        && newClippedHeight == height
+    clippedDimens.set(0, 0, newClippedWidth, newClippedHeight)
+    clipBounds = clippedDimens
     invalidateOutline()
   }
 

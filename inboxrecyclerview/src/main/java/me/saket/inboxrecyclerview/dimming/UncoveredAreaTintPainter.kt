@@ -109,7 +109,7 @@ open class UncoveredAreaTintPainter(
           canvas.drawRect(0F, (bottom + page.translationY), right.toFloat(), bottom.toFloat(), tintPaint)
 
         } else if (page.isExpandingOrCollapsing) {
-          val pageBottom = page.translationY + page.clippedDimens(rectBuffer).height().toFloat()
+          val pageBottom = page.translationY + page.clippedDimens.height().toFloat()
           canvas.drawRect(0F, pageBottom, right.toFloat(), bottom.toFloat(), tintPaint)
         }
       }

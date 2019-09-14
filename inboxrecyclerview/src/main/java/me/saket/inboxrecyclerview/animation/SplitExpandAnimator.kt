@@ -1,6 +1,5 @@
 package me.saket.inboxrecyclerview.animation
 
-import android.graphics.Rect
 import android.view.View
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
@@ -13,8 +12,6 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  * Vice versa when the page is collapsing.
  */
 open class SplitExpandAnimator : ItemExpandAnimator() {
-
-  private val rectBuffer = Rect()
 
   override fun onPageMove(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) {
     if (page.isCollapsed) {
@@ -36,7 +33,7 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
 
     val pageLocationOnScreen = page.locationOnScreen()
     val pageTop = pageLocationOnScreen[1]
-    val pageBottom = pageTop + page.clippedDimens(rectBuffer).height()
+    val pageBottom = pageTop + page.clippedDimens.height()
 
     // Move the RecyclerView rows with the page.
     if (anchorView != null) {
@@ -54,7 +51,7 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
     anchorView?.apply {
       val minPageHeight = anchorView.height
       val maxPageHeight = page.height
-      val expandRatio = (page.clippedDimens(rectBuffer).height() - minPageHeight).toFloat() / (maxPageHeight - minPageHeight)
+      val expandRatio = (page.clippedDimens.height() - minPageHeight).toFloat() / (maxPageHeight - minPageHeight)
       applyAlphaOnAnchorView(this, expandRatio)
     }
   }

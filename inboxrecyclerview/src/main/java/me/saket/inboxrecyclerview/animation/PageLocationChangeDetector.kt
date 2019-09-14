@@ -33,7 +33,7 @@ internal class PageLocationChangeDetector(
     val stateChanged = lastState != page.currentState
     val dimensionsChanged = lastWidth != page.width
         || lastHeight != page.height
-        || lastClippedDimens != page.clippedDimens(rectBuffer)
+        || lastClippedDimens != page.clippedDimens
 
     if (moved || dimensionsChanged || stateChanged) {
       changeListener()
