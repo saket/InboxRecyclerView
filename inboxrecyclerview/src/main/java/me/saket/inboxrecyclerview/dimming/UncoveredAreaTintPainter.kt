@@ -5,7 +5,6 @@ import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
-import android.graphics.Rect
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.animation.PageLocationChangeDetector
@@ -56,10 +55,10 @@ open class UncoveredAreaTintPainter(
     onDrawTint(canvas)
   }
 
-  protected open fun createCallbacks(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) =
+  internal open fun createCallbacks(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) =
     StateChangeCallbacks(recyclerView, page, color, opacity)
 
-  open class StateChangeCallbacks(
+  internal open class StateChangeCallbacks(
     private val recyclerView: InboxRecyclerView,
     private val page: ExpandablePageLayout,
     private val color: Int,
@@ -68,7 +67,6 @@ open class UncoveredAreaTintPainter(
 
     private val minIntensity = 0
     private val maxIntensity = (255 * opacity).toInt()    // [0..255]
-    private val rectBuffer = Rect()
 
     private var tintAnimator: ValueAnimator = ObjectAnimator()
     private var lastIsCollapseEligible = false
