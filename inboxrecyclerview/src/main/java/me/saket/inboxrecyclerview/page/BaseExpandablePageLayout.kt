@@ -36,7 +36,6 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
 
     outlineProvider = object : ViewOutlineProvider() {
       override fun getOutline(view: View, outline: Outline) {
-        val clippedDimens = clippedDimens
         outline.setRect(0, 0, clippedDimens.width(), clippedDimens.height())
         outline.alpha = clippedDimens.height().toFloat() / height
       }
