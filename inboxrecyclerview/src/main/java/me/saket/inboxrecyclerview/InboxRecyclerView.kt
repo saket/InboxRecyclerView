@@ -304,7 +304,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
 
   private fun ensureStableIds(adapter: Adapter<*>?) {
     adapter?.apply {
-      if (hasStableIds().not()) {
+      if (isInEditMode.not() && hasStableIds().not()) {
         throw AssertionError(
             "$adapter needs to have stable IDs so that the expanded item can be restored across " +
                 "orientation changes. Unlike adapter positions, IDs remain unchanged across " +
