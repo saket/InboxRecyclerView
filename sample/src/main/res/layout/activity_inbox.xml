@@ -11,8 +11,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
+    android:paddingTop="@dimen/emailthread_item_vertical_margin"
     android:paddingBottom="@dimen/bottom_spacing_for_bottomappbar"
-    android:paddingTop="@dimen/emailthread_item_vertical_margin" />
+    tools:layoutManager="LinearLayoutManager"
+    tools:listitem="@layout/list_email_thread" />
 
   <me.saket.inboxrecyclerview.page.ExpandablePageLayout
     android:id="@+id/inbox_email_thread_page"
