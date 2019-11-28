@@ -250,7 +250,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Expand this page instantly, without any animation.
    */
-  internal fun expandImmediately() {
+  internal open fun expandImmediately() {
     if (currentState == PageState.EXPANDING || currentState == PageState.EXPANDED) {
       return
     }

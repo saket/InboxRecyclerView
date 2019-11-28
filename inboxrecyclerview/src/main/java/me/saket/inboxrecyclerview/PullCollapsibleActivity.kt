@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
 import me.saket.inboxrecyclerview.page.StandaloneExpandablePageLayout
 
 /**
@@ -87,18 +88,18 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
 
     if (pullCollapsibleEnabled) {
       pageLayout.pullToCollapseThresholdDistance = standardToolbarHeight
-      pageLayout.callbacks = object : StandaloneExpandablePageLayout.Callbacks {
-        override fun onPageRelease(collapseEligible: Boolean) {
-          if (collapseEligible) {
-            finish()
-          }
+      pageLayout.onPageRelease = { collapseEligible ->
+        if (collapseEligible) {
+          finish()
         }
+      }
 
+      pageLayout.addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
         override fun onPageCollapsed() {
           super@PullCollapsibleActivity.finish()
           overridePendingTransition(0, 0)
         }
-      }
+      })
 
     } else {
       pageLayout.pullToCollapseEnabled = false
