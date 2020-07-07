@@ -90,7 +90,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   init {
     // Hidden on start.
-    alpha = expandedAlpha
+    alpha = collapsedAlpha
     visibility = View.INVISIBLE
     changeState(PageState.COLLAPSED)
 
@@ -299,6 +299,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
         expandedItem.locationOnScreen.height()
     )
     translationY = distanceYTo(expandedItem)
+    translationX = distanceXTo(expandedItem)
   }
 
   /**
