@@ -42,5 +42,11 @@ abstract class ItemExpandAnimator {
      */
     @JvmStatic
     fun split() = SplitExpandAnimator()
+
+    /**
+     * See [ScaleExpandAnimator].
+     */
+    @JvmStatic
+    fun scale(allowScaling: Boolean = true) = ScaleExpandAnimator(allowScaling)
   }
 }
