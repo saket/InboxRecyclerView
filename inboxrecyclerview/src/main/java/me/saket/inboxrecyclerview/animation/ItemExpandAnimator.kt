@@ -47,6 +47,6 @@ abstract class ItemExpandAnimator {
      * See [ScaleExpandAnimator].
      */
     @JvmStatic
-    fun scale(allowScaling: Boolean = true) = ScaleExpandAnimator(allowScaling)
+    fun scale(scaleBackground: Boolean = true) = ScaleExpandAnimator(scaleBackground)
   }
 }
