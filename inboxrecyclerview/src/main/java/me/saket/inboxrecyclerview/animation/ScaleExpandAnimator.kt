@@ -7,8 +7,9 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 /**
  * @param scaling whether to scale items or not, if set to false this animator actually
  * looks like a simple shared element transition.
+ * @see <a href="https://imgur.com/a/mG0S94t">Watch the examples</a>
  */
-class ScaleExpandAnimator(private val scaling: Boolean = true) : ItemExpandAnimator() {
+class ScaleExpandAnimator(private val scaleBackground: Boolean = true) : ItemExpandAnimator() {
 
   override fun onPageMove(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) {
     val anchorIndex = recyclerView.expandedItem.viewIndex
@@ -40,7 +41,7 @@ class ScaleExpandAnimator(private val scaling: Boolean = true) : ItemExpandAnima
         translationY = distanceExpandedTowardsTop.toFloat()
         // Just in case we're not using a LinearLayoutManager
         translationX = distanceExpandedTowardsCorner.toFloat()
-        if (scaling) {
+        if (scaleBackground) {
           // 1 to 0.95
           val expandedScale = 1f - (expandRatio * .10f)
           val expandedAlpha = 1f - (expandRatio * .70f)
