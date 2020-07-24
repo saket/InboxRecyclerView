@@ -7,7 +7,7 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 /**
  * @param scaling whether to scale items or not, if set to false this animator actually
  * looks like a simple shared element transition.
- * @see <a href="https://imgur.com/a/mG0S94t">Watch the examples</a>
+ * @see <a href="https://github.com/saket/InboxRecyclerView/wiki/Item-animations#2-scale">Watch the examples</a>
  */
 class ScaleExpandAnimator(private val scaleBackground: Boolean = true) : ItemExpandAnimator() {
 
