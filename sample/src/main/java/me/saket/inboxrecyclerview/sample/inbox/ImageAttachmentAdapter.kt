@@ -36,6 +36,9 @@ class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val image = ContextCompat.getDrawable(imageView.context, attachment.drawableRes)!!
     imageView.setImageDrawable(image)
 
+    imageView.alpha = 0f
+    imageView.animate().alpha(1f).setDuration(150)
+
     imageView.executeOnMeasure {
       val resizedWidth = image.intrinsicWidth / (image.intrinsicHeight.toFloat() / imageView.height)
       val params = imageView.layoutParams
