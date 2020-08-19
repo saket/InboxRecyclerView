@@ -8,11 +8,11 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewPropertyAnimator
 import android.view.ViewTreeObserver
 
 internal object Views {
-
   internal fun toolbarHeight(context: Context): Int {
     val typedArray = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionBarSize))
     val standardToolbarHeight = typedArray.getDimensionPixelSize(0, 0)
@@ -25,7 +25,7 @@ internal object Views {
  * Execute a runnable when the next global layout happens for a `View`. Example usage includes
  * waiting for a list to draw its children just after you have updated its adapter's data-set.
  */
-fun View.executeOnNextLayout(listener: () -> Unit) {
+internal fun View.executeOnNextLayout(listener: () -> Unit) {
   viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
     override fun onGlobalLayout() {
       viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -38,7 +38,7 @@ fun View.executeOnNextLayout(listener: () -> Unit) {
  * Execute a runnable when a [view]'s dimensions get measured and is laid out on the screen.
  */
 @SuppressLint("LogNotTimber")
-fun View.executeOnMeasure(listener: () -> Unit) {
+internal fun View.executeOnMeasure(listener: () -> Unit) {
   if (isInEditMode || isLaidOut) {
     listener()
     return
@@ -59,7 +59,7 @@ fun View.executeOnMeasure(listener: () -> Unit) {
   })
 }
 
-fun ViewPropertyAnimator.withEndAction(action: (Boolean) -> Unit): ViewPropertyAnimator {
+internal fun ViewPropertyAnimator.withEndAction(action: (Boolean) -> Unit): ViewPropertyAnimator {
   return setListener(object : AnimatorListenerAdapter() {
     var canceled = false
 
@@ -77,13 +77,19 @@ fun ViewPropertyAnimator.withEndAction(action: (Boolean) -> Unit): ViewPropertyA
   })
 }
 
-fun View.globalVisibleRect(): RectF {
+internal fun View.globalVisibleRect(): RectF {
   val rect = Rect()
   getGlobalVisibleRect(rect)
   return RectF(rect.left.toFloat(), rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat())
 }
 
-fun View.locationOnScreen(loc: IntArray): Rect {
+internal fun View.locationOnScreen(loc: IntArray): Rect {
   getLocationOnScreen(loc)
   return Rect(loc[0], loc[1], loc[0] + width, loc[1] + height)
+}
+
+internal fun ViewGroup.onEachChild(action: (child: View, index: Int) -> Unit) {
+  for (i in 0 until childCount) {
+    action(getChildAt(i), i)
+  }
 }

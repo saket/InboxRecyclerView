@@ -1,6 +1,8 @@
 package me.saket.inboxrecyclerview.sample.email
 
 import android.annotation.SuppressLint
+import android.graphics.Rect
+import android.graphics.RectF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +14,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
-import me.saket.inboxrecyclerview.globalVisibleRect
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 import me.saket.inboxrecyclerview.page.InterceptResult
 import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
@@ -45,6 +46,7 @@ class EmailThreadFragment : Fragment() {
     return inflater.inflate(R.layout.fragment_email_thread, container, false)
   }
 
+  @SuppressLint("CheckResult")
   override fun onViewCreated(view: View, savedState: Bundle?) {
     super.onViewCreated(view, savedState)
 
@@ -159,4 +161,10 @@ class EmailThreadFragment : Fragment() {
   private fun renderShippingUpdate(attachment: ShippingUpdate) {
     View.inflate(context, R.layout.include_email_shipping_update, attachmentContainer)
   }
+}
+
+private fun View.globalVisibleRect(): RectF {
+  val rect = Rect()
+  getGlobalVisibleRect(rect)
+  return RectF(rect.left.toFloat(), rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat())
 }
