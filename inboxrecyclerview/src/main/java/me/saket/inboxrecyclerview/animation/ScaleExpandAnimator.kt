@@ -19,9 +19,7 @@ internal class ScaleExpandAnimator : ItemExpandAnimator() {
       // Reset everything. This is also useful when the content size
       // changes, say as a result of the soft-keyboard getting dismissed.
       recyclerView.apply {
-        alpha = 1f
-        scaleX = 1f
-        scaleY = 1f
+        unClippedScale = 1f
       }
       return
     }
@@ -32,13 +30,7 @@ internal class ScaleExpandAnimator : ItemExpandAnimator() {
     val pageY = pageLocationOnScreen[1]
 
     val expandRatio = (anchorY - pageY) / (anchorY - pageYBound)
-    val expandScale = 1f - (expandRatio * .10f)
-
-    recyclerView.apply {
-      alpha = 1f - (expandRatio * .70f)
-      scaleX = expandScale
-      scaleY = expandScale
-    }
+    recyclerView.unClippedScale = 1f - (expandRatio * .10f)
 
     // Fade in the anchor row with the expanding/collapsing page.
     anchorViewOverlay?.alpha = page.contentCoverAlpha

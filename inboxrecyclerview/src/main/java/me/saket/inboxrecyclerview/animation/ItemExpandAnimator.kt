@@ -17,9 +17,12 @@ abstract class ItemExpandAnimator {
   private var anchorViewOverlay: View? = null
   private var onRemoveOverlay: () -> Unit = {}
 
-  fun onAttachRecyclerView(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) {
+  fun onAttachRecyclerView(
+    recyclerView: InboxRecyclerView,
+    page: ExpandablePageLayout
+  ) {
     val changeDetector = PageLocationChangeDetector(page) {
-      val anchorView = maybeUpdateAnchorOverlay(page, recyclerView)
+      val anchorView = maybeUpdateAnchorOverlay(recyclerView, page)
       onPageMove(recyclerView, page, anchorView)
     }
 
@@ -37,8 +40,8 @@ abstract class ItemExpandAnimator {
   }
 
   private fun maybeUpdateAnchorOverlay(
-    page: ExpandablePageLayout,
-    recyclerView: InboxRecyclerView
+    recyclerView: InboxRecyclerView,
+    page: ExpandablePageLayout
   ): View? {
     val anchorIndex = recyclerView.expandedItem.viewIndex
 

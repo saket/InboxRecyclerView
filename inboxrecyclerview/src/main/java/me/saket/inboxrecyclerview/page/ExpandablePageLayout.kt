@@ -6,11 +6,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Outline
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import androidx.core.graphics.withScale
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
@@ -53,7 +55,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   var pullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
 
-  /** Minimum Y-distance the page has to be pulled before it's eligible for collapse. */
+  /**
+   * Minimum Y-distance the page has to be pulled before it's eligible for collapse.
+   * Defaults to around 56dp which is a Toolbar's height.
+   */
   var pullToCollapseThresholdDistance: Int
     get() = pullToCollapseListener.collapseDistanceThreshold
     set(value) {
@@ -73,6 +78,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var contentCoverAnimator: ValueAnimator = ObjectAnimator()
   private var isFullyCoveredByNestedPage = false
   private val locationOnScreenBuffer = IntArray(2)
+  internal var dimDrawable: Drawable? = null
 
   val isExpanded: Boolean
     get() = currentState == PageState.EXPANDED
@@ -551,6 +557,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     background.alpha = (contentCoverAlpha * 255).toInt()
     background.draw(canvas)
     background.alpha = alphaBackup
+
+    dimDrawable?.setBounds(left, top, right, bottom)
+    dimDrawable?.draw(canvas)
   }
 
   override fun drawChild(

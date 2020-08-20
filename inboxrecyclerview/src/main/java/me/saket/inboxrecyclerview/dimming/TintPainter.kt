@@ -1,61 +1,125 @@
 package me.saket.inboxrecyclerview.dimming
 
-import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.Color.BLACK
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
+import androidx.annotation.IntRange
 import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.animation.PageLocationChangeDetector
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
+ * TODO: rename to DimPainter.
  * Draws a tint on [InboxRecyclerView] rows while it's covered by [ExpandablePageLayout].
  */
 abstract class TintPainter {
+  private lateinit var onDetach: () -> Unit
 
-  abstract fun onAttachRecyclerView(recyclerView: InboxRecyclerView, page: ExpandablePageLayout)
+  fun onAttachRecyclerView(
+    recyclerView: InboxRecyclerView,
+    page: ExpandablePageLayout
+  ) {
+    val changeDetector = PageLocationChangeDetector(page) {
+      onPageMove(recyclerView, page)
+    }
 
-  abstract fun onDetachRecyclerView()
+    page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
+    page.viewTreeObserver.addOnPreDrawListener(changeDetector)
 
-  abstract fun drawTint(canvas: Canvas)
+    onDetach = {
+      cancelAnimation(recyclerView, page)
+      page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
+      page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
+    }
+  }
+
+  fun onDetachRecyclerView() {
+    onDetach()
+  }
+
+  abstract fun cancelAnimation(
+    rv: InboxRecyclerView,
+    page: ExpandablePageLayout
+  )
+
+  abstract fun onPageMove(
+    rv: InboxRecyclerView,
+    page: ExpandablePageLayout
+  )
+
+  internal data class Dim(
+    @ColorInt val color: Int,
+    @IntRange(from = 0, to = 255) val maxAlpha: Int
+  )
 
   companion object {
 
-    /**
-     * See [UncoveredAreaTintPainter].
-     */
+    /** See [ListAndPageDimPainter]. */
+    @JvmStatic
+    fun listAndPage(
+      @ColorInt listColor: Int = BLACK,
+      @FloatRange(from = 0.0, to = 1.0) listAlpha: Float = 0.15F,
+      @ColorInt pageColor: Int = BLACK,
+      @FloatRange(from = 0.0, to = 1.0) pageAlpha: Float = 0.15F
+    ): TintPainter =
+      ListAndPageDimPainter(
+          listDim = Dim(listColor, (listAlpha * 255).toInt()),
+          pageDim = Dim(pageColor, (pageAlpha * 255).toInt())
+      )
+
+    /** See [ListAndPageDimPainter]. */
     @JvmStatic
     @JvmOverloads
-    fun uncoveredArea(
-      @ColorInt color: Int = Color.BLACK,
-      @FloatRange(from = 0.0, to = 1.0) opacity: Float = 0.15F
-    ): TintPainter {
-      return UncoveredAreaTintPainter(color, opacity)
-    }
+    fun listAndPage(
+      @ColorInt color: Int = BLACK,
+      @FloatRange(from = 0.0, to = 1.0) alpha: Float = 0.15F
+    ): TintPainter = listAndPage(color, alpha, color, alpha)
 
-    /**
-     * See [CompleteListTintPainter].
-     */
+    /** See [ListAndPageDimPainter]. */
     @JvmStatic
     @JvmOverloads
-    fun completeList(
-      @ColorInt color: Int = Color.BLACK,
-      @FloatRange(from = 0.0, to = 1.0) opacity: Float = 0.15F
-    ): TintPainter {
-      return CompleteListTintPainter(color, opacity)
-    }
+    fun listOnly(
+      @ColorInt color: Int = BLACK,
+      @FloatRange(from = 0.0, to = 1.0) alpha: Float = 0.15F
+    ): TintPainter = ListAndPageDimPainter(
+        listDim = Dim(color, (alpha * 255).toInt()),
+        pageDim = null
+    )
 
     @JvmStatic
-    fun noOp(): TintPainter {
+    @JvmOverloads
+    @Deprecated(
+        "Use listAndPage() instead",
+        ReplaceWith("TintPainter.listAndPage(color, opacity)")
+    )
+    fun uncoveredArea(color: Int = BLACK, opacity: Float = 0.15F) =
+      listAndPage(color, opacity)
+
+    @JvmStatic
+    @JvmOverloads
+    @Deprecated(
+        "No longer supported. Use listAndPage() instead",
+        ReplaceWith("TintPainter.listAndPage(color, opacity)")
+    )
+    fun completeList(color: Int = BLACK, opacity: Float = 0.15F) =
+      listAndPage(color, opacity)
+
+    @JvmStatic
+    fun none(): TintPainter {
       return object : TintPainter() {
-        override fun onAttachRecyclerView(
-          recyclerView: InboxRecyclerView,
+        override fun cancelAnimation(
+          rv: InboxRecyclerView,
           page: ExpandablePageLayout
         ) = Unit
 
-        override fun onDetachRecyclerView() = Unit
-
-        override fun drawTint(canvas: Canvas) = Unit
+        override fun onPageMove(rv: InboxRecyclerView, page: ExpandablePageLayout) = Unit
       }
+    }
+
+    @JvmStatic
+    @Deprecated("Use none() instead", ReplaceWith("TintPainter.none()"))
+    fun noOp(): TintPainter {
+      return none()
     }
   }
 }

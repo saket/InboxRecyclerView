@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
+import androidx.core.graphics.withScale
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
@@ -86,14 +87,27 @@ open class InboxRecyclerView @JvmOverloads constructor(
   private var isFullyCoveredByPage: Boolean = false
   private val restorer = StateRestorer(this)
   private val locationOnScreenBuffer = IntArray(2)
+  internal var dimDrawable: Drawable? = null
+  internal var unClippedScale: Float = 1f
+    set(value) {
+      field = value
+      invalidate()
+    }
 
   init {
-    // For drawing dimming using TintPainter.
-    setWillNotDraw(false)
-
     // Because setters don't get called for default values.
     itemExpandAnimator = ItemExpandAnimator.split()
     tintPainter = TintPainter.uncoveredArea()
+  }
+
+  override fun dispatchDraw(canvas: Canvas) {
+    // Android clips canvas to the view's scaled bounds so a custom
+    // scale property is used for drawing dimDrawable over full bounds.
+    canvas.withScale(unClippedScale, unClippedScale, pivotX = pivotX, pivotY = pivotY) {
+      super.dispatchDraw(canvas)
+    }
+    dimDrawable?.setBounds(left, top, right, bottom)
+    dimDrawable?.draw(canvas)
   }
 
   override fun onSaveInstanceState(): Parcelable {
@@ -258,13 +272,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
     invalidate()
 
     activityWindow?.setBackgroundDrawable(activityWindowOrigBackground)
-  }
-
-  override fun draw(canvas: Canvas) {
-    super.draw(canvas)
-
-    // Dimming behind the expandable page.
-    expandablePage?.run { tintPainter.drawTint(canvas) }
   }
 
   override fun canScrollProgrammatically(): Boolean {
