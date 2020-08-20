@@ -5,10 +5,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Outline
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.PaintDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -42,7 +39,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /** Alpha of this page when it's collapsed. */
   internal var collapsedContentCoverAlpha = 1f
   private val expandedContentCoverAlpha = 0f
-  private var contentCover: Drawable = PaintDrawable(Color.TRANSPARENT)
 
   /**
    * Alpha of a cover that's drawn on top to show/hide
@@ -51,7 +47,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   var contentCoverAlpha: Float = collapsedContentCoverAlpha
     set(value) {
       field = value
-      contentCover.alpha = (255 * value).toInt()
       invalidate()
       invalidateOutline()
     }
@@ -123,14 +118,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     outlineProvider = object : ViewOutlineProvider() {
       override fun getOutline(view: View, outline: Outline) {
         BACKGROUND.getOutline(view, outline)
-        outline.alpha = 1f - (contentCover.alpha / 255f)
+        outline.alpha = 1f - contentCoverAlpha
       }
     }
   }
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    copyBackgroundAsCover()
 
     // Cache before-hand.
     Thread {
@@ -190,7 +184,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
-    contentCover.setBounds(0, 0, w, h)
 
     @Suppress("NON_EXHAUSTIVE_WHEN")
     when (currentState) {
@@ -259,8 +252,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     if (isLaidOut.not() && visibility != View.GONE) {
       throw IllegalAccessError("Width / Height not available to expand")
     }
-
-    // Ignore if already expanded.
     if (isExpandedOrExpanding) {
       return
     }
@@ -279,7 +270,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * Expand this page instantly, without any animation.
    */
   internal open fun expandImmediately() {
-    if (currentState == PageState.EXPANDING || currentState == PageState.EXPANDED) {
+    if (isExpandedOrExpanding) {
       return
     }
 
@@ -423,25 +414,12 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     animateDimensions(targetWidth, targetHeight)
   }
 
-  override fun setBackground(background: Drawable?) {
-    super.setBackground(background)
-    copyBackgroundAsCover()
-  }
-
-  private fun copyBackgroundAsCover() {
-    checkNotNull(background) {
-      "An opaque background drawable is required for this page to show/hide its content during expansion/collapse."
-    }
-    contentCover = background.mutate()
-  }
-
   protected open fun animateContentCoverAlpha(expand: Boolean) {
     val toAlpha: Float = if (expand) expandedContentCoverAlpha else collapsedContentCoverAlpha
 
     contentCoverAnimator.cancel()
     contentCoverAnimator = ObjectAnimator.ofFloat(contentCoverAlpha, toAlpha).apply {
-      duration = animationDurationMillis / 2
-      interpolator = animationInterpolator
+      duration = animationDurationMillis / 3
       startDelay = ANIMATION_START_DELAY + if (expand) 0 else animationDurationMillis / 3
       addUpdateListener {
         contentCoverAlpha = it.animatedValue as Float
@@ -576,8 +554,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     if (currentState != PageState.COLLAPSED) {
       super.dispatchDraw(canvas)
     }
-    contentCover.alpha = (contentCoverAlpha * 255).toInt()
-    contentCover.draw(canvas)
+    val alphaBackup = background.alpha
+    background.alpha = (contentCoverAlpha * 255).toInt()
+    background.draw(canvas)
+    background.alpha = alphaBackup
   }
 
   override fun drawChild(
