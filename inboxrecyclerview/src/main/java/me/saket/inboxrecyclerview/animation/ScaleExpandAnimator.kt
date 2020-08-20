@@ -5,70 +5,42 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
- * @param scaling whether to scale items or not, if set to false this animator actually
  * looks like a simple shared element transition.
  * @see <a href="https://github.com/saket/InboxRecyclerView/wiki/Item-animations#2-scale">Watch the examples</a>
  */
-class ScaleExpandAnimator(private val scaleBackground: Boolean = true) : ItemExpandAnimator() {
+class ScaleExpandAnimator : ItemExpandAnimator() {
 
-  override fun onPageMove(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) {
-    val anchorIndex = recyclerView.expandedItem.viewIndex
-    val anchorView: View? = recyclerView.getChildAt(anchorIndex)
-
+  override fun onPageMove(
+    recyclerView: InboxRecyclerView,
+    page: ExpandablePageLayout,
+    anchorViewOverlay: View?
+  ) {
     if (page.isCollapsed) {
-      anchorView?.apply {
-        translationX = 0f
-        translationY = 0f
+      // Reset everything. This is also useful when the content size
+      // changes, say as a result of the soft-keyboard getting dismissed.
+      recyclerView.apply {
         alpha = 1f
+        scaleX = 1f
+        scaleY = 1f
       }
       return
     }
 
-    val anchorViewLocation = recyclerView.expandedItem.locationOnScreen
-
+    val anchorY = recyclerView.expandedItem.locationOnScreen.top
     val pageLocationOnScreen = page.locationOnScreen()
-    val pageTop = pageLocationOnScreen[1]
-    val pageBottom = pageTop + page.clippedDimens.height()
+    val pageYBound = pageLocationOnScreen[1] - page.translationY
+    val pageY = pageLocationOnScreen[1]
 
-    if (anchorView != null) {
-      val distanceExpandedTowardsTop = pageTop - anchorViewLocation.top
-      val distanceExpandedTowardsCorner = pageLocationOnScreen[0] - anchorView.left
-      anchorView.apply {
-        val minPageHeight = anchorView.height
-        val maxPageHeight = page.height
-        val expandRatio = (page.clippedDimens.height() - minPageHeight).toFloat() / (maxPageHeight - minPageHeight)
-        alpha = 1F - expandRatio
-        translationY = distanceExpandedTowardsTop.toFloat()
-        // Just in case we're not using a LinearLayoutManager
-        translationX = distanceExpandedTowardsCorner.toFloat()
-        if (scaleBackground) {
-          // 1 to 0.95
-          val expandedScale = 1f - (expandRatio * .10f)
-          val expandedAlpha = 1f - (expandRatio * .70f)
-          recyclerView.apply {
-            scaleX = expandedScale
-            scaleY = expandedScale
-            alpha = expandedAlpha
-          }
-        }
-      }
-    } else {
-      // Anchor View can be null when the page was expanded from
-      // an arbitrary location. See InboxRecyclerView#expandFromTop().
-      recyclerView.moveListItems(anchorIndex, 0, pageBottom)
-    }
-  }
+    val expandRatio = (anchorY - pageY) / (anchorY - pageYBound)
+    val expandScale = 1f - (expandRatio * .10f)
 
-  private fun InboxRecyclerView.moveListItems(
-    anchorIndex: Int,
-    distanceExpandedTowardsTop: Int,
-    distanceExpandedTowardsBottom: Int
-  ) {
-    for (childIndex in 0 until childCount) {
-      getChildAt(childIndex).translationY = when {
-        childIndex <= anchorIndex -> distanceExpandedTowardsTop.toFloat()
-        else -> distanceExpandedTowardsBottom.toFloat()
-      }
+    recyclerView.apply {
+      alpha = 1f - (expandRatio * .70f)
+      scaleX = expandScale
+      scaleY = expandScale
     }
+
+    // Fade in the anchor row with the expanding/collapsing page.
+    anchorViewOverlay?.alpha = page.contentCoverAlpha
   }
 }

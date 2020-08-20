@@ -13,7 +13,11 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  */
 open class SplitExpandAnimator : ItemExpandAnimator() {
 
-  override fun onPageMove(recyclerView: InboxRecyclerView, page: ExpandablePageLayout) {
+  override fun onPageMove(
+    recyclerView: InboxRecyclerView,
+    page: ExpandablePageLayout,
+    anchorViewOverlay: View?
+  ) {
     if (page.isCollapsed) {
       // Reset everything. This is also useful when the content size
       // changes, say as a result of the soft-keyboard getting dismissed.
@@ -28,7 +32,6 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
     }
 
     val anchorIndex = recyclerView.expandedItem.viewIndex
-    val anchorView: View? = recyclerView.getChildAt(anchorIndex)
     val anchorViewLocation = recyclerView.expandedItem.locationOnScreen
 
     val pageLocationOnScreen = page.locationOnScreen()
@@ -36,7 +39,7 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
     val pageBottom = pageTop + page.clippedDimens.height()
 
     // Move the RecyclerView rows with the page.
-    if (anchorView != null) {
+    if (anchorViewOverlay != null) {
       val distanceExpandedTowardsTop = pageTop - anchorViewLocation.top
       val distanceExpandedTowardsBottom = pageBottom - anchorViewLocation.bottom
       recyclerView.moveListItems(anchorIndex, distanceExpandedTowardsTop, distanceExpandedTowardsBottom)
@@ -48,16 +51,7 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
     }
 
     // Fade in the anchor row with the expanding/collapsing page.
-    anchorView?.apply {
-      val minPageHeight = anchorView.height
-      val maxPageHeight = page.height
-      val expandRatio = (page.clippedDimens.height() - minPageHeight).toFloat() / (maxPageHeight - minPageHeight)
-      applyAlphaOnAnchorView(this, expandRatio)
-    }
-  }
-
-  open fun applyAlphaOnAnchorView(anchorView: View, expandRatio: Float) {
-    anchorView.alpha = 1F - expandRatio
+    anchorViewOverlay?.alpha = page.contentCoverAlpha
   }
 
   open fun InboxRecyclerView.moveListItems(

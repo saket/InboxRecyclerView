@@ -77,9 +77,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   val isExpanded: Boolean
     get() = currentState == PageState.EXPANDED
 
-  val isExpandingOrCollapsing: Boolean
-    get() = currentState == PageState.EXPANDING || currentState == PageState.COLLAPSING
-
   val isCollapsing: Boolean
     get() = currentState == PageState.COLLAPSING
 
@@ -88,6 +85,12 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   val isExpanding: Boolean
     get() = currentState == PageState.EXPANDING
+
+  val isExpandingOrCollapsing: Boolean
+    get() = currentState == PageState.EXPANDING || currentState == PageState.COLLAPSING
+
+  val isExpandedOrCollapsed: Boolean
+    get() = currentState == PageState.EXPANDED || currentState == PageState.COLLAPSED
 
   val isExpandedOrExpanding: Boolean
     get() = currentState == PageState.EXPANDED || currentState == PageState.EXPANDING
