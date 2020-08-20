@@ -99,16 +99,22 @@ open class UncoveredAreaTintPainter(
 
     open fun drawTint(canvas: Canvas) {
       recyclerView.apply {
-        // Content above the page.
-        canvas.drawRect(0F, 0F, right.toFloat(), page.translationY, tintPaint)
+        // Tint above the page.
+        canvas.drawRect(0F, paddingTop.toFloat(), width.toFloat(), page.translationY, tintPaint)
 
-        // Content below the page.
+        // Tint below the page.
         if (page.isExpanded) {
-          canvas.drawRect(0F, (bottom + page.translationY), right.toFloat(), bottom.toFloat(), tintPaint)
+          canvas.drawRect(
+              0F,
+              (height + page.translationY),
+              width.toFloat(),
+              height.toFloat() - paddingBottom.toFloat(),
+              tintPaint
+          )
 
         } else if (page.isExpandingOrCollapsing) {
           val pageBottom = page.translationY + page.clippedDimens.height().toFloat()
-          canvas.drawRect(0F, pageBottom, right.toFloat(), bottom.toFloat(), tintPaint)
+          canvas.drawRect(0F, pageBottom, width.toFloat(), height.toFloat(), tintPaint)
         }
       }
     }
