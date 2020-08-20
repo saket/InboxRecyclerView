@@ -150,12 +150,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     currentState = newPageState
   }
 
-  override fun hasOverlappingRendering(): Boolean {
-    // This should help improve performance when animating alpha.
-    // Source: https://www.youtube.com/watch?v=wIy8g8yNhNk.
-    return false
-  }
-
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     // Ignore touch events until the page is expanded to avoid accidental taps.
     if (isExpanded) {
