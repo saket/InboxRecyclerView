@@ -34,7 +34,7 @@ class AboutActivity : PullCollapsibleActivity() {
       finish()
     }
 
-    bodyTextView.text = resources.getText(R.string.about_body)
+    bodyTextView.text = resources.getText(R.string.about_body).trim()
     BetterLinkMovementMethod.linkifyHtml(bodyTextView)
 
     githubLinkView.setOnClickListener {
