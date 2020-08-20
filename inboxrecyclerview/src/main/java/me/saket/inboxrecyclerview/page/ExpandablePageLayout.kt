@@ -148,7 +148,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForNestedPage = NoOp()
     internalStateCallbacksForRecyclerView = NoOp()
     stateChangeCallbacks.clear()
-    stopAnyOngoingPageAnimation()
+    stopAnyOngoingAnimation()
     super.onDetachedFromWindow()
   }
 
@@ -164,8 +164,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     // Ignore touch events until the page is
-    // fully expanded for avoiding accidental taps.
-    if (isExpanded) {
+    // visible avoiding accidental taps.
+    if (isExpandedOrExpanding) {
       super.dispatchTouchEvent(ev)
     }
 
@@ -206,10 +206,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     deltaUpwardPull: Boolean,
     collapseEligible: Boolean
   ) {
-    // In case the user pulled the page before it could fully
-    // open (and while the toolbar was still hiding).
-    stopToolbarAnimation()
-
     // Reveal the toolbar if this page is being pulled down or
     // hide it back if it's being released.
     if (parentToolbar != null) {
@@ -234,7 +230,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
 
     changeState(PageState.EXPANDED)
-    stopAnyOngoingPageAnimation()
+    stopAnyOngoingAnimation()
 
     // Restore everything to their expanded position.
     // 1. Hide Toolbar again.
@@ -244,10 +240,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
     // 2. Expand page again.
     if (translationY != 0F) {
+      animateContentCoverAlpha(expand = true)
+      animateDimensions(width, height)
       animate()
           .withLayer()
           .translationY(0F)
-          .alpha(expandedAlpha)
           .setDuration(animationDurationMillis)
           .setInterpolator(animationInterpolator)
           .withEndAction { dispatchOnPageFullyCoveredCallback() }
@@ -386,10 +383,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       visibility = View.VISIBLE
     }
 
-    stopAnyOngoingPageAnimation()
+    stopAnyOngoingAnimation()
+    animateContentCoverAlpha(expand)
     animate()
         .withLayer()
-        .alpha(if (expand) expandedAlpha else collapsedAlpha)
         .translationY(targetPageTranslationY)
         .translationX(targetPageTranslationX)
         .setDuration(animationDurationMillis)
@@ -475,17 +472,18 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       else -> 1L
     }
 
-    stopToolbarAnimation()
+    toolbarAnimator.cancel()
 
     // If the page lies behind the toolbar, use toolbar's current bottom position instead
-    toolbarAnimator = ObjectAnimator.ofFloat(fromTy, targetPageTranslationY)
-    toolbarAnimator.addUpdateListener { animation ->
-      updateToolbarTranslationY(show, animation.animatedValue as Float)
+    toolbarAnimator = ObjectAnimator.ofFloat(fromTy, targetPageTranslationY).apply {
+      addUpdateListener { animation ->
+        updateToolbarTranslationY(show, animation.animatedValue as Float)
+      }
+      duration = animationDurationMillis * speedFactor
+      interpolator = animationInterpolator
+      startDelay = ANIMATION_START_DELAY
+      start()
     }
-    toolbarAnimator.duration = animationDurationMillis * speedFactor
-    toolbarAnimator.interpolator = animationInterpolator
-    toolbarAnimator.startDelay = ANIMATION_START_DELAY
-    toolbarAnimator.start()
   }
 
   /**
@@ -514,12 +512,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     parentToolbar!!.translationY = targetTranslationY
   }
 
-  internal fun stopAnyOngoingPageAnimation() {
+  fun stopAnyOngoingAnimation() {
+    stopDimensionAnimation()
     animate().cancel()
-    stopToolbarAnimation()
-  }
-
-  private fun stopToolbarAnimation() {
+    contentCoverAnimator.cancel()
     toolbarAnimator.cancel()
   }
 

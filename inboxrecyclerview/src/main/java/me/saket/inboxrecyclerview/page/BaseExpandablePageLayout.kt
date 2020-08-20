@@ -47,8 +47,12 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     super.onDetachedFromWindow()
   }
 
-  fun animateDimensions(toWidth: Int, toHeight: Int) {
+  protected fun stopDimensionAnimation() {
     dimensionAnimator.cancel()
+  }
+
+  fun animateDimensions(toWidth: Int, toHeight: Int) {
+    stopDimensionAnimation()
 
     dimensionAnimator = ObjectAnimator.ofFloat(0F, 1F).apply {
       duration = animationDurationMillis
@@ -83,7 +87,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   }
 
   companion object {
-    private const val DEFAULT_ANIM_DURATION = 250L
+    private const val DEFAULT_ANIM_DURATION = 350L
     private val DEFAULT_ANIM_INTERPOLATOR = FastOutSlowInInterpolator()
   }
 }

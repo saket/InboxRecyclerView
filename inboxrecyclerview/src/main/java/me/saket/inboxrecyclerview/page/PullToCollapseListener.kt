@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewConfiguration
 import me.saket.inboxrecyclerview.Views
 import java.util.ArrayList
+import kotlin.math.abs
 
 class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) : View.OnTouchListener {
 
@@ -32,9 +33,9 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
      *
      * @param deltaY              Delta translation-Y since the last onPull call.
      * @param currentTranslationY Current translation-Y of the page.
-     * @param upwardPull          Whether or not the page is being pulled in the upward direction.
-     * @param deltaUpwardPull     Whether or not the last delta-pull was made in the upward direction.
-     * @param collapseEligible    Whether or not the pull distance was enough to trigger a collapse.
+     * @param upwardPull          Whether the page is being pulled in the upward direction.
+     * @param deltaUpwardPull     Whether the last delta-pull was made in the upward direction.
+     * @param collapseEligible    Whether the pull distance was enough to trigger a collapse.
      */
     fun onPull(
         deltaY: Float,
@@ -75,6 +76,9 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
         eligibleForCollapse = false
         horizontalSwipingConfirmed = null
         interceptedUntilNextGesture = horizontalSwipingConfirmed
+
+        // Page may have been touched during an animation. Stop ship!
+        cancelAnyOngoingAnimations()
         return false
       }
 
@@ -146,25 +150,22 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
         var deltaYWithFriction = deltaY / frictionFactor
 
         if (eligibleForCollapse) {
-          val extraFriction = collapseDistanceThreshold / (2F * Math.abs(expandablePage.translationY))
+          val extraFriction = collapseDistanceThreshold / (2F * abs(expandablePage.translationY))
           deltaYWithFriction *= extraFriction
         }
 
         val translationY = expandablePage.translationY + deltaYWithFriction
         expandablePage.translationY = translationY
-        dispatchPulledCallback(deltaYWithFriction, translationY, upwardSwipe, deltaUpwardSwipe)
+        dispatchPulledCallback(deltaYWithFriction, upwardSwipe, deltaUpwardSwipe)
 
         lastMoveY = event.rawY
         return true
       }
 
       MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
-        val totalSwipeDistanceY = event.rawY - downY
-        if (Math.abs(totalSwipeDistanceY) >= touchSlop) {
-          // The page is responsible for animating back into position if the page
-          // wasn't eligible for collapse. I no longer remember why I did this.
-          dispatchReleaseCallback()
-        }
+        // The page is responsible for animating back into position if the page
+        // wasn't eligible for collapse. I no longer remember why I did this.
+        dispatchReleaseCallback()
       }
     }
 
@@ -178,7 +179,8 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
     }
   }
 
-  private fun dispatchPulledCallback(deltaY: Float, translationY: Float, upwardPull: Boolean, deltaUpwardPull: Boolean) {
+  private fun dispatchPulledCallback(deltaY: Float, upwardPull: Boolean, deltaUpwardPull: Boolean) {
+    val translationY = expandablePage.translationY
     for (i in onPullListeners.indices) {
       val onPullListener = onPullListeners[i]
       onPullListener.onPull(deltaY, translationY, upwardPull, deltaUpwardPull, eligibleForCollapse)
@@ -186,6 +188,6 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
   }
 
   private fun cancelAnyOngoingAnimations() {
-    expandablePage.stopAnyOngoingPageAnimation()
+    expandablePage.stopAnyOngoingAnimation()
   }
 }
