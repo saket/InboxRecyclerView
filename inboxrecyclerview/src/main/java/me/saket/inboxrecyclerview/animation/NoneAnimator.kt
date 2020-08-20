@@ -4,7 +4,7 @@ import android.view.View
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
-open class NoneAnimator : ItemExpandAnimator() {
+internal class NoneAnimator : ItemExpandAnimator() {
   override fun onPageMove(
     recyclerView: InboxRecyclerView,
     page: ExpandablePageLayout,

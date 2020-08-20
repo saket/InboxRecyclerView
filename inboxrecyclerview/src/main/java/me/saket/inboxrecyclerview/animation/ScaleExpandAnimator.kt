@@ -8,7 +8,7 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  * looks like a simple shared element transition.
  * @see <a href="https://github.com/saket/InboxRecyclerView/wiki/Item-animations#2-scale">Watch the examples</a>
  */
-class ScaleExpandAnimator : ItemExpandAnimator() {
+internal class ScaleExpandAnimator : ItemExpandAnimator() {
 
   override fun onPageMove(
     recyclerView: InboxRecyclerView,

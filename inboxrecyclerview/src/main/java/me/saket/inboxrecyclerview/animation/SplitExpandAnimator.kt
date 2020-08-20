@@ -11,7 +11,7 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  *
  * Vice versa when the page is collapsing.
  */
-open class SplitExpandAnimator : ItemExpandAnimator() {
+internal class SplitExpandAnimator : ItemExpandAnimator() {
 
   override fun onPageMove(
     recyclerView: InboxRecyclerView,
@@ -54,7 +54,7 @@ open class SplitExpandAnimator : ItemExpandAnimator() {
     anchorViewOverlay?.alpha = page.contentCoverAlpha
   }
 
-  open fun InboxRecyclerView.moveListItems(
+  private fun InboxRecyclerView.moveListItems(
     anchorIndex: Int,
     distanceExpandedTowardsTop: Int,
     distanceExpandedTowardsBottom: Int

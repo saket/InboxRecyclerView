@@ -22,19 +22,6 @@ internal object Views {
 }
 
 /**
- * Execute a runnable when the next global layout happens for a `View`. Example usage includes
- * waiting for a list to draw its children just after you have updated its adapter's data-set.
- */
-internal fun View.executeOnNextLayout(listener: () -> Unit) {
-  viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-    override fun onGlobalLayout() {
-      viewTreeObserver.removeOnGlobalLayoutListener(this)
-      listener()
-    }
-  })
-}
-
-/**
  * Execute a runnable when a [view]'s dimensions get measured and is laid out on the screen.
  */
 @SuppressLint("LogNotTimber")
@@ -77,19 +64,7 @@ internal fun ViewPropertyAnimator.withEndAction(action: (Boolean) -> Unit): View
   })
 }
 
-internal fun View.globalVisibleRect(): RectF {
-  val rect = Rect()
-  getGlobalVisibleRect(rect)
-  return RectF(rect.left.toFloat(), rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat())
-}
-
 internal fun View.locationOnScreen(loc: IntArray): Rect {
   getLocationOnScreen(loc)
   return Rect(loc[0], loc[1], loc[0] + width, loc[1] + height)
-}
-
-internal fun ViewGroup.onEachChild(action: (child: View, index: Int) -> Unit) {
-  for (i in 0 until childCount) {
-    action(getChildAt(i), i)
-  }
 }

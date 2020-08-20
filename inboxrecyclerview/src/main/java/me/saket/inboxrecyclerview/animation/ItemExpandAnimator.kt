@@ -83,18 +83,18 @@ abstract class ItemExpandAnimator {
      * See [SplitExpandAnimator].
      */
     @JvmStatic
-    fun split() = SplitExpandAnimator()
+    fun split(): ItemExpandAnimator = SplitExpandAnimator()
 
     /**
      * See [ScaleExpandAnimator].
      */
     @JvmStatic
-    fun scale() = ScaleExpandAnimator()
+    fun scale(): ItemExpandAnimator = ScaleExpandAnimator()
 
     /**
      * See [NoneAnimator].
      */
     @JvmStatic
-    fun none() = NoneAnimator()
+    fun none(): ItemExpandAnimator = NoneAnimator()
   }
 }
