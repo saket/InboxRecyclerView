@@ -48,5 +48,6 @@
     android:layout_height="wrap_content"
     android:tint="#172629"
     app:elevation="20dp"
-    app:layout_anchor="@+id/inbox_bottomappbar" />
+    app:layout_anchor="@+id/inbox_bottomappbar"
+    tools:ignore="ContentDescription" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

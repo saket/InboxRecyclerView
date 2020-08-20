@@ -1,9 +1,12 @@
 package me.saket.inboxrecyclerview.sample.inbox
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
+import android.util.TypedValue
+import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
@@ -13,7 +16,6 @@ import com.jakewharton.rxrelay2.PublishRelay
 import kotterknife.bindView
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
-import me.saket.inboxrecyclerview.animation.NoneAnimator
 import me.saket.inboxrecyclerview.dimming.TintPainter
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
@@ -62,8 +64,9 @@ class InboxActivity : AppCompatActivity() {
   private fun setupThreadList() {
     recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.expandablePage = emailPageLayout
-    recyclerView.itemExpandAnimator = ItemExpandAnimator.split()
     recyclerView.tintPainter = TintPainter.listAndPage(color = Color.WHITE, alpha = 0.65F)
+    recyclerView.itemExpandAnimator = ItemExpandAnimator.scale()
+    emailPageLayout.pullToCollapseThresholdDistance = dp(72)
 
     threadsAdapter.submitList(EmailRepository.threads())
     recyclerView.adapter = threadsAdapter
@@ -113,4 +116,9 @@ class InboxActivity : AppCompatActivity() {
       }
     })
   }
+}
+
+private fun Context.dp(value: Int): Int {
+  val metrics = resources.displayMetrics
+  return TypedValue.applyDimension(COMPLEX_UNIT_DIP, value.toFloat(), metrics).toInt()
 }
