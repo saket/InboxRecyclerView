@@ -25,6 +25,7 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
   private var eligibleForCollapse: Boolean = false
   private var horizontalSwipingConfirmed: Boolean? = null
   private var interceptedUntilNextGesture: Boolean? = null
+  var pullFrictionFactor = 3.5f
 
   interface OnPullListener {
 
@@ -143,8 +144,7 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
         // The page isn't moved with the same speed as the finger. Some friction is applied
         // to make the gesture feel nice. This friction is increased further once the page
         // is eligible for collapse as a visual indicator that the page can now be released.
-        val frictionFactor = 4F
-        var deltaYWithFriction = deltaY / frictionFactor
+        var deltaYWithFriction = deltaY / pullFrictionFactor
 
         if (eligibleForCollapse) {
           val extraFriction = collapseDistanceThreshold / (2F * abs(expandablePage.translationY))
