@@ -1,6 +1,7 @@
 package me.saket.inboxrecyclerview.animation
 
 import android.view.View
+import android.view.View.GONE
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import me.saket.inboxrecyclerview.InboxRecyclerView
@@ -41,7 +42,7 @@ abstract class ItemExpandAnimator {
   ): View? {
     val anchorIndex = recyclerView.expandedItem.viewIndex
 
-    if (page.isExpandingOrCollapsing && anchorIndex != -1 && anchorViewOverlay == null) {
+    if (page.isExpanding && anchorIndex != -1 && anchorViewOverlay == null) {
       val anchorView = recyclerView.getChildAt(anchorIndex)!!
       anchorViewOverlay = anchorView.captureImage(forOverlayOf = page).also {
         // Revert the layout position because
@@ -49,11 +50,11 @@ abstract class ItemExpandAnimator {
         it.layout(0, 0, anchorView.width, anchorView.height)
       }
       page.overlay.add(anchorViewOverlay!!)
-      anchorView.visibility = INVISIBLE
+      anchorView.visibility = GONE
       onRemoveOverlay = { anchorView.visibility = VISIBLE }
     }
 
-    if (page.isExpandedOrCollapsed && anchorViewOverlay != null) {
+    if (page.isCollapsed && anchorViewOverlay != null) {
       page.overlay.remove(anchorViewOverlay!!)
       anchorViewOverlay = null
       onRemoveOverlay()
