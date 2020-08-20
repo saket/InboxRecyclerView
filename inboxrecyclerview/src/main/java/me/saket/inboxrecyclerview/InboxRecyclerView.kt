@@ -20,6 +20,7 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 /**
  * A RecyclerView where items can expand and collapse to and from an [ExpandablePageLayout].
  */
+@Suppress("LeakingThis")
 open class InboxRecyclerView @JvmOverloads constructor(
   context: Context,
   attrs: AttributeSet? = null
@@ -151,7 +152,9 @@ open class InboxRecyclerView @JvmOverloads constructor(
       return
     }
 
-    if (page.isExpandedOrExpanding) {
+    if (!page.isCollapsed) {
+      // Expanding an item while another is already
+      // expanding results in unpredictable animation.
       return
     }
 
