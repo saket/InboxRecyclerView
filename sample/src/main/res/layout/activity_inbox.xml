@@ -20,14 +20,16 @@
     android:id="@+id/inbox_email_thread_page"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/window_background" />
+    android:background="@color/window_background"
+    android:elevation="20dp" />
 
   <com.google.android.material.bottomappbar.BottomAppBar
     android:id="@+id/inbox_bottomappbar"
     style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom">
+    android:layout_gravity="bottom"
+    android:elevation="20dp">
 
     <ImageButton
       android:id="@+id/inbox_settings"
@@ -45,5 +47,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:tint="#172629"
+    app:elevation="20dp"
     app:layout_anchor="@+id/inbox_bottomappbar" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

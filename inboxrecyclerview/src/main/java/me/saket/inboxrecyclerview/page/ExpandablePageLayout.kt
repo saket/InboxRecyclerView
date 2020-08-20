@@ -5,10 +5,15 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Outline
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.PaintDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
@@ -114,6 +119,13 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     pullToCollapseEnabled = true
     pullToCollapseListener = PullToCollapseListener(this)
     pullToCollapseListener.addOnPullListener(this)
+
+    outlineProvider = object : ViewOutlineProvider() {
+      override fun getOutline(view: View, outline: Outline) {
+        BACKGROUND.getOutline(view, outline)
+        outline.alpha = 1f - (contentCover.alpha / 255f)
+      }
+    }
   }
 
   override fun onAttachedToWindow() {
