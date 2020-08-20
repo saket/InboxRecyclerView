@@ -15,7 +15,7 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
   constructor(context: Context, expandablePage: ExpandablePageLayout) : this(expandablePage)
 
   /** Minimum Y-distance the page has to be pulled before it's eligible for collapse. */
-  var collapseDistanceThreshold: Int = (Views.toolbarHeight(expandablePage.context) * 0.85F).toInt()
+  var collapseDistanceThreshold: Int = (Views.toolbarHeight(expandablePage.context)).toInt()
 
   private val touchSlop: Int = ViewConfiguration.get(expandablePage.context).scaledTouchSlop
   private val onPullListeners = ArrayList<OnPullListener>(3)
