@@ -19,7 +19,8 @@
   <me.saket.inboxrecyclerview.page.ExpandablePageLayout
     android:id="@+id/inbox_email_thread_page"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:background="@color/window_background" />
 
   <com.google.android.material.bottomappbar.BottomAppBar
     android:id="@+id/inbox_bottomappbar"

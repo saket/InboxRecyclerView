@@ -35,7 +35,21 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var parentToolbar: View? = null
 
   /** Alpha of this page when it's collapsed. */
-  internal var collapsedAlpha = 0F
+  internal var collapsedContentCoverAlpha = 1f
+  private val expandedContentCoverAlpha = 0f
+  private var contentCover: Drawable = PaintDrawable(Color.TRANSPARENT)
+
+  /**
+   * Alpha of a cover that's drawn on top to show/hide
+   * the content while the page is expanding/collapsing.
+   */
+  var contentCoverAlpha: Float = collapsedContentCoverAlpha
+    set(value) {
+      field = value
+      contentCover.alpha = (255 * value).toInt()
+      invalidate()
+      invalidateOutline()
+    }
 
   var pullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
 
@@ -56,7 +70,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   private var nestedPage: ExpandablePageLayout? = null
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
-  private val expandedAlpha = 1F
+  private var contentCoverAnimator: ValueAnimator = ObjectAnimator()
   private var isFullyCoveredByNestedPage = false
   private val locationOnScreenBuffer = IntArray(2)
 
@@ -90,8 +104,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   init {
     // Hidden on start.
-    alpha = collapsedAlpha
-    visibility = View.INVISIBLE
+    visibility = INVISIBLE
+    contentCoverAlpha = collapsedContentCoverAlpha
     changeState(PageState.COLLAPSED)
 
     pullToCollapseEnabled = true
@@ -101,6 +115,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
+    copyBackgroundAsCover()
 
     // Cache before-hand.
     Thread {
@@ -160,6 +175,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
+    contentCover.setBounds(0, 0, w, h)
 
     @Suppress("NON_EXHAUSTIVE_WHEN")
     when (currentState) {
@@ -256,7 +272,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
 
     visibility = View.VISIBLE
-    alpha = expandedAlpha
+    contentCoverAlpha = expandedContentCoverAlpha
 
     // Hide the toolbar as soon as its height is available.
     parentToolbar?.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
@@ -395,6 +411,33 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     animateDimensions(targetWidth, targetHeight)
   }
 
+  override fun setBackground(background: Drawable?) {
+    super.setBackground(background)
+    copyBackgroundAsCover()
+  }
+
+  private fun copyBackgroundAsCover() {
+    checkNotNull(background) {
+      "An opaque background drawable is required for this page to show/hide its content during expansion/collapse."
+    }
+    contentCover = background.mutate()
+  }
+
+  protected open fun animateContentCoverAlpha(expand: Boolean) {
+    val toAlpha: Float = if (expand) expandedContentCoverAlpha else collapsedContentCoverAlpha
+
+    contentCoverAnimator.cancel()
+    contentCoverAnimator = ObjectAnimator.ofFloat(contentCoverAlpha, toAlpha).apply {
+      duration = animationDurationMillis / 2
+      interpolator = animationInterpolator
+      startDelay = ANIMATION_START_DELAY + if (expand) 0 else animationDurationMillis / 3
+      addUpdateListener {
+        contentCoverAlpha = it.animatedValue as Float
+      }
+      start()
+    }
+  }
+
   private fun animateToolbar(
     show: Boolean,
     targetPageTranslationY: Float
@@ -518,11 +561,12 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
   }
 
-  override fun draw(canvas: Canvas) {
-    if (currentState == PageState.COLLAPSED) {
-      return
+  override fun dispatchDraw(canvas: Canvas) {
+    if (currentState != PageState.COLLAPSED) {
+      super.dispatchDraw(canvas)
     }
-    super.draw(canvas)
+    contentCover.alpha = (contentCoverAlpha * 255).toInt()
+    contentCover.draw(canvas)
   }
 
   override fun drawChild(

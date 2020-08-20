@@ -48,7 +48,7 @@ open class StandaloneExpandablePageLayout(
   lateinit var onPageRelease: (collapseEligible: Boolean) -> Unit
 
   init {
-    collapsedAlpha = 1F
+    collapsedContentCoverAlpha = 1F
     animationDurationMillis = 300
 
     addOnPullListener(object : SimpleOnPullListener() {
