@@ -76,9 +76,6 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
         eligibleForCollapse = false
         horizontalSwipingConfirmed = null
         interceptedUntilNextGesture = horizontalSwipingConfirmed
-
-        // Page may have been touched during an animation. Stop ship!
-        cancelAnyOngoingAnimations()
         return false
       }
 
