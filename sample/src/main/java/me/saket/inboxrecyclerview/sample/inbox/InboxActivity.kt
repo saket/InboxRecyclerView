@@ -16,6 +16,7 @@ import com.jakewharton.rxrelay2.PublishRelay
 import kotterknife.bindView
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
+import me.saket.inboxrecyclerview.dimming.DimPainter
 import me.saket.inboxrecyclerview.dimming.TintPainter
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
@@ -64,7 +65,7 @@ class InboxActivity : AppCompatActivity() {
   private fun setupThreadList() {
     recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.expandablePage = emailPageLayout
-    recyclerView.tintPainter = TintPainter.listAndPage(color = Color.WHITE, alpha = 0.65F)
+    recyclerView.dimPainter = DimPainter.listAndPage(color = Color.WHITE, alpha = 0.65F)
     recyclerView.itemExpandAnimator = ItemExpandAnimator.scale()
     emailPageLayout.pullToCollapseThresholdDistance = dp(72)
 

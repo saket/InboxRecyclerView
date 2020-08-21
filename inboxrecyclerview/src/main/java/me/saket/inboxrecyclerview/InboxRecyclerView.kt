@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
-import me.saket.inboxrecyclerview.dimming.TintPainter
+import me.saket.inboxrecyclerview.dimming.DimPainter
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
@@ -41,7 +41,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
     }
 
   /** Controls how items are dimmed when the page is expanding/collapsing. */
-  var tintPainter: TintPainter = TintPainter.noOp()
+  var dimPainter: DimPainter = DimPainter.none()
     set(value) {
       val old = field
       field = value
@@ -51,6 +51,13 @@ open class InboxRecyclerView @JvmOverloads constructor(
         old.onDetachRecyclerView()
         field.onAttachRecyclerView(this, page)
       }
+    }
+
+  @Deprecated("Use dimPainter instead", ReplaceWith("dimPainter"))
+  var tintPainter: DimPainter
+    get() = dimPainter
+    set(value) {
+      dimPainter = value
     }
 
   /** Details about the currently expanded item. */
@@ -70,13 +77,13 @@ open class InboxRecyclerView @JvmOverloads constructor(
       }
 
       if (oldPage != null) {
-        tintPainter.onDetachRecyclerView()
+        dimPainter.onDetachRecyclerView()
         itemExpandAnimator.onDetachRecyclerView()
         oldPage.internalStateCallbacksForRecyclerView = NoOp()
       }
 
       if (newPage != null) {
-        tintPainter.onAttachRecyclerView(this, newPage)
+        dimPainter.onAttachRecyclerView(this, newPage)
         itemExpandAnimator.onAttachRecyclerView(this, newPage)
         newPage.internalStateCallbacksForRecyclerView = this
       }
@@ -97,7 +104,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
   init {
     // Because setters don't get called for default values.
     itemExpandAnimator = ItemExpandAnimator.split()
-    tintPainter = TintPainter.uncoveredArea()
+    dimPainter = DimPainter.listAndPage()
   }
 
   override fun dispatchDraw(canvas: Canvas) {
@@ -123,7 +130,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
     val page = expandablePage
     if (page != null) {
       itemExpandAnimator.onDetachRecyclerView()
-      tintPainter.onDetachRecyclerView()
+      dimPainter.onDetachRecyclerView()
     }
     super.onDetachedFromWindow()
   }

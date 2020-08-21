@@ -17,7 +17,7 @@ import kotlin.math.abs
 internal class ListAndPageDimPainter(
   private val listDim: Dim,
   private val pageDim: Dim?
-) : TintPainter() {
+) : DimPainter() {
 
   override fun onPageMove(rv: InboxRecyclerView, page: ExpandablePageLayout) {
     if (rv.dimDrawable == null) {

@@ -37,14 +37,15 @@ FYI, `InboxRecyclerView` has a dependency on `androidx`. If you haven't [migrate
 **Expanding content**
 
 ```kotlin
-val expandablePage = findViewById(...)
-expandablePage.pushParentToolbarOnExpand(toolbar)
+val page: ExpandablePageLayout = findViewById(...)
+page.pushParentToolbarOnExpand(toolbar)
 
-recyclerView.expandablePage = expandablePage
-recyclerView.tintPainter = TintPainter.uncoveredArea(Color.WHITE, opacity = 0.65f)
+recyclerView.expandablePage = page
+recyclerView.tintPainter = TintPainter.listAndPage(Color.WHITE, alpha = 0.65f)
+recyclerView.itemExpandAnimator = ItemExpandAnimator.scale() // or split() / none()
 
 recyclerViewAdapter.itemClickListener = { clickedItem ->
-  // Load content inside expandablePage.
+  // Load content inside expandablePage here.
   recyclerView.expandItem(clickedItem.adapterId)
 }
 ```
