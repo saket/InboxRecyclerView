@@ -1,4 +1,4 @@
-[![](https://github.com/saket/InboxRecyclerView/blob/master/images/static_thumbnail.jpg)](https://youtu.be/aI9wX91m3Qs)
+[![](https://github.com/saket/InboxRecyclerView/blob/master/images/static_thumbnail.jpg)](docs/images/animators)
 
 InboxRecyclerView is a library for building expandable descendant navigation, inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html). If you're interested in learning how it was created, [here's a detailed blog post](https://saket.me/inbox-recyclerview).
 
@@ -52,10 +52,10 @@ recyclerViewAdapter.itemClickListener = { clickedItem ->
 
 ### How do I…
 
-- [customize item expand animations?](https://github.com/saket/InboxRecyclerView/wiki/Item-animations)
-- [control the pull-to-collapse gesture?](https://github.com/saket/InboxRecyclerView/wiki/Pull-to-collapse)
-- [change the background tint?](https://github.com/saket/InboxRecyclerView/wiki/Background-tint)
-- [listen to state changes?](https://github.com/saket/InboxRecyclerView/wiki/Page-callbacks)
+- [customize item expand animations?](docs/item_animators.md)
+- [control the pull-to-collapse gesture?](docs/pull_to_collapse.md)
+- [change the background dim?](docs/background_dim.md)
+- [listen to state changes?](docs/page_callbacks.md)
 
 ### Pull collapsible activities
 
