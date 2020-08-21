@@ -5,11 +5,7 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
- * When the page is expanding, this pushes all RecyclerView items out of the Window.
- * The expanding item is pushed to align with the top edge, while the items above it
- * are pushed out of the window towards the top and the rest towards the bottom.
- *
- * Vice versa when the page is collapsing.
+ * [https://github.com/saket/InboxRecyclerView/tree/master/images/animators/animator_split.mp4]
  */
 internal class SplitExpandAnimator : ItemExpandAnimator() {
 

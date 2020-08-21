@@ -8,11 +8,10 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
- * Controls how [InboxRecyclerView] items are animated when its page is moving.
- * To create a custom animator, extend this and override [onPageMove].
+ * Controls how [InboxRecyclerView] items are animated when [ExpandablePageLayout] is moving.
+ * See [split], [scale] and [none].
  */
 abstract class ItemExpandAnimator {
-
   private lateinit var onDetach: () -> Unit
   private var anchorViewOverlay: View? = null
   private var onRemoveOverlay: () -> Unit = {}
@@ -83,19 +82,19 @@ abstract class ItemExpandAnimator {
 
   companion object {
     /**
-     * See [SplitExpandAnimator].
+     * [https://github.com/saket/InboxRecyclerView/tree/master/images/animators/animator_split.mp4]
      */
     @JvmStatic
     fun split(): ItemExpandAnimator = SplitExpandAnimator()
 
     /**
-     * See [ScaleExpandAnimator].
+     * [https://github.com/saket/InboxRecyclerView/tree/master/images/animators/animator_scale.mp4]
      */
     @JvmStatic
     fun scale(): ItemExpandAnimator = ScaleExpandAnimator()
 
     /**
-     * See [NoneAnimator].
+     * [https://github.com/saket/InboxRecyclerView/tree/master/images/animators/animator_none.mp4]
      */
     @JvmStatic
     fun none(): ItemExpandAnimator = NoneAnimator()

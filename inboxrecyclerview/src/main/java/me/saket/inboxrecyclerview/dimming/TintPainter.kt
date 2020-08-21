@@ -2,9 +2,7 @@ package me.saket.inboxrecyclerview.dimming
 
 import android.graphics.Color
 
-@Deprecated("Use DimPainter instead", ReplaceWith("DimPainter"))
 object TintPainter {
-
   @JvmStatic
   @JvmOverloads
   @Deprecated(
