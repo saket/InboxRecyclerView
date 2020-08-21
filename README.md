@@ -1,16 +1,12 @@
 [![](https://github.com/saket/InboxRecyclerView/blob/master/images/static_thumbnail.jpg)](docs/images/animators)
 
-InboxRecyclerView is a library for building expandable descendant navigation, inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html). If you're interested in learning how it was created, [here's a detailed blog post](https://saket.me/inbox-recyclerview).
+InboxRecyclerView is a library for building expandable descendant navigation, inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html). If you're interested in learning how it was created, [here's an in-depth blog post](https://saket.me/inbox-recyclerview). `InboxRecyclerView` can be dropped into existing projects without requiring much effort. You can take a look at the [sample app](https://github.com/saket/InboxRecyclerView/tree/master/sample) for best practices or [download its APK](https://github.com/saket/InboxRecyclerView/releases) for trying it out on your phone
 
 ```groovy
 implementation 'me.saket:inboxrecyclerview:2.1.0'
 ```
 
-FYI, `InboxRecyclerView` has a dependency on `androidx`. If you haven't [migrated](https://android-developers.googleblog.com/2018/05/hello-world-androidx.html) from the support library already, this would be a good opportunity.
-
 ### Usage
-
-`InboxRecyclerView` can be dropped in existing projects without requiring any effort. You can take a look at the [sample app](https://github.com/saket/InboxRecyclerView/tree/master/sample) for best practices or [download its APK](https://github.com/saket/InboxRecyclerView/releases) for trying it out on your phone.
 
 **Layout**
 
@@ -54,7 +50,7 @@ recyclerViewAdapter.itemClickListener = { clickedItem ->
 
 - [customize item expand animations?](docs/item_animators.md)
 - [control the pull-to-collapse gesture?](docs/pull_to_collapse.md)
-- [change the background dim?](docs/background_dim.md)
+- [change background dimming?](docs/background_dim.md)
 - [listen to state changes?](docs/page_callbacks.md)
 
 ### Pull collapsible activities
