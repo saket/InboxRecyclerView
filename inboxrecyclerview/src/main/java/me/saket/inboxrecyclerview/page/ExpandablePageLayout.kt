@@ -251,6 +251,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     if (isLaidOut.not() && visibility != View.GONE) {
       throw IllegalAccessError("Width / Height not available to expand")
     }
+    checkNotNull(background) {
+      "A solid background is needed on this page for smoothly fading in/out its content."
+    }
     if (isExpandedOrExpanding) {
       return
     }
@@ -553,10 +556,12 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     if (currentState != PageState.COLLAPSED) {
       super.dispatchDraw(canvas)
     }
-    val alphaBackup = background.alpha
-    background.alpha = (contentCoverAlpha * 255).toInt()
-    background.draw(canvas)
-    background.alpha = alphaBackup
+    if (background != null) {
+      val alphaBackup = background.alpha
+      background.alpha = (contentCoverAlpha * 255).toInt()
+      background.draw(canvas)
+      background.alpha = alphaBackup
+    }
 
     dimDrawable?.setBounds(left, top, right, bottom)
     dimDrawable?.draw(canvas)
