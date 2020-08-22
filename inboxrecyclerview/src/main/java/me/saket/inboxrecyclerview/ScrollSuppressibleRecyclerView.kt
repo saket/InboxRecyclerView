@@ -17,37 +17,32 @@ abstract class ScrollSuppressibleRecyclerView(
   abstract fun canScrollProgrammatically(): Boolean
 
   override fun scrollToPosition(position: Int) {
-    if (!canScrollProgrammatically()) {
-      return
+    if (canScrollProgrammatically()) {
+      super.scrollToPosition(position)
     }
-    super.scrollToPosition(position)
   }
 
   override fun smoothScrollToPosition(position: Int) {
-    if (!canScrollProgrammatically()) {
-      return
+    if (canScrollProgrammatically()) {
+      super.smoothScrollToPosition(position)
     }
-    super.smoothScrollToPosition(position)
   }
 
   override fun smoothScrollBy(dx: Int, dy: Int) {
-    if (!canScrollProgrammatically()) {
-      return
+    if (canScrollProgrammatically()) {
+      super.smoothScrollBy(dx, dy)
     }
-    super.smoothScrollBy(dx, dy)
   }
 
   override fun scrollTo(x: Int, y: Int) {
-    if (!canScrollProgrammatically()) {
-      return
+    if (canScrollProgrammatically()) {
+      super.scrollTo(x, y)
     }
-    super.scrollTo(x, y)
   }
 
   override fun scrollBy(x: Int, y: Int) {
-    if (!canScrollProgrammatically()) {
-      return
+    if (canScrollProgrammatically()) {
+      super.scrollBy(x, y)
     }
-    super.scrollBy(x, y)
   }
 }
