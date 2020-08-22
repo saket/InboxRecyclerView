@@ -10,7 +10,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
-import androidx.core.graphics.withScale
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
@@ -95,11 +94,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
   private val restorer = StateRestorer(this)
   private val locationOnScreenBuffer = IntArray(2)
   internal var dimDrawable: Drawable? = null
-  internal var unClippedScale: Float = 1f
-    set(value) {
-      field = value
-      invalidate()
-    }
 
   init {
     // Because setters don't get called for default values.
@@ -108,9 +102,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   override fun dispatchDraw(canvas: Canvas) {
-    // Android clips canvas to the view's scaled bounds so a custom
-    // scale property is used for drawing dimDrawable over full bounds.
-    canvas.withScale(unClippedScale, unClippedScale, pivotX = pivotX, pivotY = pivotY) {
+    itemExpandAnimator.transformRecyclerViewCanvas(this, canvas) {
       super.dispatchDraw(canvas)
     }
     dimDrawable?.setBounds(left, top, right, bottom)

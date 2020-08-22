@@ -1,5 +1,6 @@
 package me.saket.inboxrecyclerview.animation
 
+import android.graphics.Canvas
 import android.view.View
 import android.view.View.GONE
 import android.view.View.INVISIBLE
@@ -79,6 +80,17 @@ abstract class ItemExpandAnimator {
     page: ExpandablePageLayout,
     anchorViewOverlay: View?
   )
+
+  /**
+   * Called before the list items are drawn on the canvas.
+   */
+  open fun transformRecyclerViewCanvas(
+    recyclerView: InboxRecyclerView,
+    canvas: Canvas,
+    block: Canvas.() -> Unit
+  ) {
+    block(canvas)
+  }
 
   companion object {
     /**
