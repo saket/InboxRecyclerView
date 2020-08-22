@@ -278,6 +278,31 @@ open class InboxRecyclerView @JvmOverloads constructor(
     return page == null || page.isCollapsed
   }
 
+  override fun onDrawForeground(canvas: Canvas) {
+    // If an item is expanded, its z-index changes from lower than
+    // that of the scrollbars to a higher value and looks a bit abrupt.
+    maybeHideScrollbarsAndRun {
+      super.onDrawForeground(canvas)
+    }
+  }
+
+  private inline fun maybeHideScrollbarsAndRun(crossinline run: () -> Unit) {
+    if (expandablePage?.isCollapsed == true
+        || scrollBarStyle != SCROLLBARS_INSIDE_OVERLAY
+    ) {
+      run()
+      return
+    }
+
+    val wasVerticalEnabled = isVerticalScrollBarEnabled
+    val wasHorizEnabled = isHorizontalScrollBarEnabled
+    isVerticalScrollBarEnabled = false
+    isHorizontalScrollBarEnabled = false
+    run()
+    isVerticalScrollBarEnabled = wasVerticalEnabled
+    isHorizontalScrollBarEnabled = wasHorizEnabled
+  }
+
   /**
    * Experimental: Reduce overdraw by 1 level by removing the Activity Window's
    * background when the [ExpandablePageLayout] is expanded. No point in drawing
