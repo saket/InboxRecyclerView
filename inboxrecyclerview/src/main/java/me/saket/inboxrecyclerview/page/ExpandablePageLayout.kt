@@ -158,12 +158,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     // Ignore touch events until the page is expanded to avoid accidental taps.
-    if (isExpanded) {
-      super.dispatchTouchEvent(ev)
-    }
-
-    // Consume all touch events to avoid them leaking behind.
-    return true
+    return isExpanded && super.dispatchTouchEvent(ev)
   }
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {

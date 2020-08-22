@@ -127,11 +127,14 @@ open class InboxRecyclerView @JvmOverloads constructor(
     super.onDetachedFromWindow()
   }
 
-  override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-    val dispatched = super.dispatchTouchEvent(ev)
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (expandablePage?.isCollapsed == false) {
+      // Don't let the user open another item midway an animation.
+      return true
+    }
 
-    val page = expandablePage
-    return if (page != null && page.isExpanded) {
+    val dispatched = super.dispatchTouchEvent(ev)
+    return if (expandablePage?.isExpanded == true) {
       // Intentionally leak touch events behind just in case the content page has
       // a lower z-index than than this list. This is an ugly hack, but I cannot
       // think of a way to enforce view positions. Fortunately this hack will not
