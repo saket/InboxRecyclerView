@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.graphics.withScale
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
+import kotlin.math.min
 
 /**
  * [https://github.com/saket/InboxRecyclerView/tree/master/images/animators/animator_scale.mp4]
@@ -32,7 +33,7 @@ internal class ScaleExpandAnimator : ItemExpandAnimator() {
     val pageY = pageLocationOnScreen[1]
 
     val expandRatio = (anchorY - pageY) / (anchorY - pageYBound)
-    unClippedScale = 1f - (expandRatio * .10f)
+    unClippedScale = 1f - (.10f * expandRatio.coerceIn(0.0f, 1.0f))
     recyclerView.invalidate()
 
     // Fade in the anchor row with the expanding/collapsing page.
