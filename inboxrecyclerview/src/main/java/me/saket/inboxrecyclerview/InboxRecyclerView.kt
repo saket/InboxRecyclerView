@@ -104,7 +104,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
     itemExpandAnimator.transformRecyclerViewCanvas(this, canvas) {
       super.dispatchDraw(canvas)
     }
-    dimDrawable?.setBounds(left, top, right, bottom)
+    dimDrawable?.setBounds(0, 0, width, height)
     dimDrawable?.draw(canvas)
   }
 

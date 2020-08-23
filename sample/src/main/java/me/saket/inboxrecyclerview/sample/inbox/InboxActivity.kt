@@ -65,7 +65,12 @@ class InboxActivity : AppCompatActivity() {
   private fun setupThreadList() {
     recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.expandablePage = emailPageLayout
-    recyclerView.dimPainter = DimPainter.listAndPage(color = Color.WHITE, alpha = 0.65F)
+    recyclerView.dimPainter = DimPainter.listAndPage(
+        listColor = Color.WHITE,
+        listAlpha = 0.75F,
+        pageColor = Color.WHITE,
+        pageAlpha = 0.65f
+    )
     recyclerView.itemExpandAnimator = ItemExpandAnimator.scale()
     emailPageLayout.pullToCollapseThresholdDistance = dp(72)
 
