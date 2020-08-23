@@ -13,12 +13,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
-import androidx.core.view.doOnPreDraw
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
+import me.saket.inboxrecyclerview.executeOnMeasure
 import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDING
@@ -271,9 +271,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     contentCoverAlpha = expandedContentCoverAlpha
 
     // Hide the toolbar as soon as its height is available.
-    parentToolbar?.doOnPreDraw { updateToolbarTranslationY(false, 0F) }
+    parentToolbar?.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
 
-    doOnPreDraw {
+    executeOnMeasure {
       // Cover the whole screen right away. Don't need any animations.
       alignPageToCoverScreen()
       dispatchOnPageAboutToExpandCallback(0)

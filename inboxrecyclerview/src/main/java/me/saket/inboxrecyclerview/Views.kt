@@ -19,6 +19,31 @@ internal object Views {
   }
 }
 
+/**
+ * Execute a runnable when a [view]'s dimensions get measured and is laid out on the screen.
+ */
+@SuppressLint("LogNotTimber")
+internal fun View.executeOnMeasure(listener: () -> Unit) {
+  if (isInEditMode || isLaidOut) {
+    listener()
+    return
+  }
+
+  viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+    override fun onPreDraw(): Boolean {
+      if (isLaidOut) {
+        viewTreeObserver.removeOnPreDrawListener(this)
+        listener()
+
+      } else if (visibility == View.GONE) {
+        Log.w("Views", "View's visibility is set to Gone. It'll never be measured: ${resources.getResourceEntryName(id)}")
+        viewTreeObserver.removeOnPreDrawListener(this)
+      }
+      return true
+    }
+  })
+}
+
 internal fun ViewPropertyAnimator.withEndAction(action: (Boolean) -> Unit): ViewPropertyAnimator {
   return setListener(object : AnimatorListenerAdapter() {
     var canceled = false
