@@ -30,8 +30,7 @@ internal class SplitExpandAnimator : ItemExpandAnimator() {
     val anchorIndex = recyclerView.expandedItem.viewIndex
     val anchorViewLocation = recyclerView.expandedItem.locationOnScreen
 
-    val pageLocationOnScreen = page.locationOnScreen()
-    val pageTop = pageLocationOnScreen[1]
+    val pageTop = page.locationOnScreen().top
     val pageBottom = pageTop + page.clippedDimens.height()
 
     // Move the RecyclerView rows with the page.

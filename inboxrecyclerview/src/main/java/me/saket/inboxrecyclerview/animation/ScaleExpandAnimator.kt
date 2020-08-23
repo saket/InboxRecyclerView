@@ -29,8 +29,8 @@ internal class ScaleExpandAnimator : ItemExpandAnimator() {
 
     val anchorY = recyclerView.expandedItem.locationOnScreen.top
     val pageLocationOnScreen = page.locationOnScreen()
-    val pageYBound = pageLocationOnScreen[1] - page.translationY
-    val pageY = pageLocationOnScreen[1]
+    val pageY = pageLocationOnScreen.top
+    val pageYBound = pageY - page.translationY
 
     val expandRatio = (anchorY - pageY) / (anchorY - pageYBound)
     unClippedScale = 1f - (.10f * expandRatio.coerceIn(0.0f, 1.0f))

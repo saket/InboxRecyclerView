@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Outline
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -19,6 +20,7 @@ import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.executeOnMeasure
+import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDING
 import me.saket.inboxrecyclerview.withEndAction
@@ -77,7 +79,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
   private var contentCoverAnimator: ValueAnimator = ObjectAnimator()
   private var isFullyCoveredByNestedPage = false
-  private val locationOnScreenBuffer = IntArray(2)
   internal var dimDrawable: Drawable? = null
 
   val isExpanded: Boolean
@@ -326,20 +327,21 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * in front of the toolbar.
    */
   private fun distanceYTo(expandedItem: ExpandedItem): Float {
-    val pageYOnScreen = locationOnScreen()[1]
+    val pageYOnScreen = locationOnScreen().top
     val itemYOnScreen = expandedItem.locationOnScreen.top.toFloat()
     return itemYOnScreen - (pageYOnScreen - translationY)
   }
 
   private fun distanceXTo(expandedItem: ExpandedItem): Float {
-    val pageXOnScreen = locationOnScreen()[0]
+    val pageXOnScreen = locationOnScreen().left
     val itemXOnScreen = expandedItem.locationOnScreen.left.toFloat()
     return itemXOnScreen - (pageXOnScreen - translationX)
   }
 
-  fun locationOnScreen(): IntArray {
-    getLocationOnScreen(locationOnScreenBuffer)
-    return locationOnScreenBuffer
+  private val intArrayBuffer = IntArray(2)
+  private val rectBuffer = Rect()
+  fun locationOnScreen(): Rect {
+    return locationOnScreen(intArrayBuffer, rectBuffer)
   }
 
   internal fun alignPageToCoverScreen() {

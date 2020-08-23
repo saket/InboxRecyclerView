@@ -92,7 +92,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
   private val restorer = StateRestorer(this)
-  private val locationOnScreenBuffer = IntArray(2)
   internal var dimDrawable: Drawable? = null
 
   init {
@@ -193,7 +192,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
     }
 
     val itemViewPosition = indexOfChild(itemView)
-    val itemRect = itemView.locationOnScreen(locationOnScreenBuffer)
+    val itemRect = itemView.locationOnScreen()
 
     expandedItem = ExpandedItem(itemViewPosition, itemId, itemRect)
     if (immediate) {
