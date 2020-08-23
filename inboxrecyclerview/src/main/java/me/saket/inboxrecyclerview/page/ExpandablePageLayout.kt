@@ -13,13 +13,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
-import androidx.core.graphics.withScale
+import androidx.core.view.doOnPreDraw
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
-import me.saket.inboxrecyclerview.executeOnMeasure
 import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDING
@@ -276,9 +275,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     contentCoverAlpha = expandedContentCoverAlpha
 
     // Hide the toolbar as soon as its height is available.
-    parentToolbar?.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
+    parentToolbar?.doOnPreDraw { updateToolbarTranslationY(false, 0F) }
 
-    executeOnMeasure {
+    doOnPreDraw {
       // Cover the whole screen right away. Don't need any animations.
       alignPageToCoverScreen()
       dispatchOnPageAboutToExpandCallback(0)
@@ -362,7 +361,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     // collapse just below the toolbar and not the window top to avoid closing the toolbar upon hiding.
     if (!expand && expandedItem.locationOnScreen.height() == 0) {
       val toolbarBottom = if (parentToolbar != null) parentToolbar!!.bottom else 0
-      targetPageTranslationY = Math.max(targetPageTranslationY, toolbarBottom.toFloat())
+      targetPageTranslationY = targetPageTranslationY.coerceAtLeast(toolbarBottom.toFloat())
     }
 
     if (expand.not()) {
