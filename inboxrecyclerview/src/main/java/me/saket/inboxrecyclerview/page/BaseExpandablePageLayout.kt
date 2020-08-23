@@ -87,7 +87,7 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
   }
 
   companion object {
-    private const val DEFAULT_ANIM_DURATION = 350L
+    private const val DEFAULT_ANIM_DURATION = 300L
     private val DEFAULT_ANIM_INTERPOLATOR = FastOutSlowInInterpolator()
   }
 }
