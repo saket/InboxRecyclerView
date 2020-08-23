@@ -104,6 +104,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   val isCollapsedOrCollapsing: Boolean
     get() = currentState == PageState.COLLAPSING || currentState == PageState.COLLAPSED
 
+  /** Whether the page will collapse if the touched is released right now. */
+  val isCollapseEligible
+    get() = abs(translationY) >= pullToCollapseThresholdDistance
+
   enum class PageState {
     COLLAPSING,
     COLLAPSED,
@@ -157,22 +161,17 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    // Ignore touch events until the page is expanded to avoid accidental taps.
-    return isExpanded && super.dispatchTouchEvent(ev)
+    return isExpandedOrExpanding && super.dispatchTouchEvent(ev)
   }
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-    var intercepted = false
-    if (pullToCollapseEnabled && visibility == View.VISIBLE) {
-      intercepted = pullToCollapseListener.onTouch(this, event)
-    }
-
+    val intercepted = pullToCollapseEnabled && pullToCollapseListener.onTouch(event, consumeDowns = false)
     return intercepted || super.onInterceptTouchEvent(event)
   }
 
   @SuppressLint("ClickableViewAccessibility")
   override fun onTouchEvent(event: MotionEvent): Boolean {
-    val handled = pullToCollapseEnabled && pullToCollapseListener.onTouch(this, event)
+    val handled = pullToCollapseEnabled && pullToCollapseListener.onTouch(event, consumeDowns = true)
     return handled || super.onTouchEvent(event)
   }
 
@@ -215,9 +214,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       // Let the page collapse in peace.
       return
     }
-
-    changeState(PageState.EXPANDED)
-    stopAnyOngoingAnimation()
 
     // Restore everything to their expanded position.
     // 1. Hide Toolbar again.

@@ -2,14 +2,15 @@ package me.saket.inboxrecyclerview.page
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Rect
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewConfiguration
 import me.saket.inboxrecyclerview.Views
+import me.saket.inboxrecyclerview.page.InterceptResult.INTERCEPTED
 import java.util.ArrayList
 import kotlin.math.abs
 
-class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) : View.OnTouchListener {
+class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) {
 
   @Deprecated(message = "Passing context is no longer needed")
   constructor(context: Context, expandablePage: ExpandablePageLayout) : this(expandablePage)
@@ -22,10 +23,19 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
   private var downX: Float = 0f
   private var downY: Float = 0f
   private var lastMoveY: Float = 0f
-  private var eligibleForCollapse: Boolean = false
   private var horizontalSwipingConfirmed: Boolean? = null
   private var interceptedUntilNextGesture: Boolean? = null
   var pullFrictionFactor = 3.5f
+
+  /**
+   * Letting the user pull down the page while it's expanding results in a very fluid
+   * experience because they aren't forced to wait for the expansion animation to finish
+   * in case they change their minds and want to go back immediately.
+   *
+   * An unfortunate drawback of this is that the user can stop the animation midway by
+   * holding the page and be able to move it around.
+   * */
+  var allowPullDuringExpansion = false
 
   interface OnPullListener {
 
@@ -67,51 +77,33 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
   }
 
   @SuppressLint("ClickableViewAccessibility")
-  override fun onTouch(v: View, event: MotionEvent): Boolean {
+  fun onTouch(event: MotionEvent, consumeDowns: Boolean): Boolean {
     when (event.actionMasked) {
       MotionEvent.ACTION_DOWN -> {
         downX = event.rawX
         downY = event.rawY
         lastMoveY = downY
 
-        eligibleForCollapse = false
         horizontalSwipingConfirmed = null
-        interceptedUntilNextGesture = horizontalSwipingConfirmed
-        return false
+        interceptedUntilNextGesture = null
+        return consumeDowns
       }
 
       MotionEvent.ACTION_MOVE -> {
-        if (horizontalSwipingConfirmed != null && horizontalSwipingConfirmed!!) {
-          return false
-        }
-        if (interceptedUntilNextGesture != null && interceptedUntilNextGesture!!) {
-          return false
-        }
+        if (horizontalSwipingConfirmed == true) return false
+        if (interceptedUntilNextGesture == true) return false
 
         val deltaY = event.rawY - lastMoveY
         val totalSwipeDistanceX = event.rawX - downX
         val totalSwipeDistanceY = event.rawY - downY
-        val totalSwipeDistanceXAbs = Math.abs(totalSwipeDistanceX)
-        val totalSwipeDistanceYAbs = Math.abs(totalSwipeDistanceY)
+        val totalSwipeDistanceXAbs = abs(totalSwipeDistanceX)
+        val totalSwipeDistanceYAbs = abs(totalSwipeDistanceY)
 
-        if (totalSwipeDistanceYAbs < touchSlop && totalSwipeDistanceXAbs < touchSlop) {
-          return false
-        }
-
-        // When it's confirmed that the movement distance is > touchSlop and this is
-        // indeed a gesture, two checks are made:
-        //
-        // 1. Whether this is a horizontal swipe.
-        // 2. Whether an interceptor wants to intercept this gesture.
-        //
-        // These two checks should only happen once per gesture, just when the gesture
-        // starts. The flags will reset when the finger is lifted.
-
-        // Ignore horizontal swipes (Step 1).
+        // Ignore horizontal swipes.
         if (horizontalSwipingConfirmed == null) {
           horizontalSwipingConfirmed = totalSwipeDistanceXAbs > totalSwipeDistanceYAbs
 
-          // Any ongoing release animation must also be canceled at the starting of a gesture.
+          // Any ongoing animation must also be canceled at the starting of a gesture.
           if (expandablePage.isExpanded) {
             cancelAnyOngoingAnimations()
           }
@@ -123,30 +115,37 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
 
         val deltaUpwardSwipe = deltaY < 0
 
+        // Offer this event to interceptors. Content is allowed to
+        // scroll even while the page is expanding for a fluid experience.
         if (interceptedUntilNextGesture == null) {
           val interceptResult = expandablePage.handleOnPullToCollapseIntercept(event, downX, downY, deltaUpwardSwipe)
-          interceptedUntilNextGesture = interceptResult == InterceptResult.INTERCEPTED
-
+          interceptedUntilNextGesture = interceptResult == INTERCEPTED
           if (interceptedUntilNextGesture!!) {
             return false
-          } else {
-            expandablePage.parent.requestDisallowInterceptTouchEvent(true)
           }
+        }
+        expandablePage.parent.requestDisallowInterceptTouchEvent(true)
+
+        if (allowPullDuringExpansion
+            && expandablePage.isExpanding
+            && event in expandablePage.clippedDimens
+            && abs(totalSwipeDistanceY) > 0f) {
+          // Page swiped during an expansion. The user may want to go back. Don't make
+          // them wait until the animation is over and giving a chance to swipe back immediately.
+          cancelAnyOngoingAnimations()
+
+        } else if (totalSwipeDistanceYAbs < touchSlop && totalSwipeDistanceXAbs < touchSlop) {
+          return false
         }
 
         val upwardSwipe = totalSwipeDistanceY < 0F
-
-        eligibleForCollapse = when {
-          upwardSwipe -> expandablePage.translationY <= -collapseDistanceThreshold
-          else -> expandablePage.translationY >= collapseDistanceThreshold
-        }
 
         // The page isn't moved with the same speed as the finger. Some friction is applied
         // to make the gesture feel nice. This friction is increased further once the page
         // is eligible for collapse as a visual indicator that the page can now be released.
         var deltaYWithFriction = deltaY / pullFrictionFactor
 
-        if (eligibleForCollapse) {
+        if (expandablePage.isCollapseEligible) {
           val extraFriction = collapseDistanceThreshold / (2F * abs(expandablePage.translationY))
           deltaYWithFriction *= extraFriction
         }
@@ -172,7 +171,7 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
   private fun dispatchReleaseCallback() {
     for (i in onPullListeners.indices) {
       val onPullListener = onPullListeners[i]
-      onPullListener.onRelease(eligibleForCollapse)
+      onPullListener.onRelease(expandablePage.isCollapseEligible)
     }
   }
 
@@ -180,11 +179,15 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) :
     val translationY = expandablePage.translationY
     for (i in onPullListeners.indices) {
       val onPullListener = onPullListeners[i]
-      onPullListener.onPull(deltaY, translationY, upwardPull, deltaUpwardPull, eligibleForCollapse)
+      onPullListener.onPull(deltaY, translationY, upwardPull, deltaUpwardPull, expandablePage.isCollapseEligible)
     }
   }
 
   private fun cancelAnyOngoingAnimations() {
     expandablePage.stopAnyOngoingAnimation()
   }
+}
+
+private operator fun Rect.contains(event: MotionEvent): Boolean {
+  return contains(event.x.toInt(), event.y.toInt())
 }

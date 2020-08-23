@@ -51,7 +51,4 @@ internal class ListAndPageDimPainter(
     (rv.dimDrawable as? AnimatedColorDrawable)?.cancelAnimation()
     (page.dimDrawable as? AnimatedColorDrawable)?.cancelAnimation()
   }
-
-  private val ExpandablePageLayout.isCollapseEligible
-    get() = abs(translationY) >= pullToCollapseThresholdDistance
 }
