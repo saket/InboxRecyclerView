@@ -72,7 +72,7 @@ class InboxActivity : AppCompatActivity() {
         pageAlpha = 0.65f
     )
     recyclerView.itemExpandAnimator = ItemExpandAnimator.scale()
-    emailPageLayout.pullToCollapseThresholdDistance = dp(72)
+    emailPageLayout.pullToCollapseThresholdDistance = dp(90)
 
     threadsAdapter.submitList(EmailRepository.threads())
     recyclerView.adapter = threadsAdapter
