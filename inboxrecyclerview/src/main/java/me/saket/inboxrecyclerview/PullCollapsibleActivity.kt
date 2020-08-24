@@ -72,11 +72,13 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
   override fun setContentView(view: View) {
     activityPageLayout = wrapInExpandablePage(view)
     super.setContentView(activityPageLayout)
+    expandFromTop()
   }
 
   override fun setContentView(view: View, params: ViewGroup.LayoutParams) {
     activityPageLayout = wrapInExpandablePage(view)
     super.setContentView(activityPageLayout, params)
+    expandFromTop()
   }
 
   private fun wrapInExpandablePage(view: View): StandaloneExpandablePageLayout {
