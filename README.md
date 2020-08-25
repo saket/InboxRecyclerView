@@ -1,6 +1,6 @@
 [![](https://github.com/saket/InboxRecyclerView/blob/master/images/static_thumbnail.jpg)](docs/images/animators)
 
-InboxRecyclerView is a library for building expandable descendant navigation, inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html). If you're interested in learning how it was created, [here's an in-depth blog post](https://saket.me/inbox-recyclerview). `InboxRecyclerView` can be dropped into existing projects without requiring much effort. You can take a look at the [sample app](https://github.com/saket/InboxRecyclerView/tree/master/sample) for best practices or [download its APK](https://github.com/saket/InboxRecyclerView/releases) for trying it out on your phone
+`InboxRecyclerView` is a library for building expandable descendant navigation inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html), and is an easy drop-in into existing projects. You can take a look at the [sample app](https://github.com/saket/InboxRecyclerView/tree/master/sample) for best practices or [download its APK](https://github.com/saket/InboxRecyclerView/releases) for trying it out on your phone. If you're interested in learning how it was created, [here's an in-depth blog post](https://saket.me/inbox-recyclerview). 
 
 ```groovy
 implementation 'me.saket:inboxrecyclerview:2.1.0'
@@ -15,19 +15,17 @@ implementation 'me.saket:inboxrecyclerview:2.1.0'
   android:layout_width="match_parent"
   android:layout_height="match_parent" />
 
-<!--
-  This is where your expandable content will be present. One
-  way of using it would be to add a Fragment inside the layout
-  and update it when any list item is clicked.
-
-  It's recommended that the content page has a higher z-index
-  than the list. This can be achieved by either giving it a
-  higher view position or a higher elevation.
--->
 <me.saket.inboxrecyclerview.page.ExpandablePageLayout
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/window_background" />
+  android:background="@color/window_background">
+
+  <!--
+    Your expandable content will live here. Make sure that 
+    your page has a higher z-index than the list by giving 
+    it a higher view position or a higher elevation.
+  -->
+</me.saket.inboxrecyclerview.page.ExpandablePageLayout>
 ```
 
 **Expanding content**
@@ -37,12 +35,15 @@ val page: ExpandablePageLayout = findViewById(...)
 page.pushParentToolbarOnExpand(toolbar)
 
 recyclerView.expandablePage = page
-recyclerView.tintPainter = TintPainter.listAndPage(Color.WHITE, alpha = 0.65f)
+recyclerView.dimPainter = DimPainter.listAndPage(Color.WHITE, alpha = 0.65f)
 recyclerView.itemExpandAnimator = ItemExpandAnimator.scale() // or split() / none()
 
-recyclerViewAdapter.itemClickListener = { clickedItem ->
-  // Load content inside expandablePage here.
-  recyclerView.expandItem(clickedItem.adapterId)
+recyclerViewAdapter.onItemClick = { clickedItem ->
+  // Load or update your content here.
+  page.addView(ItemDetailView(...))
+  page.post {
+    recyclerView.expandItem(clickedItem.adapterId)
+  }
 }
 ```
 
@@ -55,7 +56,7 @@ recyclerViewAdapter.itemClickListener = { clickedItem ->
 
 ### Pull collapsible activities
 
-To maintain consistency across the whole app, this library also includes a `PullCollapsibleActivity` that brings the same animations and gesture to activities with little effort.
+To maintain consistency across your whole app, a `PullCollapsibleActivity` is also included that brings the same animations and gesture to activities with little effort.
 
 Step 1. Extend `PullCollapsibleActivity`.
 
