@@ -5,7 +5,7 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
- * [https://github.com/saket/InboxRecyclerView/tree/master/images/animators/animator_none.mp4]
+ * [https://www.youtube.com/watch?v=87ZbSFgwn8s]
  */
 internal class NoneAnimator : ItemExpandAnimator() {
   override fun onPageMove(

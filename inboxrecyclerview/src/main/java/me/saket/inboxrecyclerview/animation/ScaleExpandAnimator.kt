@@ -8,7 +8,7 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 import kotlin.math.min
 
 /**
- * [https://github.com/saket/InboxRecyclerView/tree/master/images/animators/animator_scale.mp4]
+ * [https://www.youtube.com/watch?v=a0U8HcvT4G4]
  */
 internal class ScaleExpandAnimator : ItemExpandAnimator() {
 

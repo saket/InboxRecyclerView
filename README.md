@@ -1,6 +1,6 @@
-[![](https://github.com/saket/InboxRecyclerView/blob/master/images/static_thumbnail.jpg)](docs/images/animators)
+[![](https://github.com/saket/InboxRecyclerView/blob/master/images/static_thumbnail.jpg)](https://www.youtube.com/playlist?list=PLY9Ajk3MUE7UAT4rn9LO-jSPfkPm5ewrQ)
 
-`InboxRecyclerView` is a library for building expandable descendant navigation inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html), and is an easy drop-in into existing projects. You can take a look at the [sample app](https://github.com/saket/InboxRecyclerView/tree/master/sample) for best practices or [download its APK](https://github.com/saket/InboxRecyclerView/releases) for trying it out on your phone. If you're interested in learning how it was created, [here's an in-depth blog post](https://saket.me/inbox-recyclerview). 
+`InboxRecyclerView` is a library for building expandable descendant navigation inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html), and is an easy drop-in into existing projects. You can take a look at the [sample app](https://github.com/saket/InboxRecyclerView/tree/master/sample) for best practices or [download its APK](https://github.com/saket/InboxRecyclerView/releases) for trying it out on your phone. If you're interested in learning how it was created, [here's an in-depth blog post](https://saket.me/inbox-recyclerview).
 
 ```groovy
 implementation 'me.saket:inboxrecyclerview:2.1.0'
@@ -21,8 +21,8 @@ implementation 'me.saket:inboxrecyclerview:2.1.0'
   android:background="@color/window_background">
 
   <!--
-    Your expandable content will live here. Make sure that 
-    your page has a higher z-index than the list by giving 
+    Your expandable content will live here. Make sure that
+    your page has a higher z-index than the list by giving
     it a higher view position or a higher elevation.
   -->
 </me.saket.inboxrecyclerview.page.ExpandablePageLayout>
@@ -31,19 +31,18 @@ implementation 'me.saket:inboxrecyclerview:2.1.0'
 **Expanding content**
 
 ```kotlin
-val page: ExpandablePageLayout = findViewById(...)
-page.pushParentToolbarOnExpand(toolbar)
+recyclerView.apply {
+  itemExpandAnimator = ItemExpandAnimator.scale() // or split() / none()
+  dimPainter = DimPainter.listAndPage(Color.WHITE, alpha = 0.65f)
 
-recyclerView.expandablePage = page
-recyclerView.dimPainter = DimPainter.listAndPage(Color.WHITE, alpha = 0.65f)
-recyclerView.itemExpandAnimator = ItemExpandAnimator.scale() // or split() / none()
+  expandablePage = findViewById(...).also {
+    it.pushParentToolbarOnExpand(toolbar)
+  }
+}
 
 recyclerViewAdapter.onItemClick = { clickedItem ->
-  // Load or update your content here.
-  page.addView(ItemDetailView(...))
-  page.post {
-    recyclerView.expandItem(clickedItem.adapterId)
-  }
+  // Load or update your content inside the page here.
+  recyclerView.expandItem(clickedItem.adapterId)
 }
 ```
 

@@ -5,7 +5,7 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
- * [https://github.com/saket/InboxRecyclerView/tree/master/images/animators/animator_split.mp4]
+ * [https://www.youtube.com/watch?v=WQGtweo-2dc]
  */
 internal class SplitExpandAnimator : ItemExpandAnimator() {
 
