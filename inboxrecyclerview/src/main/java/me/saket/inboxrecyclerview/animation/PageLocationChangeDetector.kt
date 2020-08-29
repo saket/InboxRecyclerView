@@ -4,7 +4,11 @@ import android.graphics.Rect
 import android.view.ViewTreeObserver
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
-internal class PageLocationChangeDetector(
+/**
+ * Gives a callback everytime [ExpandablePageLayout]'s size or location changes.
+ * Can be used for synchronizing animations with the page's expansion/collapse.
+ */
+class PageLocationChangeDetector(
   private val page: ExpandablePageLayout,
   private val changeListener: () -> Unit
 ) : ViewTreeObserver.OnPreDrawListener, ViewTreeObserver.OnGlobalLayoutListener {
