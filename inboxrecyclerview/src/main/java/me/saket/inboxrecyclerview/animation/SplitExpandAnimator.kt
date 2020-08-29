@@ -46,7 +46,7 @@ internal class SplitExpandAnimator : ItemExpandAnimator() {
     }
 
     // Fade in the anchor row with the expanding/collapsing page.
-    anchorViewOverlay?.alpha = page.contentCoverAlpha
+    anchorViewOverlay?.alpha = 1f - page.expandRatio(recyclerView)
   }
 
   private fun InboxRecyclerView.moveListItems(

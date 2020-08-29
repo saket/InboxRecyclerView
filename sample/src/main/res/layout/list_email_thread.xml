@@ -7,7 +7,7 @@
   android:layout_marginEnd="4dp"
   android:layout_marginStart="4dp"
   android:layout_marginTop="@dimen/emailthread_item_vertical_margin"
-  android:background="#FEFEFE"
+  android:background="@color/email_thread_background"
   android:stateListAnimator="@animator/thread_elevation_stateanimator"
   android:paddingBottom="16dp"
   android:paddingEnd="14dp"

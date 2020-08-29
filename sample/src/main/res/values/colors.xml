@@ -4,4 +4,5 @@
   <color name="color_primary_dark">#232F34</color>
   <color name="color_accent">#F8AA34</color>
   <color name="window_background">#EEF0F2</color>
+  <color name="email_thread_background">#FEFEFE</color>
 </resources>

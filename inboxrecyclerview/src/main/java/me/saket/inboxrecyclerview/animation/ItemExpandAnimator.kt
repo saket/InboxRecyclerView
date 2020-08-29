@@ -3,7 +3,6 @@ package me.saket.inboxrecyclerview.animation
 import android.graphics.Canvas
 import android.view.View
 import android.view.View.GONE
-import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
@@ -81,15 +80,23 @@ abstract class ItemExpandAnimator {
     anchorViewOverlay: View?
   )
 
-  /**
-   * Called before the list items are drawn on the canvas.
-   */
+  /** Called before the list items are drawn on the canvas. */
   open fun transformRecyclerViewCanvas(
     recyclerView: InboxRecyclerView,
     canvas: Canvas,
     block: Canvas.() -> Unit
   ) {
     block(canvas)
+  }
+
+  /**
+   * 0.0 -> fully collapsed.
+   * 1.0 -> fully expanded.
+   */
+  protected fun ExpandablePageLayout.expandRatio(rv: InboxRecyclerView): Float {
+    val anchorHeight = rv.expandedItem.locationOnScreen.height()
+    val pageHeight = clippedDimens.height()
+    return ((anchorHeight - pageHeight) / (anchorHeight - anchorHeight).toFloat()).coerceIn(0.0f, 1.0f)
   }
 
   companion object {
