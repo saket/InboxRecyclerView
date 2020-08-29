@@ -25,7 +25,7 @@
   <target android:name="path">
     <aapt:attr name="android:animation">
       <objectAnimator
-        android:duration="200"
+        android:duration="300"
         android:interpolator="@android:interpolator/fast_out_slow_in"
         android:propertyName="pathData"
         android:valueFrom="M 18.88 8.87 C 19.49 8.26 20.1 7.65 20.71 7.04 C 20.71 7.04 20.71 7.04 20.71 7.04 C 21.1 6.65 21.1 6.02 20.71 5.63 C 20.515 5.435 20.32 5.24 20.125 5.045 C 19.93 4.85 19.735 4.655 19.54 4.46 C 19.345 4.265 19.15 4.07 18.955 3.875 L 18.37 3.29 C 17.98 2.9 17.35 2.9 16.96 3.29 L 15.13 5.12 C 16.38 6.37 17.63 7.62 18.88 8.87 M 3 17.46 L 3 20.5 C 3 20.78 3.22 21 3.5 21 L 6.54 21 C 6.605 21 6.67 20.988 6.73 20.962 C 6.79 20.938 6.845 20.9 6.89 20.85 L 17.81 9.94 L 14.06 6.19 C 10.423 9.827 6.787 13.463 3.15 17.1 C 3.05 17.2 3 17.32 3 17.46 C 3 17.46 3 17.46 3 17.46"
@@ -36,7 +36,7 @@
   <target android:name="group">
     <aapt:attr name="android:animation">
       <objectAnimator
-        android:duration="200"
+        android:duration="300"
         android:interpolator="@android:interpolator/fast_out_slow_in"
         android:propertyName="rotation"
         android:valueFrom="0"
