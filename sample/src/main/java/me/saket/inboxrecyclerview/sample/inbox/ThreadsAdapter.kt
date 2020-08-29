@@ -48,7 +48,7 @@ class ThreadsAdapter : ListAdapter<EmailThread, EmailViewHolder>(EmailThread.Ite
   }
 
   override fun getItemId(position: Int): Long {
-    return position.toLong()
+    return getItem(position).id
   }
 
   override fun getItemViewType(position: Int): Int {
