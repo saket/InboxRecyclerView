@@ -70,7 +70,7 @@ class InboxActivity : AppCompatActivity() {
         pageColor = Color.WHITE,
         pageAlpha = 0.65f
     )
-    recyclerView.itemExpandAnimator = ItemExpandAnimator.scale()
+    recyclerView.itemExpandAnimator = ItemExpandAnimator.split()
     emailPageLayout.pullToCollapseThresholdDistance = dp(90)
 
     threadsAdapter.submitList(EmailRepository.threads())
