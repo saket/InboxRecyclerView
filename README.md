@@ -18,7 +18,7 @@ implementation 'me.saket:inboxrecyclerview:2.3.0'
 <me.saket.inboxrecyclerview.page.ExpandablePageLayout
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/window_background">
+  android:background="@color/same_as_your_list_items">
 
   <!--
     Your expandable content will live here. Make sure that
