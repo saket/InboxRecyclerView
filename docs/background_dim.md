@@ -2,9 +2,9 @@
 
 ![dim](images/background_dim.gif)
 
-`InboxRecyclerView` applies soft dimming on the list when its covered by the page. When the content page is pulled and is eligible for collapse, the tint is shifted to the page away to give a visual indication that the page can now be released.
+`InboxRecyclerView` applies soft dimming on the list when it's covered by `ExpandablePageLayout`. The dimming is shifted to the page when it's pulled past the collapse threshold, as a visual indication that the page can now be released.
 
-By default, a black tint with a maximum alpha of 15% is applied on the list items. This can be customized by using,
+By default, a black dim with an alpha of 15% is applied on the list. This can be customized by using,
 
 ```kotlin
 recyclerView.dimPainter = DimPainter.listAndPage(color = Color.WHITE, alpha = 0.65F)

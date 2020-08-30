@@ -10,9 +10,8 @@ import kotlin.math.abs
 
 /**
  * Draws dimming over [InboxRecyclerView] while the page is expanding/collapsing.
- * When [ExpandablePageLayout] is being pulled, the dimming is shifted to the page
- * if the pull distance is sufficient for collapsing the page. The shift acts as a
- * nice indicator that the page can now be released.
+ * The dimming is shifted to the page when it's pulled past the collapse threshold,
+ * as a visual indication that the page can now be released.
  */
 internal class ListAndPageDimPainter(
   private val listDim: Dim,
