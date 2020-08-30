@@ -1,4 +1,4 @@
-[![](https://github.com/saket/InboxRecyclerView/blob/master/images/static_thumbnail.jpg)](https://www.youtube.com/playlist?list=PLY9Ajk3MUE7UAT4rn9LO-jSPfkPm5ewrQ)
+[![](https://github.com/saket/InboxRecyclerView/blob/master/docs/images/static_thumbnail.jpg)](https://www.youtube.com/playlist?list=PLY9Ajk3MUE7UAT4rn9LO-jSPfkPm5ewrQ)
 
 `InboxRecyclerView` is a library for building expandable descendant navigation inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html), and is an easy drop-in into existing projects. You can take a look at the [sample app](https://github.com/saket/InboxRecyclerView/tree/master/sample) for best practices or [download its APK](https://github.com/saket/InboxRecyclerView/releases) for trying it out on your phone. If you're interested in learning how it was created, [here's an in-depth blog post](https://saket.me/inbox-recyclerview).
 
