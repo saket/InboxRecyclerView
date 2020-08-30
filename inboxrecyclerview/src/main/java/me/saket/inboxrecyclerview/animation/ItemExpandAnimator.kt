@@ -96,7 +96,7 @@ abstract class ItemExpandAnimator {
   protected fun ExpandablePageLayout.expandRatio(rv: InboxRecyclerView): Float {
     val anchorHeight = rv.expandedItem.locationOnScreen.height()
     val pageHeight = clippedDimens.height()
-    return ((anchorHeight - pageHeight) / (anchorHeight - anchorHeight).toFloat()).coerceIn(0.0f, 1.0f)
+    return ((anchorHeight - pageHeight) / (anchorHeight - height).toFloat()).coerceIn(0.0f, 1.0f)
   }
 
   companion object {
