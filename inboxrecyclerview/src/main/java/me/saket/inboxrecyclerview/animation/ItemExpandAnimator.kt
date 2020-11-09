@@ -6,6 +6,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
+import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
 
 /**
  * Controls how [InboxRecyclerView] items are animated when [ExpandablePageLayout] is moving.
@@ -25,12 +26,9 @@ abstract class ItemExpandAnimator {
       onPageMove(recyclerView, page, anchorView)
     }
 
-    page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
-    page.viewTreeObserver.addOnPreDrawListener(changeDetector)
-
+    changeDetector.start()
     onDetach = {
-      page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
-      page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
+      changeDetector.stop()
     }
   }
 

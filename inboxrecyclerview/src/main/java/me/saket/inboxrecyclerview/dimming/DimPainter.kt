@@ -24,13 +24,10 @@ abstract class DimPainter {
       onPageMove(recyclerView, page)
     }
 
-    page.viewTreeObserver.addOnGlobalLayoutListener(changeDetector)
-    page.viewTreeObserver.addOnPreDrawListener(changeDetector)
-
+    changeDetector.start()
     onDetach = {
       cancelAnimation(recyclerView, page)
-      page.viewTreeObserver.removeOnGlobalLayoutListener(changeDetector)
-      page.viewTreeObserver.removeOnPreDrawListener(changeDetector)
+      changeDetector.stop()
     }
   }
 
