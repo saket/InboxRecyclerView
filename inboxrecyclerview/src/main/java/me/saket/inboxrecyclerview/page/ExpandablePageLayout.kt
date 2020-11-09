@@ -705,7 +705,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * bottom of the toolbar. When this page is collapsing or being pulled downwards.
    * the toolbar will be animated back to its position.
    */
-  fun pushParentToolbarOnExpand(toolbar: View) {
+  fun pushParentToolbarOnExpand(toolbar: View?) {
     this.parentToolbar = toolbar
   }
 
