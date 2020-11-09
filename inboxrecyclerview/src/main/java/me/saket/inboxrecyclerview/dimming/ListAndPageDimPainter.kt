@@ -20,12 +20,10 @@ internal class ListAndPageDimPainter(
 
   override fun onPageMove(rv: InboxRecyclerView, page: ExpandablePageLayout) {
     if (rv.dimDrawable == null) {
-      val animDuration = page.animationDurationMillis
-      rv.dimDrawable = AnimatedColorDrawable(rv, listDim.color, animDuration)
-
-      if (pageDim != null) {
-        page.dimDrawable = AnimatedColorDrawable(page, pageDim.color, animDuration)
-      }
+      rv.dimDrawable = AnimatedColorDrawable(rv, listDim.color, page.animationDurationMillis)
+    }
+    if (page.dimDrawable == null && pageDim != null) {
+      page.dimDrawable = AnimatedColorDrawable(page, pageDim.color, page.animationDurationMillis)
     }
 
     rv.dimDrawable!!.alpha = when (page.currentState) {
