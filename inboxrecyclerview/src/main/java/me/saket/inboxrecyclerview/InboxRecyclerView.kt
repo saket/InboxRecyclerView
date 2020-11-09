@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
+import androidx.core.view.doOnDetach
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
@@ -162,7 +163,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
   ) {
     val page = ensureSetup(expandablePage)
 
-    if (isLaidOut.not()) {
+    if (isLaidOut.not() || page.isLaidOut.not()) {
       post { expandItem(itemId, immediate) }
       return
     }
