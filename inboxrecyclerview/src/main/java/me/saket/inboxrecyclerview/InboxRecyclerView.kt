@@ -10,7 +10,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
-import androidx.core.view.doOnDetach
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
@@ -157,14 +156,23 @@ open class InboxRecyclerView @JvmOverloads constructor(
    * @param itemId ID of the item to expand.
    */
   @JvmOverloads
-  fun expandItem(
-    itemId: Long,
-    immediate: Boolean = false
-  ) {
+  fun expandItem(itemId: Long, immediate: Boolean = false) {
+    expandInternal(itemId, immediate)
+  }
+
+  /**
+   * Expand from the top, pushing all items out of the window towards the bottom.
+   */
+  @JvmOverloads
+  fun expandFromTop(immediate: Boolean = false) {
+    expandInternal(itemId = null, immediate = immediate)
+  }
+
+  private fun expandInternal(itemId: Long?, immediate: Boolean) {
     val page = ensureSetup(expandablePage)
 
     if (isLaidOut.not() || page.isLaidOut.not()) {
-      post { expandItem(itemId, immediate) }
+      post { expandInternal(itemId, immediate) }
       return
     }
 
@@ -174,53 +182,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
       return
     }
 
-    val adapter = adapter!!
-    var itemAdapterPosition: Int = -1
-    for (i in 0 until adapter.itemCount) {
-      if (adapter.getItemId(i) == itemId) {
-        itemAdapterPosition = i
-        break
-      }
-    }
-
-    val itemView: View? =
-      (layoutManager as LinearLayoutManager).findViewByPosition(itemAdapterPosition)
-
-    if (itemView == null) {
-      // View got removed right when it was clicked to expand.
-      expandFromTop(immediate)
-      return
-    }
-
-    val itemViewPosition = indexOfChild(itemView)
-    val itemRect = itemView.locationOnScreen()
-
-    expandedItem = ExpandedItem(itemViewPosition, itemId, itemRect)
-    if (immediate) {
-      page.expandImmediately()
-    } else {
-      page.expand(expandedItem)
-    }
-  }
-
-  /**
-   * Expand from the top, pushing all items out of the window towards the bottom.
-   */
-  @JvmOverloads
-  fun expandFromTop(immediate: Boolean = false) {
-    val page = ensureSetup(expandablePage)
-
-    if (isLaidOut.not()) {
-      post { expandFromTop(immediate) }
-      return
-    }
-
-    if (page.isExpandedOrExpanding) {
-      return
-    }
-
-    expandedItem = ExpandedItem.EMPTY.copy(locationOnScreen = Rect(left, top, right, top))
-
+    expandedItem = captureExpandInfo(itemId)
     if (immediate) {
       page.expandImmediately()
     } else {
@@ -236,17 +198,57 @@ open class InboxRecyclerView @JvmOverloads constructor(
     }
   }
 
+  private fun captureExpandInfo(itemId: Long?): ExpandedItem {
+    val adapter = adapter!!
+    var itemAdapterPosition: Int = -1
+
+    val itemView: View? = if (itemId != null) {
+      for (i in 0 until adapter.itemCount) {
+        if (adapter.getItemId(i) == itemId) {
+          itemAdapterPosition = i
+          break
+        }
+      }
+      (layoutManager as LinearLayoutManager).findViewByPosition(itemAdapterPosition)
+    } else {
+      null
+    }
+
+    return if (itemView != null) {
+      val itemViewPosition = indexOfChild(itemView)
+      val itemRect = itemView.locationOnScreen()
+      ExpandedItem(
+          viewIndex = itemViewPosition,
+          adapterId = itemId ?: -1,
+          locationOnScreen = itemRect
+      )
+
+    } else {
+      val paddedY = locationOnScreen().top + paddingTop // This is where list items will be laid out from.
+      ExpandedItem(
+          viewIndex = -1,
+          adapterId = itemId ?: -1,
+          locationOnScreen = Rect(0, paddedY, width, paddedY)
+      )
+    }
+  }
+
   override fun onPageAboutToExpand() {
     isLayoutFrozen = true
   }
 
   override fun onPageAboutToCollapse() {
-    isLayoutFrozen = false
     onPageBackgroundVisible()
   }
 
   override fun onPageCollapsed() {
+    isLayoutFrozen = false
     expandedItem = ExpandedItem.EMPTY
+  }
+
+  override fun onPagePullStarted() {
+    // List items may have changed while the page was expanded. Find the expanded item's location again.
+    expandedItem = captureExpandInfo(itemId = expandedItem.adapterId)
   }
 
   override fun onPagePull(deltaY: Float) {
@@ -260,6 +262,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   override fun onPageFullyCovered() {
+    isLayoutFrozen = false
+
     val invalidate = !isFullyCoveredByPage
     isFullyCoveredByPage = true
     if (invalidate) {
@@ -270,6 +274,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   private fun onPageBackgroundVisible() {
+    isLayoutFrozen = true
     isFullyCoveredByPage = false
     invalidate()
 

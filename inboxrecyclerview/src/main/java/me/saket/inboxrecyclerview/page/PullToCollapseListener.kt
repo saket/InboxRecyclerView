@@ -38,6 +38,10 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) {
   var allowPullDuringExpansion = false
 
   interface OnPullListener {
+    /**
+     * Called when a pull starts.
+     */
+    fun onPullStarted() = Unit
 
     /**
      * Called when the user is pulling down / up the expandable page or the list.
@@ -123,6 +127,7 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) {
           if (interceptedUntilNextGesture!!) {
             return false
           }
+          dispatchPullStartedCallback()
         }
         expandablePage.parent.requestDisallowInterceptTouchEvent(true)
 
@@ -172,6 +177,13 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) {
     for (i in onPullListeners.indices) {
       val onPullListener = onPullListeners[i]
       onPullListener.onRelease(expandablePage.isCollapseEligible)
+    }
+  }
+
+  private fun dispatchPullStartedCallback() {
+    for (i in onPullListeners.indices) {
+      val onPullListener = onPullListeners[i]
+      onPullListener.onPullStarted()
     }
   }
 

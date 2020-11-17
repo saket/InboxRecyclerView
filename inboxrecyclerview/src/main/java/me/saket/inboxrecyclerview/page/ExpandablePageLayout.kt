@@ -185,6 +185,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
   }
 
+  override fun onPullStarted() {
+    dispatchOnPagePullStartedCallbacks()
+  }
+
   override fun onPull(
     deltaY: Float,
     currentTranslationY: Float,
@@ -570,6 +574,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     } else {
       super.drawChild(canvas, child, drawingTime)
     }
+  }
+
+  private fun dispatchOnPagePullStartedCallbacks() {
+    internalStateCallbacksForNestedPage.onPagePullStarted()
+    internalStateCallbacksForRecyclerView.onPagePullStarted()
   }
 
   private fun dispatchOnPagePullCallbacks(deltaY: Float) {
