@@ -715,6 +715,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * the toolbar will be animated back to its position.
    */
   fun pushParentToolbarOnExpand(toolbar: View?) {
+    if (this.parentToolbar != toolbar) {
+      toolbarAnimator.cancel()
+    }
     this.parentToolbar = toolbar
   }
 
