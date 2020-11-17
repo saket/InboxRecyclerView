@@ -5,8 +5,7 @@ import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 
 internal class StateRestorer(private val recyclerView: InboxRecyclerView) {
-
-  private var itemToRestore: ExpandedItem = ExpandedItem.EMPTY
+  private var itemToRestore = ExpandedItem.EMPTY
 
   internal fun save(outState: Parcelable?): Parcelable {
     return SavedState(outState, recyclerView.expandedItem)
@@ -25,6 +24,7 @@ internal class StateRestorer(private val recyclerView: InboxRecyclerView) {
 
     if (itemToRestore.isEmpty().not() && page != null && adapter != null) {
       recyclerView.expandItem(itemToRestore.adapterId, immediate = true)
+      itemToRestore = ExpandedItem.EMPTY
     }
   }
 }
