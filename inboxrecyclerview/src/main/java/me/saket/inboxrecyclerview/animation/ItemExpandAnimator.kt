@@ -5,8 +5,10 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.animation.ItemExpandAnimator.Companion.none
+import me.saket.inboxrecyclerview.animation.ItemExpandAnimator.Companion.scale
+import me.saket.inboxrecyclerview.animation.ItemExpandAnimator.Companion.split
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
-import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
 
 /**
  * Controls how [InboxRecyclerView] items are animated when [ExpandablePageLayout] is moving.
@@ -42,7 +44,7 @@ abstract class ItemExpandAnimator {
   ): View? {
     val anchorIndex = recyclerView.expandedItem.viewIndex
 
-    if (page.isExpanding && anchorIndex != -1 && anchorViewOverlay == null) {
+    if (page.isCollapsed.not() && anchorIndex != -1 && anchorViewOverlay == null) {
       val anchorView = recyclerView.getChildAt(anchorIndex)!!
       anchorViewOverlay = anchorView.captureImage(forOverlayOf = page).also {
         // Revert the layout position because
