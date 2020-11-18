@@ -166,7 +166,9 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) {
       MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
         // The page is responsible for animating back into position if the page
         // wasn't eligible for collapse. I no longer remember why I did this.
-        dispatchReleaseCallback()
+        if (abs(expandablePage.translationY) > 0f) {
+          dispatchReleaseCallback()
+        }
       }
     }
 

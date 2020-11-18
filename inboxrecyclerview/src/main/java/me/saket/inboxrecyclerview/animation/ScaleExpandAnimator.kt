@@ -10,7 +10,6 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  * [https://www.youtube.com/watch?v=a0U8HcvT4G4]
  */
 internal class ScaleExpandAnimator : ItemExpandAnimator() {
-
   private var unClippedScale: Float = 1f
 
   override fun onPageMove(
