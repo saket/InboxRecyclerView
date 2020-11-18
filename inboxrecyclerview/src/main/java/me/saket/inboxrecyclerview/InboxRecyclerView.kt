@@ -193,6 +193,10 @@ open class InboxRecyclerView @JvmOverloads constructor(
   fun collapse() {
     val page = ensureSetup(expandablePage)
 
+    // List items may have changed while the page was
+    // expanded. Find the expanded item's location again.
+    expandedItem = captureExpandInfo(itemId = expandedItem.adapterId)
+
     if (page.isCollapsedOrCollapsing.not()) {
       page.collapse(expandedItem)
     }
