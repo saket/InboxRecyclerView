@@ -293,6 +293,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       return
     }
 
+    // Send state callbacks that the city is going to collapse.
+    dispatchOnPageAboutToCollapseCallback()
+
     var targetWidth = expandedItem.locationOnScreen.width()
     val targetHeight = expandedItem.locationOnScreen.height()
     if (targetWidth == 0) {
@@ -300,9 +303,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       targetWidth = width
     }
     animatePageExpandCollapse(false, targetWidth, targetHeight, expandedItem)
-
-    // Send state callbacks that the city is going to collapse.
-    dispatchOnPageAboutToCollapseCallback()
   }
 
   /**
