@@ -25,6 +25,7 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) {
   private var lastMoveY: Float = 0f
   private var horizontalSwipingConfirmed: Boolean? = null
   private var interceptedUntilNextGesture: Boolean? = null
+  private var gestureCompleted = true
   var pullFrictionFactor = 3.5f
 
   /**
@@ -88,6 +89,7 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) {
         downY = event.rawY
         lastMoveY = downY
 
+        gestureCompleted = false
         horizontalSwipingConfirmed = null
         interceptedUntilNextGesture = null
         return consumeDowns
@@ -164,10 +166,16 @@ class PullToCollapseListener(private val expandablePage: ExpandablePageLayout) {
       }
 
       MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
-        // The page is responsible for animating back into position if the page
-        // wasn't eligible for collapse. I no longer remember why I did this.
-        if (abs(expandablePage.translationY) > 0f) {
-          dispatchReleaseCallback()
+        if (!gestureCompleted) {
+          // It's possible to receive a ACTION_CANCEL event right
+          // after an ACTION_UP if the page is removed on collapse.
+          gestureCompleted = true
+
+          if (abs(expandablePage.translationY) > 0f) {
+            // The page is responsible for animating back into position if the page
+            // wasn't eligible for collapse. I no longer remember why I did this.
+            dispatchReleaseCallback()
+          }
         }
       }
     }
