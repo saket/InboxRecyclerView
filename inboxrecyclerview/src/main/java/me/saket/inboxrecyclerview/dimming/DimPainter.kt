@@ -14,7 +14,7 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  * See [listAndPage].
  */
 abstract class DimPainter {
-  private lateinit var onDetach: () -> Unit
+  private var onDetach: (() -> Unit)? = null
 
   fun onAttachRecyclerView(
     recyclerView: InboxRecyclerView,
@@ -32,7 +32,7 @@ abstract class DimPainter {
   }
 
   fun onDetachRecyclerView() {
-    onDetach()
+    onDetach?.invoke()
   }
 
   abstract fun cancelAnimation(
