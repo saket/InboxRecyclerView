@@ -76,6 +76,13 @@ open class StandaloneExpandablePageLayout(
   }
 
   /**
+   * Expand this page immediately.
+   */
+  public override fun expandImmediately() {
+    super.expandImmediately()
+  }
+
+  /**
    * Expand this page with animation with `fromShapeRect` as its initial dimensions.
    */
   fun expandFrom(fromShapeRect: Rect) {

@@ -267,7 +267,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * Expand this page instantly, without any animation. Useful when using this layout
    * as a standalone page, without an associated InboxRecyclerView to manage its lifecycle.
    */
-  open fun expandImmediately() {
+  internal open fun expandImmediately() {
     if (isExpandedOrExpanding) {
       return
     }
