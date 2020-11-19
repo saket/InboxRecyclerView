@@ -16,6 +16,7 @@ import me.saket.inboxrecyclerview.PullCollapsibleActivity
  *
  * ```
  * val pageLayout = findViewById<StandaloneExpandablePageLayout>(...)
+ * pageLayout.expandImmediately()
  * pageLayout.onPageRelease = { collapseEligible ->
  *   if (collapseEligible) {
  *     exitWithAnimation()
@@ -80,13 +81,6 @@ open class StandaloneExpandablePageLayout(
   fun expandFrom(fromShapeRect: Rect) {
     setClippedDimensions(width, 0)
     expand(ExpandedItem(-1, -1, fromShapeRect))
-  }
-
-  /**
-   * Expand this page immediately.
-   */
-  public override fun expandImmediately() {
-    super.expandImmediately()
   }
 
   /**
