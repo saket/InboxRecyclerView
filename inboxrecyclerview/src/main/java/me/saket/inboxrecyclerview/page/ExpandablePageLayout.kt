@@ -181,7 +181,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     @Suppress("NON_EXHAUSTIVE_WHEN")
     when (currentState) {
       EXPANDING -> animateDimensions(toWidth = width, toHeight = height)
-      EXPANDED -> alignPageToCoverScreen()
+      EXPANDED -> resetClipping()
     }
   }
 
