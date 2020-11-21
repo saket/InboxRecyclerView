@@ -61,7 +61,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
   var expandedItem: ExpandedItem = ExpandedItem.EMPTY
 
   /** See [ExpandedItemFinder]. */
-  var expandedItemFinder: ExpandedItemFinder? = DefaultExpandedItemFinder()
+  var expandedItemFinder: ExpandedItemFinder? = DefaultExpandedItemFinder(requireStableIds = true)
 
   /**
    * The expandable page to be used with this list.
@@ -164,8 +164,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   /**
-   * @param itemId Identifier of the expanding item that can be used for finding
-   * the expanding item's location on screen through [expandedItemFinder].
+   * @param itemId Identifier of the expanding item that can be used for finding the expanding
+   * item's location on screen (across state restorations) using [expandedItemFinder].
    */
   @JvmOverloads
   fun expandItem(itemId: Parcelable, immediate: Boolean = false) {

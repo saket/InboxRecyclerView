@@ -17,6 +17,8 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  */
 fun interface ExpandedItemFinder {
   /**
+   * @param id ID of the expanded item passed through [InboxRecyclerView.expandItem].
+   *
    * @return When null, the content will be expanded from the top of the list.
    */
   fun findExpandedItem(parent: RecyclerView, id: Parcelable): FindResult?
@@ -30,11 +32,19 @@ fun interface ExpandedItemFinder {
 @Parcelize
 internal data class DefaultExpandedItemId(val adapterId: Long) : Parcelable
 
-internal class DefaultExpandedItemFinder : ExpandedItemFinder {
+/**
+ * @param requireStableIds Stable IDs are recommended for correctly collapsing an [ExpandablePageLayout]
+ * back to its original list item after a state restoration (like an orientation change). Feel free to disable
+ * this if your adapter overrides [RecyclerView.Adapter.getItemId] without setting
+ * [RecyclerView.Adapter.setHasStableIds]=true.
+ */
+class DefaultExpandedItemFinder(
+  private val requireStableIds: Boolean
+) : ExpandedItemFinder {
   override fun findExpandedItem(parent: RecyclerView, id: Parcelable): FindResult? {
     val adapter = parent.adapter!!
     check(id is DefaultExpandedItemId) { "Expected the expanded item ID to be of type Long." }
-    check(adapter.hasStableIds()) {
+    check(requireStableIds && adapter.hasStableIds()) {
       "$adapter needs to have stable IDs so that the expanded item can be restored across " +
           "orientation changes. If using adapter IDs is not an option, consider setting a " +
           "custom InboxRecyclerView#itemExpandFinder."
