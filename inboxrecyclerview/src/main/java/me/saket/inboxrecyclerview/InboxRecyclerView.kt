@@ -169,12 +169,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
    */
   @JvmOverloads
   fun expandItem(itemId: Parcelable, immediate: Boolean = false) {
-    if (itemId !is DefaultExpandedItemId) {
-      check(expandedItemFinder !is DefaultExpandedItemFinder) {
-        "A custom InboxRecyclerView#expandedItemFinder must be set that's capable of identifying expanded " +
-            "item ID of type ${expandedItem.id!!::class}."
-      }
-    }
     expandInternal(itemId, immediate)
   }
 
@@ -209,13 +203,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   fun collapse() {
-    if (expandedItem.id !is DefaultExpandedItemId && expandedItem.id != null) {
-      check(expandedItemFinder !is DefaultExpandedItemFinder) {
-        "A custom InboxRecyclerView#expandedItemFinder must be set that's capable of identifying expanded " +
-            "item ID of type ${expandedItem.id!!::class}."
-      }
-    }
-
     val page = ensureSetup(expandablePage)
 
     // List items may have changed while the page was
@@ -228,6 +215,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   private fun captureExpandInfo(itemId: Parcelable?): ExpandedItem {
+    itemId?.let(::checkHasSupportingItemFinder)
+
     val findResult = itemId?.let { expandedItemFinder?.findExpandedItem(this, it) }
     val itemView = findResult?.itemView
 
@@ -246,6 +235,13 @@ open class InboxRecyclerView @JvmOverloads constructor(
           viewIndex = -1,
           locationOnScreen = Rect(0, paddedY, width, paddedY)
       )
+    }
+  }
+
+  private fun checkHasSupportingItemFinder(itemId: Parcelable) {
+    if (itemId !is DefaultExpandedItemId && expandedItemFinder is DefaultExpandedItemFinder) {
+      "A custom InboxRecyclerView#expandedItemFinder must be set that's capable of identifying expanded " +
+          "item ID of type ${itemId::class.java}."
     }
   }
 

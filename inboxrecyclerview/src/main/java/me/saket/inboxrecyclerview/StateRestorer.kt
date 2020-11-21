@@ -23,6 +23,14 @@ internal class StateRestorer(private val recyclerView: InboxRecyclerView) {
     val page = recyclerView.expandablePage
 
     if (itemToRestore.isEmpty().not() && page != null && adapter != null) {
+      val canAutoRestore = itemToRestore.id is DefaultExpandedItemId || recyclerView.expandedItemFinder !is DefaultExpandedItemFinder
+      check(canAutoRestore) {
+        "Failed to auto restore InboxRecyclerView's state without a custom expandedItemFinder that can identify " +
+            "expanded item of type ${itemToRestore.id!!::class.java}. Make sure your expandedItemFinder is set " +
+            "before state restoration. Otherwise consider disabling state restoration for your InboxRecyclerView " +
+            "(isSaveEnabled=false)."
+      }
+
       recyclerView.expandItem(itemToRestore.id!!, immediate = true)
       itemToRestore = ExpandedItem.EMPTY
     }
