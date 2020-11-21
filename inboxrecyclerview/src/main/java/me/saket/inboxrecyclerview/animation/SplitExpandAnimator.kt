@@ -42,7 +42,7 @@ internal class SplitExpandAnimator : ItemExpandAnimator() {
     } else {
       // Anchor View can be null when the page was expanded from
       // an arbitrary location. See InboxRecyclerView#expandFromTop().
-      recyclerView.moveListItems(anchorIndex, 0, pageBottom)
+      recyclerView.moveListItems(anchorIndex, 0, pageBottom - pageTop)
     }
 
     // Fade in the anchor row with the expanding/collapsing page.
