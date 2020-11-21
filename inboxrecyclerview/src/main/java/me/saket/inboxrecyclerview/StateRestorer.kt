@@ -23,7 +23,7 @@ internal class StateRestorer(private val recyclerView: InboxRecyclerView) {
     val page = recyclerView.expandablePage
 
     if (itemToRestore.isEmpty().not() && page != null && adapter != null) {
-      recyclerView.expandItem(itemToRestore.adapterId, immediate = true)
+      recyclerView.expandItem(itemToRestore.id!!, immediate = true)
       itemToRestore = ExpandedItem.EMPTY
     }
   }
@@ -31,6 +31,6 @@ internal class StateRestorer(private val recyclerView: InboxRecyclerView) {
 
 @Parcelize
 private data class SavedState(
-    val superState: Parcelable?,
-    val expandedItem: ExpandedItem
+  val superState: Parcelable?,
+  val expandedItem: ExpandedItem
 ) : Parcelable

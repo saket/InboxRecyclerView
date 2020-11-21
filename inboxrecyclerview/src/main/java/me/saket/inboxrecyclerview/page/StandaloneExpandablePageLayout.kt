@@ -87,13 +87,13 @@ open class StandaloneExpandablePageLayout(
    */
   fun expandFrom(fromShapeRect: Rect) {
     setClippedDimensions(width, 0)
-    expand(ExpandedItem(-1, -1, fromShapeRect))
+    expand(ExpandedItem(viewIndex = -1, id = null, locationOnScreen = fromShapeRect))
   }
 
   /**
    * @param toShapeRect Final dimensions of this page, when it fully collapses.
    */
   fun collapseTo(toShapeRect: Rect) {
-    collapse(ExpandedItem(-1, -1, toShapeRect))
+    collapse(ExpandedItem(viewIndex = -1, id = null, locationOnScreen = toShapeRect))
   }
 }
