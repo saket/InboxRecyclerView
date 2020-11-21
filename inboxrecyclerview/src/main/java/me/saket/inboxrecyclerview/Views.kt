@@ -64,9 +64,14 @@ internal fun ViewPropertyAnimator.withEndAction(action: (Boolean) -> Unit): View
 
 internal fun View.locationOnScreen(
   intBuffer: IntArray = IntArray(2),
-  rectBuffer: Rect = Rect()
+  rectBuffer: Rect = Rect(),
+  ignoreTranslations: Boolean = false
 ): Rect {
   getLocationOnScreen(intBuffer)
+  if (ignoreTranslations) {
+    intBuffer[0] -= translationX.toInt()
+    intBuffer[1] -= translationY.toInt()
+  }
   rectBuffer.set(intBuffer[0], intBuffer[1], intBuffer[0] + width, intBuffer[1] + height)
   return rectBuffer
 }

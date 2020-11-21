@@ -221,10 +221,10 @@ open class InboxRecyclerView @JvmOverloads constructor(
     }
 
     return if (itemView != null) {
-      val itemViewPosition = indexOfChild(itemView)
-      val itemRect = itemView.locationOnScreen()
+      // Ignore translations done by the item expand animator.
+      val itemRect = itemView.locationOnScreen(ignoreTranslations = true)
       ExpandedItem(
-          viewIndex = itemViewPosition,
+          viewIndex = indexOfChild(itemView),
           adapterId = itemId ?: -1,
           locationOnScreen = itemRect
       )

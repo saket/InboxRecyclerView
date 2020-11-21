@@ -108,6 +108,10 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   val isCollapseEligible
     get() = abs(translationY) >= pullToCollapseThresholdDistance
 
+  /** Whether the page is expanding/collapsing or if it's being pulled to collapse. */
+  val isMoving: Boolean
+    get() = isExpandingOrCollapsing || isExpanded && translationY != 0f
+
   enum class PageState {
     COLLAPSING,
     COLLAPSED,

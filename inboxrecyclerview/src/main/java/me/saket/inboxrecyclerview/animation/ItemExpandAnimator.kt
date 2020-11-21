@@ -48,8 +48,9 @@ abstract class ItemExpandAnimator {
       val anchorView = recyclerView.getChildAt(anchorIndex)!!
       anchorViewOverlay = anchorView.captureImage(forOverlayOf = page).also {
         // Revert the layout position because
-        // ScaleExpandAnimator may have modified the RV's scale.
-        it.layout(0, 0, anchorView.width, anchorView.height)
+        // - ScaleExpandAnimator may have modified the RV's scale.
+        // - SplitExpandAnimator may have modified the y-translation.
+        it.layout(0, -anchorView.translationY.toInt(), anchorView.width, anchorView.height)
       }
       page.overlay.add(anchorViewOverlay!!)
       anchorView.visibility = GONE

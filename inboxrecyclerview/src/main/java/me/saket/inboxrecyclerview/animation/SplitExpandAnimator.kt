@@ -14,7 +14,7 @@ internal class SplitExpandAnimator : ItemExpandAnimator() {
     page: ExpandablePageLayout,
     anchorViewOverlay: View?
   ) {
-    if (page.isCollapsed) {
+    if (!page.isMoving) {
       // Reset everything. This is also useful when the content size
       // changes, say as a result of the soft-keyboard getting dismissed.
       recyclerView.apply {
