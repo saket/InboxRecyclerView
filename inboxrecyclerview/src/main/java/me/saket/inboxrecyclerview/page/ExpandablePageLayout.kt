@@ -246,7 +246,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Expands this page (with animation) so that it fills the whole screen.
    */
-  internal fun expand(expandedItem: ExpandedItem) {
+  internal open fun expand(expandedItem: ExpandedItem) {
     if (isLaidOut.not() && visibility != View.GONE) {
       throw IllegalAccessError("Width / Height not available to expand")
     }

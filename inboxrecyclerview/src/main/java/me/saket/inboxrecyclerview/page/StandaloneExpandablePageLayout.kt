@@ -82,6 +82,31 @@ open class StandaloneExpandablePageLayout(
     super.expandImmediately()
   }
 
+  fun expandFromTop() {
+    if (isLaidOut.not()) {
+      post { expandFromTop() }
+      return
+    }
+
+    expand(
+        ExpandedItem(
+            id = null,
+            viewIndex = -1,
+            locationOnScreen = Rect(0, 0, width, 0)
+        )
+    )
+  }
+
+  fun collapseToTop() {
+    collapse(
+        ExpandedItem(
+            id = null,
+            viewIndex = -1,
+            locationOnScreen = Rect(0, 0, width, 0)
+        )
+    )
+  }
+
   /**
    * Expand this page with animation with `fromShapeRect` as its initial dimensions.
    */
