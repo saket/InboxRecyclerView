@@ -10,10 +10,10 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
  * Identifies an expanding item's location on screen from where an [ExpandablePageLayout] can expand
- * from as well as collapse to. The default implementation uses adapter IDs but apps can implement
- * their own finder if using adapter IDs isn't desired.
+ * from and collapse to. The default implementation uses adapter IDs but apps can implement
+ * their own finder if using adapter IDs isn't desired because it's not 20th century anymore.
  *
- * The finder is unfortunately not type safe because of limitations of a View's lifecycle.
+ * The finder is unfortunately not type safe because of limitations of View's lifecycle.
  */
 fun interface ExpandedItemFinder {
   /**
