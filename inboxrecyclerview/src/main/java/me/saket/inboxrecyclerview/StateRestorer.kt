@@ -22,7 +22,7 @@ internal class StateRestorer(private val recyclerView: InboxRecyclerView) {
     val adapter = recyclerView.adapter
     val page = recyclerView.expandablePage
 
-    if (itemToRestore.isEmpty().not() && page != null && adapter != null) {
+    if (itemToRestore.isNotEmpty() && page != null && adapter != null) {
       val canAutoRestore = itemToRestore.id is DefaultExpandedItemId || recyclerView.expandedItemFinder !is DefaultExpandedItemFinder
       check(canAutoRestore) {
         "Failed to auto restore InboxRecyclerView's state without a custom expandedItemFinder that can identify " +

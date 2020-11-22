@@ -366,14 +366,13 @@ open class InboxRecyclerView @JvmOverloads constructor(
     // Original location of the currently expanded item.
     // Used for restoring states after collapsing.
     val locationOnScreen: Rect
-
   ) : Parcelable {
 
-    internal fun isEmpty(): Boolean {
-      return viewIndex == -1
-          && id == null
-          && locationOnScreen.width() == 0
-          && locationOnScreen.height() == 0
+    internal fun isNotEmpty(): Boolean {
+      return viewIndex != -1
+          && id != null
+          && locationOnScreen.width() != 0
+          && locationOnScreen.height() != 0
     }
 
     companion object {
