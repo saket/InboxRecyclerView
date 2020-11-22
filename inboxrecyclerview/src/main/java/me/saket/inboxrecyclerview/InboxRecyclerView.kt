@@ -194,7 +194,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
       return
     }
 
-    expandedItem = captureExpandInfo(itemId)
+    expandedItem = captureExpandedItemInfo(itemId)
     if (immediate) {
       page.expandImmediately()
     } else {
@@ -207,14 +207,14 @@ open class InboxRecyclerView @JvmOverloads constructor(
 
     // List items may have changed while the page was
     // expanded. Find the expanded item's location again.
-    expandedItem = captureExpandInfo(itemId = expandedItem.id)
+    expandedItem = captureExpandedItemInfo(itemId = expandedItem.id)
 
     if (page.isCollapsedOrCollapsing.not()) {
       page.collapse(expandedItem)
     }
   }
 
-  private fun captureExpandInfo(itemId: Parcelable?): ExpandedItem {
+  private fun captureExpandedItemInfo(itemId: Parcelable?): ExpandedItem {
     itemId?.let(::checkHasSupportingItemFinder)
 
     val findResult = itemId?.let { expandedItemFinder?.findExpandedItem(this, it) }
@@ -260,7 +260,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
 
   override fun onPagePullStarted() {
     // List items may have changed while the page was expanded. Find the expanded item's location again.
-    expandedItem = captureExpandInfo(itemId = expandedItem.id)
+    expandedItem = captureExpandedItemInfo(itemId = expandedItem.id)
   }
 
   override fun onPagePull(deltaY: Float) {
