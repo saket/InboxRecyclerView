@@ -50,7 +50,7 @@ abstract class ItemExpandAnimator {
         // Revert the layout position because
         // - ScaleExpandAnimator may have modified the RV's scale.
         // - SplitExpandAnimator may have modified the y-translation.
-        it.layout(0, -anchorView.translationY.toInt(), anchorView.width, anchorView.height)
+        it.layout(0, 0, anchorView.width, anchorView.height)
       }
       page.overlay.add(anchorViewOverlay!!)
       anchorView.visibility = GONE
