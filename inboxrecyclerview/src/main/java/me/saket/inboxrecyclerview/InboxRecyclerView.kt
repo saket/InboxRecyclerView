@@ -191,6 +191,11 @@ open class InboxRecyclerView @JvmOverloads constructor(
     if (!page.isCollapsed) {
       // Expanding an item while another is already
       // expanding results in unpredictable animation.
+      if (!expandedItem.isNotEmpty()) {
+        // Useful if the page was expanded immediately as a result of a (manual)
+        // state restoration before this RecyclerView could restore its state.
+        expandedItem = captureExpandedItemInfo(itemId)
+      }
       return
     }
 
