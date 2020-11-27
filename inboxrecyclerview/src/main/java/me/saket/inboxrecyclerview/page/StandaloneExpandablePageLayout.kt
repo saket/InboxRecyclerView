@@ -2,10 +2,24 @@ package me.saket.inboxrecyclerview.page
 
 import android.content.Context
 import android.graphics.Rect
+import android.os.Parcelable
 import android.util.AttributeSet
+import android.view.View
+import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 import me.saket.inboxrecyclerview.PullCollapsibleActivity
+import me.saket.inboxrecyclerview.executeOnMeasure
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.COLLAPSED
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.COLLAPSING
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
+import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDING
+
+@Parcelize
+data class StandaloneState(
+  val superState: Parcelable?,
+  val state: ExpandablePageLayout.PageState
+): Parcelable
 
 /**
  * An expandable page that can live without an accompanying [InboxRecyclerView].
@@ -63,6 +77,22 @@ open class StandaloneExpandablePageLayout(
 
     if (::onPageRelease.isInitialized.not()) {
       throw AssertionError("Did you forget to set onPageRelease?")
+    }
+  }
+
+  override fun onSaveInstanceState(): Parcelable {
+    return StandaloneState(
+        superState = super.onSaveInstanceState(),
+        state = currentState
+    )
+  }
+
+  override fun onRestoreInstanceState(state: Parcelable) {
+    require(state is StandaloneState)
+    super.onRestoreInstanceState(state.superState)
+
+    if (state.state == EXPANDED || state.state == EXPANDING) {
+      expandImmediately()
     }
   }
 
