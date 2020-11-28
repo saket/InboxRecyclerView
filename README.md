@@ -62,8 +62,8 @@ Step 1. Extend `PullCollapsibleActivity`.
 Step 2. Add these attributes to the activity’s theme:
 
 ```xml
-<item name=“android:windowIsTranslucent”>true</item>
-<item name=“android:colorBackgroundCacheHint”>@null</item>
+<item name="android:windowIsTranslucent">true</item>
+<item name="android:colorBackgroundCacheHint">@null</item>
 ```
 
 ### License
