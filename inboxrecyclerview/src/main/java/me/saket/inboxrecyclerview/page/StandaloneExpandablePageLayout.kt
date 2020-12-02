@@ -122,7 +122,7 @@ open class StandaloneExpandablePageLayout(
         ExpandedItem(
             id = null,
             viewIndex = -1,
-            locationOnScreen = Rect(0, 0, width, 0)
+            locationOnScreen = Rect(left, top, right, top)
         )
     )
   }
@@ -132,7 +132,7 @@ open class StandaloneExpandablePageLayout(
         ExpandedItem(
             id = null,
             viewIndex = -1,
-            locationOnScreen = Rect(0, 0, width, 0)
+            locationOnScreen = Rect(left, top, right, top)
         )
     )
   }
