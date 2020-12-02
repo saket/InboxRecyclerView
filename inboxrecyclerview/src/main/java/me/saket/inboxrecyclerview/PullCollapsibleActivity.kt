@@ -22,8 +22,7 @@ import me.saket.inboxrecyclerview.page.StandaloneExpandablePageLayout
  * <item name="android:colorBackgroundCacheHint">@null</item>
  */
 abstract class PullCollapsibleActivity : AppCompatActivity() {
-
-  private lateinit var activityPageLayout: StandaloneExpandablePageLayout
+  protected lateinit var activityPageLayout: StandaloneExpandablePageLayout
 
   private var expandCalled = false
   private var expandedFromRect: Rect? = null
@@ -72,13 +71,21 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
   override fun setContentView(view: View) {
     activityPageLayout = wrapInExpandablePage(view)
     super.setContentView(activityPageLayout)
-    expandFromTop()
+    if (entryAnimationEnabled) {
+      expandFromTop()
+    } else {
+      expandImmediately()
+    }
   }
 
   override fun setContentView(view: View, params: ViewGroup.LayoutParams) {
     activityPageLayout = wrapInExpandablePage(view)
     super.setContentView(activityPageLayout, params)
-    expandFromTop()
+    if (entryAnimationEnabled) {
+      expandFromTop()
+    } else {
+      expandImmediately()
+    }
   }
 
   private fun wrapInExpandablePage(view: View): StandaloneExpandablePageLayout {
@@ -95,14 +102,6 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
           finish()
         }
       }
-
-      pageLayout.addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
-        override fun onPageCollapsed() {
-          super@PullCollapsibleActivity.finish()
-          overridePendingTransition(0, 0)
-        }
-      })
-
     } else {
       pageLayout.pullToCollapseEnabled = false
       pageLayout.expandImmediately()
@@ -118,6 +117,11 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
       val toolbarRect = Rect(0, standardToolbarHeight, activityPageLayout.width, standardToolbarHeight)
       expandFrom(toolbarRect)
     }
+  }
+
+  protected fun expandImmediately() {
+    expandCalled = true
+    activityPageLayout.expandImmediately()
   }
 
   protected fun expandFrom(fromRect: Rect) {
@@ -139,7 +143,14 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
     // layout gets measured.
 
     if (pullCollapsibleEnabled && expandedFromRect != null) {
+      activityPageLayout.addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
+        override fun onPageCollapsed() {
+          super@PullCollapsibleActivity.finish()
+          overridePendingTransition(0, 0)
+        }
+      })
       activityPageLayout.collapseTo(expandedFromRect!!)
+
     } else {
       super.finish()
     }
