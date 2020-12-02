@@ -250,9 +250,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     if (isLaidOut.not() && visibility != View.GONE) {
       throw IllegalAccessError("Width / Height not available to expand")
     }
-    checkNotNull(background) {
-      "A solid background is needed on this page for smoothly fading in/out its content."
-    }
     if (isExpandedOrExpanding) {
       return
     }
@@ -418,6 +415,12 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   protected open fun animateContentCoverAlpha(expand: Boolean) {
+    if (collapsedContentCoverAlpha != expandedContentCoverAlpha) {
+      checkNotNull(background) {
+        "A solid background is needed on this page for smoothly fading in/out its content."
+      }
+    }
+
     val toAlpha: Float = if (expand) expandedContentCoverAlpha else collapsedContentCoverAlpha
 
     contentCoverAnimator.cancel()
