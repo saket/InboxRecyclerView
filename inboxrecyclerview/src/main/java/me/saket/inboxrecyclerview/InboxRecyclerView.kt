@@ -210,7 +210,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
   /**
    * InboxRecyclerView rejects duplicate calls to [expandItem] if the page is already expanded.
    * If the expanded item still needs to be updated for some reason (for eg., if the page was
-   * immediately expanded earlier but can now collapse to an actual list item), this can be used.
+   * immediately expanded from an arbitrary location earlier but can now collapse to an actual
+   * list item), this can be used.
    */
   fun forceUpdateExpandedItem(itemId: Parcelable) {
     expandedItem = captureExpandedItemInfo(itemId)

@@ -141,6 +141,11 @@ open class StandaloneExpandablePageLayout(
    * Expand this page with animation with `fromShapeRect` as its initial dimensions.
    */
   fun expandFrom(fromShapeRect: Rect) {
+    if (isLaidOut.not()) {
+      post { expandFrom(fromShapeRect) }
+      return
+    }
+
     setClippedDimensions(width, 0)
     expand(ExpandedItem(viewIndex = -1, id = null, locationOnScreen = fromShapeRect))
   }
