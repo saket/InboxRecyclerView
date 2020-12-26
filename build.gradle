@@ -3,7 +3,7 @@ buildscript {
       compileSdk: 29,
       androidx  : '1.0.0-rc01',
       timber    : '4.7.0',
-      kotlin    : '1.4.20',
+      kotlin    : '1.4.21',
       dokka     : '0.9.18',
       leakcanary: '1.6.1',
   ]
@@ -14,7 +14,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:4.0.1'
+    classpath 'com.android.tools.build:gradle:4.0.2'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
   }
 }
