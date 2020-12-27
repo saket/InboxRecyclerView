@@ -244,11 +244,12 @@ open class InboxRecyclerView @JvmOverloads constructor(
       )
 
     } else {
-      val paddedY = locationOnScreen().top + paddingTop // This is where list items will be laid out from.
+      val locationOnScreen = locationOnScreen()
+      val paddedY = locationOnScreen.top + paddingTop // This is where list items will be laid out from.
       ExpandedItem(
           id = itemId,
           viewIndex = -1,
-          locationOnScreen = Rect(0, paddedY, width, paddedY)
+          locationOnScreen = Rect(locationOnScreen.left, paddedY, locationOnScreen.right, paddedY)
       )
     }
   }
@@ -267,8 +268,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
     // has processed its initial batch of child Views. Otherwise this list stays empty
     // after a state restoration, until the page is collapsed.
     if (isLaidOut && childCount > 0 && expandablePage?.isExpandedOrExpanding == true) {
-    isLayoutFrozen = true
-  }
+      isLayoutFrozen = true
+    }
   }
 
   override fun onPageAboutToCollapse() {
