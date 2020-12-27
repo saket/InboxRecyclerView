@@ -13,6 +13,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import androidx.annotation.FloatRange
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
@@ -39,15 +40,24 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /** See [pushParentToolbarOnExpand]. */
   private var parentToolbar: View? = null
 
-  /** Alpha of this page when it's collapsed. */
-  internal var collapsedContentCoverAlpha = 1f
-  private val expandedContentCoverAlpha = 0f
+  /**
+   * When this page is expanding, the content is smoothly faded in.
+   * This value controls the max opacity of the content.
+   */
+  @FloatRange(from = 0.0, to = 1.0)
+  var contentOpacityWhenCollapsed = 0f
 
   /**
-   * Alpha of a cover that's drawn on top to show/hide
-   * the content while the page is expanding/collapsing.
+   * When this page is collapsing, the content is smoothly faded out.
+   * This value controls the min opacity of the content.
    */
-  var contentCoverAlpha: Float = collapsedContentCoverAlpha
+  @FloatRange(from = 0.0, to = 1.0)
+  val contentOpacityWhenExpanded = 1f
+
+  /**
+   * Opacity of content while the page is expanding/collapsing.
+   */
+  internal var contentOpacity: Float = contentOpacityWhenCollapsed
     set(value) {
       field = value
       invalidate()
@@ -122,7 +132,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   init {
     // Hidden on start.
     visibility = INVISIBLE
-    contentCoverAlpha = collapsedContentCoverAlpha
+    contentOpacity = contentOpacityWhenCollapsed
     changeState(PageState.COLLAPSED)
 
     pullToCollapseEnabled = true
@@ -132,7 +142,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     outlineProvider = object : ViewOutlineProvider() {
       override fun getOutline(view: View, outline: Outline) {
         BACKGROUND.getOutline(view, outline)
-        outline.alpha = 1f - contentCoverAlpha
+        outline.alpha = contentOpacity
       }
     }
   }
@@ -274,7 +284,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
 
     visibility = View.VISIBLE
-    contentCoverAlpha = expandedContentCoverAlpha
+    contentOpacity = contentOpacityWhenExpanded
 
     // Hide the toolbar as soon as its height is available.
     parentToolbar?.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
@@ -415,20 +425,20 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   protected open fun animateContentCoverAlpha(expand: Boolean) {
-    if (collapsedContentCoverAlpha != expandedContentCoverAlpha) {
+    if (contentOpacityWhenCollapsed != contentOpacityWhenExpanded) {
       checkNotNull(background) {
         "A solid background is needed on this page for smoothly fading in/out its content."
       }
     }
 
-    val toAlpha: Float = if (expand) expandedContentCoverAlpha else collapsedContentCoverAlpha
+    val toAlpha: Float = if (expand) contentOpacityWhenExpanded else contentOpacityWhenCollapsed
 
     contentCoverAnimator.cancel()
-    contentCoverAnimator = ObjectAnimator.ofFloat(contentCoverAlpha, toAlpha).apply {
+    contentCoverAnimator = ObjectAnimator.ofFloat(contentOpacity, toAlpha).apply {
       duration = animationDurationMillis / 3
       startDelay = ANIMATION_START_DELAY + if (expand) 0 else animationDurationMillis / 3
       addUpdateListener {
-        contentCoverAlpha = it.animatedValue as Float
+        contentOpacity = it.animatedValue as Float
       }
       start()
     }
@@ -562,7 +572,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
     if (background != null) {
       val alphaBackup = background.alpha
-      background.alpha = (contentCoverAlpha * 255).toInt()
+      background.alpha = 255 - (255 * contentOpacity).toInt()
       background.draw(canvas)
       background.alpha = alphaBackup
     }

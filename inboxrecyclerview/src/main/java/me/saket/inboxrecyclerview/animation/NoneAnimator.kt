@@ -13,6 +13,6 @@ internal class NoneAnimator : ItemExpandAnimator() {
     page: ExpandablePageLayout,
     anchorViewOverlay: View?
   ) {
-    anchorViewOverlay?.alpha = page.contentCoverAlpha
+    anchorViewOverlay?.alpha = 1f - page.contentOpacity
   }
 }

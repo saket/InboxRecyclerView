@@ -4,14 +4,10 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.view.View
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
 import me.saket.inboxrecyclerview.PullCollapsibleActivity
-import me.saket.inboxrecyclerview.executeOnMeasure
-import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.COLLAPSED
-import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.COLLAPSING
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDING
 
@@ -63,7 +59,7 @@ open class StandaloneExpandablePageLayout(
   lateinit var onPageRelease: (collapseEligible: Boolean) -> Unit
 
   init {
-    collapsedContentCoverAlpha = 0F
+    contentOpacityWhenCollapsed = 1F
 
     addOnPullListener(object : SimpleOnPullListener() {
       override fun onRelease(collapseEligible: Boolean) {
