@@ -45,16 +45,17 @@ abstract class ItemExpandAnimator {
     val anchorIndex = recyclerView.expandedItem.viewIndex
 
     if (page.isCollapsed.not() && anchorIndex != -1 && anchorViewOverlay == null) {
-      val anchorView = recyclerView.getChildAt(anchorIndex)!!
-      anchorViewOverlay = anchorView.captureImage(forOverlayOf = page).also {
-        // Revert the layout position because
-        // - ScaleExpandAnimator may have modified the RV's scale.
-        // - SplitExpandAnimator may have modified the y-translation.
-        it.layout(0, 0, anchorView.width, anchorView.height)
+      recyclerView.getChildAt(anchorIndex)?.let { anchorView ->
+        anchorViewOverlay = anchorView.captureImage(forOverlayOf = page).also {
+          // Revert the layout position because
+          // - ScaleExpandAnimator may have modified the RV's scale.
+          // - SplitExpandAnimator may have modified the y-translation.
+          it.layout(0, 0, anchorView.width, anchorView.height)
+        }
+        page.overlay.add(anchorViewOverlay!!)
+        anchorView.visibility = GONE
+        onRemoveOverlay = { anchorView.visibility = VISIBLE }
       }
-      page.overlay.add(anchorViewOverlay!!)
-      anchorView.visibility = GONE
-      onRemoveOverlay = { anchorView.visibility = VISIBLE }
     }
 
     if (page.isCollapsed && anchorViewOverlay != null) {

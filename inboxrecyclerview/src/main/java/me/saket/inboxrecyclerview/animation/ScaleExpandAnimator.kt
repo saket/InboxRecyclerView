@@ -21,6 +21,7 @@ internal class ScaleExpandAnimator : ItemExpandAnimator() {
       // Reset everything. This is also useful when the content size
       // changes, say as a result of the soft-keyboard getting dismissed.
       unClippedScale = 1f
+      anchorViewOverlay?.alpha = 0f
       recyclerView.invalidate()
       return
     }

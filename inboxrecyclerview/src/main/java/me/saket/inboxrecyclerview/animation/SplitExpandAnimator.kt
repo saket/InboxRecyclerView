@@ -24,6 +24,7 @@ internal class SplitExpandAnimator : ItemExpandAnimator() {
           childView.alpha = 1F
         }
       }
+      anchorViewOverlay?.alpha = 0f
       return
     }
 
