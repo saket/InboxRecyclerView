@@ -3,7 +3,7 @@ package me.saket.inboxrecyclerview
 /** Used internally, by [InboxRecyclerView]. */
 internal interface InternalPageCallbacks {
 
-  fun onPageAboutToExpand()
+  fun onPageAboutToExpand() = Unit
 
   /**
    * Called when this page has fully covered the list. This can happen in two situations:

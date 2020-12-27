@@ -260,8 +260,15 @@ open class InboxRecyclerView @JvmOverloads constructor(
     }
   }
 
-  override fun onPageAboutToExpand() {
+  override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+    super.onLayout(changed, l, t, r, b)
+
+    // This is kind of a hack, but I want the layout to be frozen only after this list
+    // has processed its initial batch of child Views. Otherwise this list stays empty
+    // after a state restoration, until the page is collapsed.
+    if (isLaidOut && childCount > 0 && expandablePage?.isExpandedOrExpanding == true) {
     isLayoutFrozen = true
+  }
   }
 
   override fun onPageAboutToCollapse() {
@@ -289,8 +296,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   override fun onPageFullyCovered() {
-    isLayoutFrozen = false
-
     val invalidate = !isFullyCoveredByPage
     isFullyCoveredByPage = true
     if (invalidate) {
@@ -301,7 +306,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   private fun onPageBackgroundVisible() {
-    isLayoutFrozen = true
     isFullyCoveredByPage = false
     invalidate()
 
@@ -349,11 +353,9 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   override fun setAdapter(adapter: Adapter<*>?) {
-    val isLayoutFrozenBak = isLayoutFrozen
+    val wasLayoutSuppressed = isLayoutSuppressed
     super.setAdapter(adapter)
-
-    // isLayoutFrozen is reset when the adapter is changed.
-    isLayoutFrozen = isLayoutFrozenBak
+    suppressLayout(wasLayoutSuppressed) // isLayoutSuppressed is reset when the adapter is changed.
 
     restorer.restoreIfPossible()
   }
@@ -362,10 +364,10 @@ open class InboxRecyclerView @JvmOverloads constructor(
     adapter: Adapter<*>?,
     removeAndRecycleExistingViews: Boolean
   ) {
-    val isLayoutFrozenBak = isLayoutFrozen
+    val wasLayoutSuppressed = isLayoutSuppressed
     super.swapAdapter(adapter, removeAndRecycleExistingViews)
+    suppressLayout(wasLayoutSuppressed) // isLayoutSuppressed is reset when the adapter is changed.
 
-    isLayoutFrozen = isLayoutFrozenBak
     restorer.restoreIfPossible()
   }
 
