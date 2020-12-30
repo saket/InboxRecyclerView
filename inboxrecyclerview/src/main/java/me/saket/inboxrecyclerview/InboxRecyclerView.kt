@@ -268,7 +268,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
     // has processed its initial batch of child Views. Otherwise this list stays empty
     // after a state restoration, until the page is collapsed.
     if (isLaidOut && childCount > 0 && expandablePage?.isExpandedOrExpanding == true) {
-      isLayoutFrozen = true
+      suppressLayout(true)
     }
   }
 
@@ -277,7 +277,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   override fun onPageCollapsed() {
-    isLayoutFrozen = false
+    suppressLayout(false)
     expandedItem = ExpandedItem.EMPTY
   }
 
