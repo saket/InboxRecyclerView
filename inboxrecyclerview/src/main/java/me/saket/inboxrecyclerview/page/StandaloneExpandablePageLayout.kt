@@ -11,12 +11,6 @@ import me.saket.inboxrecyclerview.PullCollapsibleActivity
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDING
 
-@Parcelize
-data class StandaloneState(
-  val superState: Parcelable?,
-  val state: ExpandablePageLayout.PageState
-): Parcelable
-
 /**
  * An expandable page that can live without an accompanying [InboxRecyclerView].
  * Can be used for making pull-collapsible screens where using [PullCollapsibleActivity]
@@ -142,7 +136,6 @@ open class StandaloneExpandablePageLayout(
       return
     }
 
-    setClippedDimensions(width, 0)
     expand(ExpandedItem(viewIndex = -1, id = null, locationOnScreen = fromShapeRect))
   }
 
@@ -153,3 +146,9 @@ open class StandaloneExpandablePageLayout(
     collapse(ExpandedItem(viewIndex = -1, id = null, locationOnScreen = toShapeRect))
   }
 }
+
+@Parcelize
+data class StandaloneState(
+  val superState: Parcelable?,
+  val state: ExpandablePageLayout.PageState
+) : Parcelable
