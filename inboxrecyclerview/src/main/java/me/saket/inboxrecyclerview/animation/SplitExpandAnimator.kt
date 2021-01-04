@@ -17,14 +17,7 @@ internal class SplitExpandAnimator : ItemExpandAnimator() {
     if (!page.isMoving) {
       // Reset everything. This is also useful when the content size
       // changes, say as a result of the soft-keyboard getting dismissed.
-      recyclerView.apply {
-        for (childIndex in 0 until childCount) {
-          val childView = getChildAt(childIndex)
-          childView.translationY = 0F
-          childView.alpha = 1F
-        }
-      }
-      anchorViewOverlay?.alpha = 0f
+      resetAnimation(recyclerView, anchorViewOverlay)
       return
     }
 
@@ -61,5 +54,17 @@ internal class SplitExpandAnimator : ItemExpandAnimator() {
         else -> distanceExpandedTowardsBottom.toFloat()
       }
     }
+  }
+
+  override fun resetAnimation(
+    recyclerView: InboxRecyclerView,
+    anchorViewOverlay: View?
+  ) {
+    for (childIndex in 0 until recyclerView.childCount) {
+      val childView = recyclerView.getChildAt(childIndex)
+      childView.translationY = 0F
+      childView.alpha = 1F
+    }
+    anchorViewOverlay?.alpha = 0f
   }
 }

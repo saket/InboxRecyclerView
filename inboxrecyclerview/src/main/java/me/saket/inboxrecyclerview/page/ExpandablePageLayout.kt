@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.FloatRange
+import androidx.core.animation.addListener
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
@@ -159,14 +160,14 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   override fun onDetachedFromWindow() {
-    parentToolbar = null
+    stopAnyOngoingAnimation()
+    pushParentToolbarOnExpand(toolbar = null)
     nestedPage = null
     pullToCollapseInterceptor = null
     pullToCollapseListener.removeAllOnPullListeners()
     internalStateCallbacksForNestedPage = NoOp()
     internalStateCallbacksForRecyclerView = NoOp()
     stateChangeCallbacks.clear()
-    stopAnyOngoingAnimation()
     super.onDetachedFromWindow()
   }
 
@@ -213,7 +214,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     // Reveal the toolbar if this page is being pulled down or
     // hide it back if it's being released.
     if (parentToolbar != null) {
-      updateToolbarTranslationY(currentTranslationY > 0F, currentTranslationY)
+      updateToolbarTranslationY(show = currentTranslationY > 0F, currentTranslationY)
     }
 
     // Sync the positions of the list items with this page.
@@ -287,7 +288,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     contentOpacity = contentOpacityWhenExpanded
 
     // Hide the toolbar as soon as its height is available.
-    parentToolbar?.executeOnMeasure { updateToolbarTranslationY(false, 0F) }
+    parentToolbar?.executeOnMeasure { updateToolbarTranslationY(show = false, 0F) }
 
     executeOnMeasure {
       // Cover the whole screen right away. Don't need any animations.
@@ -481,7 +482,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   /**
-   * Helper method for showing / hiding the toolbar depending upon this page's current translationY.
+   * Show / hide the toolbar depending upon this page's current translationY.
    */
   private fun updateToolbarTranslationY(
     show: Boolean,
@@ -734,6 +735,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    */
   fun pushParentToolbarOnExpand(toolbar: View?) {
     if (this.parentToolbar != toolbar) {
+      parentToolbar?.translationY = 0f
       toolbarAnimator.cancel()
     }
     this.parentToolbar = toolbar

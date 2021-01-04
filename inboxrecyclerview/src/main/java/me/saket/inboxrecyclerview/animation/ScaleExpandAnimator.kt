@@ -20,9 +20,7 @@ internal class ScaleExpandAnimator : ItemExpandAnimator() {
     if (!page.isMoving) {
       // Reset everything. This is also useful when the content size
       // changes, say as a result of the soft-keyboard getting dismissed.
-      unClippedScale = 1f
-      anchorViewOverlay?.alpha = 0f
-      recyclerView.invalidate()
+      resetAnimation(recyclerView, anchorViewOverlay)
       return
     }
 
@@ -37,6 +35,15 @@ internal class ScaleExpandAnimator : ItemExpandAnimator() {
 
     // Fade in the anchor row with the expanding/collapsing page.
     anchorViewOverlay?.alpha = 1f - page.expandRatio(recyclerView)
+  }
+
+  override fun resetAnimation(
+    recyclerView: InboxRecyclerView,
+    anchorViewOverlay: View?
+  ) {
+    unClippedScale = 1f
+    anchorViewOverlay?.alpha = 0f
+    recyclerView.invalidate()
   }
 
   override fun transformRecyclerViewCanvas(

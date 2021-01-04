@@ -30,6 +30,8 @@ abstract class ItemExpandAnimator {
 
     changeDetector.start()
     onDetach = {
+      anchorViewOverlay?.let { page.overlay.remove(it) }
+      resetAnimation(recyclerView, anchorViewOverlay = null)
       changeDetector.stop()
     }
   }
@@ -79,6 +81,14 @@ abstract class ItemExpandAnimator {
   abstract fun onPageMove(
     recyclerView: InboxRecyclerView,
     page: ExpandablePageLayout,
+    anchorViewOverlay: View?
+  )
+
+  /**
+   * Called when a page is detached from its [InboxRecyclerView].
+   */
+  abstract fun resetAnimation(
+    recyclerView: InboxRecyclerView,
     anchorViewOverlay: View?
   )
 

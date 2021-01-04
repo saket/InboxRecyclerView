@@ -45,7 +45,13 @@ internal class ListAndPageDimPainter(
     rv: InboxRecyclerView,
     page: ExpandablePageLayout
   ) {
-    (rv.dimDrawable as? AnimatedColorDrawable)?.cancelAnimation()
-    (page.dimDrawable as? AnimatedColorDrawable)?.cancelAnimation()
+    (rv.dimDrawable as? AnimatedColorDrawable)?.let {
+      it.alpha = 0
+      it.cancelAnimation(jumpToOngoingAlpha = true)
+    }
+    (page.dimDrawable as? AnimatedColorDrawable)?.let {
+      it.alpha = 0
+      it.cancelAnimation(jumpToOngoingAlpha = true)
+    }
   }
 }

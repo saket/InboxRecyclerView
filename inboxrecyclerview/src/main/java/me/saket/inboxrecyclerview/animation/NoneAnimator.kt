@@ -15,4 +15,9 @@ internal class NoneAnimator : ItemExpandAnimator() {
   ) {
     anchorViewOverlay?.alpha = 1f - page.contentOpacity
   }
+
+  override fun resetAnimation(
+    recyclerView: InboxRecyclerView,
+    anchorViewOverlay: View?
+  ) = Unit
 }

@@ -23,7 +23,7 @@ internal open class AnimatedColorDrawable(
     if (super.getAlpha() == alpha) return
     if (alphaAnimator.isRunning && animatingToAlpha == alpha) return
 
-    cancelAnimation()
+    cancelAnimation(jumpToOngoingAlpha = false)
     alphaAnimator = ObjectAnimator.ofInt(super.getAlpha(), alpha).apply {
       startDelay = 0
       duration = animDuration
@@ -39,7 +39,11 @@ internal open class AnimatedColorDrawable(
     }
   }
 
-  fun cancelAnimation() {
+  fun cancelAnimation(jumpToOngoingAlpha: Boolean) {
     alphaAnimator.cancel()
+
+    if (jumpToOngoingAlpha) {
+      super.setAlpha(animatingToAlpha)
+    }
   }
 }

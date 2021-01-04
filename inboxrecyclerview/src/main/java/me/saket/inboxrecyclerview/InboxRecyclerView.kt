@@ -9,6 +9,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.Window
+import androidx.core.view.doOnDetach
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
@@ -30,8 +31,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
       val old = field
       field = value
 
-      val page = expandablePage
-      if (page != null) {
+      expandablePage?.let { page ->
         old.onDetachRecyclerView()
         value.onAttachRecyclerView(this, page)
       }
@@ -43,8 +43,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
       val old = field
       field = value
 
-      val page = expandablePage
-      if (page != null) {
+      expandablePage?.let { page ->
         old.onDetachRecyclerView()
         field.onAttachRecyclerView(this, page)
       }
@@ -65,15 +64,24 @@ open class InboxRecyclerView @JvmOverloads constructor(
 
   /**
    * The expandable page to be used with this list.
-   * Setting it to null will reset the older page's state.
    */
   var expandablePage: ExpandablePageLayout? = null
     set(newPage) {
       val oldPage = field
+      if (oldPage === newPage) {
+        return
+      }
+
       field = newPage
 
       if (oldPage == null) {
         restorer.restoreIfPossible()
+      }
+
+      // The old page may have gotten removed midway a collapse animation,
+      // causing this list's layout to be stuck as disabled. Clear it here.
+      if (newPage == null || newPage.isCollapsedOrCollapsing) {
+        suppressLayout(false)
       }
 
       if (oldPage != null) {
@@ -86,6 +94,10 @@ open class InboxRecyclerView @JvmOverloads constructor(
         dimPainter.onAttachRecyclerView(this, newPage)
         itemExpandAnimator.onAttachRecyclerView(this, newPage)
         newPage.internalStateCallbacksForRecyclerView = this
+
+        newPage.doOnDetach {
+          this.expandablePage = null
+        }
       }
     }
 
@@ -121,11 +133,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   override fun onDetachedFromWindow() {
-    val page = expandablePage
-    if (page != null) {
-      itemExpandAnimator.onDetachRecyclerView()
-      dimPainter.onDetachRecyclerView()
-    }
+    expandablePage = null
     super.onDetachedFromWindow()
   }
 
