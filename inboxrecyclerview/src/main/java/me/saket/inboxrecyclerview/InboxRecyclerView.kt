@@ -95,7 +95,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
         itemExpandAnimator.onAttachRecyclerView(this, newPage)
         newPage.internalStateCallbacksForRecyclerView = this
 
-        newPage.doOnDetach {
+        newPage.doOnNextDetach {
           this.expandablePage = null
         }
       }
