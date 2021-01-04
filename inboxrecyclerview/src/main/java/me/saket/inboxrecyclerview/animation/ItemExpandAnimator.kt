@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.core.view.doOnDetach
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator.Companion.none
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator.Companion.scale
@@ -17,7 +18,6 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 abstract class ItemExpandAnimator {
   private lateinit var onDetach: () -> Unit
   private var anchorViewOverlay: View? = null
-  private var onRemoveOverlay: () -> Unit = {}
 
   fun onAttachRecyclerView(
     recyclerView: InboxRecyclerView,
@@ -56,15 +56,18 @@ abstract class ItemExpandAnimator {
         }
         page.overlay.add(anchorViewOverlay!!)
         anchorView.visibility = GONE
-        onRemoveOverlay = { anchorView.visibility = VISIBLE }
+
+        anchorViewOverlay!!.doOnDetach {
+          anchorView.visibility = VISIBLE
+          anchorViewOverlay = null
+        }
       }
     }
 
     if (page.isCollapsed && anchorViewOverlay != null) {
       page.overlay.remove(anchorViewOverlay!!)
-      anchorViewOverlay = null
-      onRemoveOverlay()
     }
+
     return anchorViewOverlay
   }
 
