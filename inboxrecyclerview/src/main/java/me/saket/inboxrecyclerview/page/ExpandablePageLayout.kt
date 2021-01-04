@@ -65,6 +65,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       invalidateOutline()
     }
 
+  /**
+   * See [OnPullToCollapseInterceptor].
+   */
   var pullToCollapseInterceptor: OnPullToCollapseInterceptor? = null
 
   /**
@@ -605,7 +608,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForRecyclerView.onPagePull(deltaY)
   }
 
-  private fun dispatchOnPageReleaseCallback(collapseEligible: Boolean) {
+  protected open fun dispatchOnPageReleaseCallback(collapseEligible: Boolean) {
     internalStateCallbacksForNestedPage.onPageRelease(collapseEligible)
     internalStateCallbacksForRecyclerView.onPageRelease(collapseEligible)
   }

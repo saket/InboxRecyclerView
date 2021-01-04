@@ -54,12 +54,11 @@ open class StandaloneExpandablePageLayout(
 
   init {
     contentOpacityWhenCollapsed = 1F
+  }
 
-    addOnPullListener(object : SimpleOnPullListener() {
-      override fun onRelease(collapseEligible: Boolean) {
-        onPageRelease(collapseEligible)
-      }
-    })
+  override fun dispatchOnPageReleaseCallback(collapseEligible: Boolean) {
+    // Do not let a parent InboxRecyclerView (if present) collapse this page.
+    onPageRelease(collapseEligible)
   }
 
   override fun onAttachedToWindow() {
