@@ -36,7 +36,7 @@ internal fun View.executeOnMeasure(listener: () -> Unit) {
         listener()
 
       } else if (visibility == View.GONE) {
-        Log.w("Views", "View's visibility is set to Gone. It'll never be measured: ${resources.getResourceEntryName(id)}")
+        Log.w("InboxRecyclerView", "View's visibility is set to GONE and can't be measured: $this.")
         viewTreeObserver.removeOnPreDrawListener(this)
       }
       return true
