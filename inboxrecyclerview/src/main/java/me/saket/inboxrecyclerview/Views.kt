@@ -75,14 +75,3 @@ internal fun View.locationOnScreen(
   rectBuffer.set(intBuffer[0], intBuffer[1], intBuffer[0] + width, intBuffer[1] + height)
   return rectBuffer
 }
-
-internal inline fun View.doOnNextDetach(crossinline action: (view: View) -> Unit) {
-  addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-    override fun onViewAttachedToWindow(view: View) {}
-
-    override fun onViewDetachedFromWindow(view: View) {
-      removeOnAttachStateChangeListener(this)
-      action(view)
-    }
-  })
-}

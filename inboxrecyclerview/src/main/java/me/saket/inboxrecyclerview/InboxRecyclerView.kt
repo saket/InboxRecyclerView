@@ -9,7 +9,6 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.Window
-import androidx.core.view.doOnDetach
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
@@ -94,10 +93,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
         dimPainter.onAttachRecyclerView(this, newPage)
         itemExpandAnimator.onAttachRecyclerView(this, newPage)
         newPage.internalStateCallbacksForRecyclerView = this
-
-        newPage.doOnNextDetach {
-          this.expandablePage = null
-        }
       }
     }
 
