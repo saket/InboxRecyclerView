@@ -14,10 +14,10 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  * Convenience function for treating [InboxItemExpander] like a fun interface.
  */
 @Suppress("FunctionName")
-fun <T : Parcelable> InboxItemExpander(identifier: ExpandingViewIdentifier<T>): InboxItemExpander<T> {
+fun <T : Parcelable> InboxItemExpander(viewIdentifier: ExpandingItemViewIdentifier<T>): InboxItemExpander<T> {
   return object : InboxItemExpander<T>() {
     override fun identifyExpandingView(expandingItem: T, childViewHolders: Sequence<ViewHolder>) =
-      identifier.identifyExpandingView(expandingItem, childViewHolders)
+      viewIdentifier.identifyExpandingView(expandingItem, childViewHolders)
   }
 }
 
@@ -32,9 +32,9 @@ fun <T : Parcelable> InboxItemExpander(identifier: ExpandingViewIdentifier<T>): 
  * Example usage:
  *
  * ```kotlin
- * InboxItemExpander { expandingItem, viewHolders ->
+ * InboxItemExpander(viewIdentifier = { expandingItem, viewHolders ->
  *   viewHolders.firstOrNull { it.{some identifier} == expandingItem }
- * }
+ * })
  * ```
  *
  * All calls to `InboxRecyclerView#expandItem()` should then be replaced with your custom expander:
@@ -44,7 +44,7 @@ fun <T : Parcelable> InboxItemExpander(identifier: ExpandingViewIdentifier<T>): 
  * + itemExpander.expandItem(SomeParcelable(...))
  * ```
  */
-abstract class InboxItemExpander<T : Parcelable> : ExpandingViewIdentifier<T> {
+abstract class InboxItemExpander<T : Parcelable> : ExpandingItemViewIdentifier<T> {
   lateinit var recyclerView: InboxRecyclerView
   private var expandedItem: T? = null
 
@@ -113,7 +113,7 @@ abstract class InboxItemExpander<T : Parcelable> : ExpandingViewIdentifier<T> {
   }
 }
 
-fun interface ExpandingViewIdentifier<T> {
+fun interface ExpandingItemViewIdentifier<T> {
   /**
    * Called when [InboxItemExpander.expandItem] is called and [InboxRecyclerView] needs to find
    * the item's corresponding View. The View is only used for capturing its location on screen.

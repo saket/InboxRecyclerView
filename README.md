@@ -47,12 +47,14 @@ recyclerViewAdapter.onItemClick = { clickedItem ->
 }
 ```
 
-InboxRecyclerView uses adapter IDs by default for identifying expanding items, but apps can use any `Parcelable` item if using adapter IDs isn't desired because it's not 2020 anymore.
+InboxRecyclerView uses adapter IDs by default for identifying expanding items, but apps can use any `Parcelable` type if using adapter IDs isn't desired because hey it's not 2020 anymore.
 
 ```kotlin
-val itemExpander = InboxItemExpander { expandingItem, viewHolders ->
+val itemExpander = InboxItemExpander(viewIdentifier = { expandingItem, viewHolders ->
+  // Called everytime an item is expanding so that
+  // InboxRecyclerView can find its associated item View.
   viewHolders.firstOrNull { it.{some identifier} == expandingItem }
-}
+})
 recyclerView.itemExpander = itemExpander
 ```
 
