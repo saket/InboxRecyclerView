@@ -2,8 +2,8 @@ package me.saket.inboxrecyclerview.expander
 
 import android.graphics.Rect
 import android.os.Parcelable
-import android.view.View
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.view.children
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItemLocation
@@ -13,10 +13,13 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 /**
  * Convenience function for treating [InboxItemExpander] like a fun interface.
  */
-fun <T : Parcelable> InboxItemExpander(identify: (parent: RecyclerView, item: T) -> View?) =
-  object : InboxItemExpander<T>() {
-    override fun identifyExpandingView(parent: RecyclerView, item: T) = identify(parent, item)
+@Suppress("FunctionName")
+fun <T : Parcelable> InboxItemExpander(identifier: ExpandingViewIdentifier<T>): InboxItemExpander<T> {
+  return object : InboxItemExpander<T>() {
+    override fun identifyExpandingView(expandingItem: T, childViewHolders: Sequence<ViewHolder>) =
+      identifier.identifyExpandingView(expandingItem, childViewHolders)
   }
+}
 
 /**
  * Identifies expanding list items so that [InboxRecyclerView] can animate between the item
@@ -25,22 +28,18 @@ fun <T : Parcelable> InboxItemExpander(identify: (parent: RecyclerView, item: T)
  * The default implementation is [AdapterIdBasedItemExpander] that uses adapter IDs, but apps
  * can implement their own expanders if using adapter IDs isn't desired because it's not 2020
  * anymore.
+ *
+ * Example usage:
+ *
+ * ```
+ * InboxItemExpander { expandingItem, viewHolders ->
+ *   viewHolders.firstOrNull { it.{some identifier} == expandingItem }
+ * }
+ * ```
  */
-abstract class InboxItemExpander<T : Parcelable> {
+abstract class InboxItemExpander<T : Parcelable> : ExpandingViewIdentifier<T> {
   lateinit var recyclerView: InboxRecyclerView
   private var expandedItem: T? = null
-
-  /**
-   * Called when [expandItem] is called and [InboxRecyclerView] needs to find the item's
-   * corresponding View. The View is only used for capturing its location on screen. This
-   * may be called multiple times while the page is visible if [InboxRecyclerView] detects
-   * that the list item may have moved.
-   *
-   * @param item Item passed to [expandItem].
-   *
-   * @return When null, the [ExpandablePageLayout] will be expanded from the top of the list.
-   */
-  abstract fun identifyExpandingView(parent: RecyclerView, item: T): View?
 
   /**
    * Expand a list item. The item's View will be captured using [identifyExpandingView].
@@ -82,7 +81,12 @@ abstract class InboxItemExpander<T : Parcelable> {
   }
 
   internal fun captureExpandedItemInfo(): ExpandedItemLocation {
-    val itemView = expandedItem?.let { identifyExpandingView(recyclerView, it) }
+    val itemView = expandedItem?.let { expandedItem ->
+      identifyExpandingView(
+          expandingItem = expandedItem,
+          childViewHolders = recyclerView.children.map(recyclerView::getChildViewHolder)
+      )?.itemView
+    }
 
     return if (itemView != null) {
       ExpandedItemLocation(
@@ -100,6 +104,21 @@ abstract class InboxItemExpander<T : Parcelable> {
       )
     }
   }
+}
+
+fun interface ExpandingViewIdentifier<T> {
+  /**
+   * Called when [InboxItemExpander.expandItem] is called and [InboxRecyclerView] needs to find
+   * the item's corresponding View. The View is only used for capturing its location on screen.
+   * This may be called multiple times while the page is visible if [InboxRecyclerView] detects
+   * that the list item may have moved.
+   *
+   * @param expandingItem Item passed to [InboxItemExpander.expandItem].
+   * @param childViewHolders ViewHolders for [InboxRecyclerView] visible list items.
+   *
+   * @return When null, the [ExpandablePageLayout] will be expanded from the top of the list.
+   */
+  fun identifyExpandingView(expandingItem: T, childViewHolders: Sequence<ViewHolder>): ViewHolder?
 }
 
 @Parcelize
