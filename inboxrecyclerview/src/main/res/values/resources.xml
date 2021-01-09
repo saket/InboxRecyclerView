@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <item name="irv_expanded_item_info" type="id" />
   <dimen name="irv_pull_collapsible_activity_elevation">40dp</dimen>
 </resources>

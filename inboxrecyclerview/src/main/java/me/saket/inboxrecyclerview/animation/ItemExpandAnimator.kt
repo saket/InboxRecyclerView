@@ -6,6 +6,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.core.view.doOnDetach
 import me.saket.inboxrecyclerview.InboxRecyclerView
+import me.saket.inboxrecyclerview.R
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator.Companion.none
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator.Companion.scale
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator.Companion.split
@@ -44,27 +45,33 @@ abstract class ItemExpandAnimator {
     recyclerView: InboxRecyclerView,
     page: ExpandablePageLayout
   ): View? {
-    val anchorIndex = recyclerView.expandedItem.viewIndex
+    val expandedItem = recyclerView.expandedItem
+    val expandedItemIndex = expandedItem.viewIndex
 
-    if (page.isCollapsed.not() && anchorIndex != -1 && anchorViewOverlay == null) {
-      recyclerView.getChildAt(anchorIndex)?.let { anchorView ->
+    // If the expanded item changed because, say, the window was resized, we want to recreate the overlay.
+    val expandedItemChanged = anchorViewOverlay?.getTag(R.id.irv_expanded_item_info) != recyclerView.expandedItem
+
+    if (expandedItemChanged && expandedItem.isNotEmpty()) {
+      recyclerView.getChildAt(expandedItemIndex)?.let { anchorView ->
         anchorViewOverlay = anchorView.captureImage(forOverlayOf = page).also {
           // Revert the layout position because
           // - ScaleExpandAnimator may have modified the RV's scale.
           // - SplitExpandAnimator may have modified the y-translation.
           it.layout(0, 0, anchorView.width, anchorView.height)
-        }
-        page.overlay.add(anchorViewOverlay!!)
-        anchorView.visibility = GONE
 
-        anchorViewOverlay!!.doOnDetach {
-          anchorView.visibility = VISIBLE
-          anchorViewOverlay = null
+          it.setTag(R.id.irv_expanded_item_info, expandedItem)
+          page.overlay.add(it)
+
+          anchorView.visibility = GONE
+          it.doOnDetach {   // Note to self: this must be called after this overlay is added.
+            anchorView.visibility = VISIBLE
+            anchorViewOverlay = null
+          }
         }
       }
     }
 
-    if (page.isCollapsed && anchorViewOverlay != null) {
+    if (expandedItem.isEmpty() && anchorViewOverlay != null) {
       page.overlay.remove(anchorViewOverlay!!)
     }
 

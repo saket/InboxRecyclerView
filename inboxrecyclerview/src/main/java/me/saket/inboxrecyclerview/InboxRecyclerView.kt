@@ -356,15 +356,11 @@ open class InboxRecyclerView @JvmOverloads constructor(
     val locationOnScreen: Rect
   ) {
 
-    internal fun isNotEmpty(): Boolean {
-      return viewIndex != -1
-          && locationOnScreen.width() != 0
-          && locationOnScreen.height() != 0
-    }
+    internal fun isEmpty(): Boolean = this == EMPTY
+    internal fun isNotEmpty(): Boolean = !isEmpty()
 
     companion object {
-      internal val EMPTY =
-        ExpandedItem(viewIndex = -1, locationOnScreen = Rect(0, 0, 0, 0))
+      internal val EMPTY = ExpandedItem(viewIndex = -1, locationOnScreen = Rect(0, 0, 0, 0))
     }
   }
 }
