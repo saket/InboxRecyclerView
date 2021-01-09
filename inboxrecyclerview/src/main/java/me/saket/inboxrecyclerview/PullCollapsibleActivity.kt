@@ -21,6 +21,7 @@ import me.saket.inboxrecyclerview.page.StandaloneExpandablePageLayout
  * <item name="android:windowIsTranslucent">true</item>
  * <item name="android:colorBackgroundCacheHint">@null</item>
  */
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class PullCollapsibleActivity : AppCompatActivity() {
   protected lateinit var activityPageLayout: StandaloneExpandablePageLayout
 
@@ -114,7 +115,8 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
   protected fun expandFromTop() {
     expandCalled = true
     activityPageLayout.executeOnMeasure {
-      val toolbarRect = Rect(0, standardToolbarHeight, activityPageLayout.width, standardToolbarHeight)
+      val pageLocation = activityPageLayout.locationOnScreen()
+      val toolbarRect = Rect(pageLocation.left, standardToolbarHeight, pageLocation.right, standardToolbarHeight)
       expandFrom(toolbarRect)
     }
   }
