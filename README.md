@@ -31,19 +31,35 @@ implementation 'me.saket:inboxrecyclerview:2.3.0'
 **Expanding content**
 
 ```kotlin
-recyclerView.apply {
-  itemExpandAnimator = ItemExpandAnimator.scale() // or split() / none()
-  dimPainter = DimPainter.listAndPage(Color.WHITE, alpha = 0.65f)
+val expandablePage = findViewById(...).apply {
+  pushParentToolbarOnExpand(toolbar)
+}
 
-  expandablePage = findViewById(...).also {
-    it.pushParentToolbarOnExpand(toolbar)
-  }
+recyclerView.let {
+  it.expandablePage = expandablePage
+  it.itemExpandAnimator = ItemExpandAnimator.scale() // or split() / none()
+  it.dimPainter = DimPainter.listAndPage(Color.WHITE, alpha = 0.65f)
 }
 
 recyclerViewAdapter.onItemClick = { clickedItem ->
-  // Load or update your content inside the page here.
+  // This is a good time to load/update content inside your page.
   recyclerView.expandItem(clickedItem.adapterId)
 }
+```
+
+InboxRecyclerView uses adapter IDs by default for identifying expanding items, but apps can use any `Parcelable` item if using adapter IDs isn't desired because it's not 2020 anymore.
+
+```kotlin
+val itemExpander = InboxItemExpander { expandingItem, viewHolders ->
+  viewHolders.firstOrNull { it.{some identifier} == expandingItem }
+}
+recyclerView.itemExpander = itemExpander
+```
+
+All calls to `InboxRecyclerView#expandItem()` should then be replaced with your custom expander:
+```diff
+- recyclerView.expandItem(adapterId = ...)
++ itemExpander.expandItem(SomeParcelable(...))
 ```
 
 ### How do I…

@@ -31,10 +31,17 @@ fun <T : Parcelable> InboxItemExpander(identifier: ExpandingViewIdentifier<T>): 
  *
  * Example usage:
  *
- * ```
+ * ```kotlin
  * InboxItemExpander { expandingItem, viewHolders ->
  *   viewHolders.firstOrNull { it.{some identifier} == expandingItem }
  * }
+ * ```
+ *
+ * All calls to `InboxRecyclerView#expandItem()` should then be replaced with your custom expander:
+ *
+ * ```diff
+ * - recyclerView.expandItem(adapterId = ...)
+ * + itemExpander.expandItem(SomeParcelable(...))
  * ```
  */
 abstract class InboxItemExpander<T : Parcelable> : ExpandingViewIdentifier<T> {
