@@ -12,9 +12,10 @@ import android.view.Window
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
 import me.saket.inboxrecyclerview.dimming.DimPainter
+import me.saket.inboxrecyclerview.expander.AdapterIdBasedItem
 import me.saket.inboxrecyclerview.expander.AdapterIdBasedItemExpander
+import me.saket.inboxrecyclerview.expander.ItemExpander
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
-import kotlin.DeprecationLevel.ERROR
 
 /**
  * A RecyclerView where items can expand and collapse to and from an [ExpandablePageLayout].
@@ -161,29 +162,26 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   /**
-   * @param adapterId Adapter ID of the item to expand.
+   * Expand an item by its adapter-ID.
+   *
+   * InboxRecyclerView uses adapter-IDs by default for expanding/collapsing items,
+   * but you can choose to use any [Parcelable] object by using a custom item expander.
    */
   @JvmOverloads
   fun expandItem(adapterId: Long, immediate: Boolean = false) {
     val expander = itemExpander
-    check(expander is AdapterIdBasedItemExpander) // TODO: error message.
-
-    expander.setItem(AdapterIdBasedItem(adapterId))
-    expandInternal(immediate)
+    check(expander is AdapterIdBasedItemExpander) {
+      "Can't expand an item by its adapter ID if a custom ItemExpander is set. " +
+          "Call expandItem on your ItemExpander instead."
+    }
+    expander.expandItem(AdapterIdBasedItem(adapterId), immediate)
   }
 
   /**
-   * @param itemId Identifier of the expanding item that can be used for finding the expanding
-   * item's location on screen (across state restorations) using [itemExpander].
-   */
-  @Deprecated("foo", level = ERROR)
-  fun expandItem(itemId: Parcelable, immediate: Boolean = false) {
-    // todo: remove
-    error("nope")
-  }
-
-  /**
-   * Expand from the top, pushing all items out of the window towards the bottom.
+   * Expand the page from the top.
+   *
+   * InboxRecyclerView uses adapter-IDs by default for expanding/collapsing items,
+   * but you can choose to use any [Parcelable] object by using a custom item expander.
    */
   @JvmOverloads
   fun expandFromTop(immediate: Boolean = false) {
@@ -204,12 +202,12 @@ open class InboxRecyclerView @JvmOverloads constructor(
       if (!expandedItem.isNotEmpty()) {
         // Useful if the page was expanded immediately as a result of a (manual)
         // state restoration before this RecyclerView could restore its state.
-        expandedItem = itemExpander.captureExpandedItemInfo(this)
+        expandedItem = itemExpander.captureExpandedItemInfo()
       }
       return
     }
 
-    expandedItem = itemExpander.captureExpandedItemInfo(this)
+    expandedItem = itemExpander.captureExpandedItemInfo()
     if (immediate) {
       page.expandImmediately()
     } else {
@@ -217,22 +215,13 @@ open class InboxRecyclerView @JvmOverloads constructor(
     }
   }
 
-  /**
-   * InboxRecyclerView rejects duplicate calls to [expandItem] if the page is already expanded.
-   * If the expanded item still needs to be updated for some reason (for eg., if the page was
-   * immediately expanded from an arbitrary location earlier but can now collapse to an actual
-   * list item), this can be used.
-   */
-  @Deprecated(message = "Use ItemExpander instead", level = ERROR)
-  fun forceUpdateExpandedItem(itemId: Parcelable) = Unit
-
   fun collapse() {
     val page = ensureSetup(expandablePage)
 
     if (page.isCollapsedOrCollapsing.not()) {
       // List items may have changed while the page was
       // expanded. Find the expanded item's location again.
-      expandedItem = itemExpander.captureExpandedItemInfo(this)
+      expandedItem = itemExpander.captureExpandedItemInfo()
       page.collapse(expandedItem)
     }
   }
@@ -255,11 +244,12 @@ open class InboxRecyclerView @JvmOverloads constructor(
   override fun onPageCollapsed() {
     suppressLayout(false)
     expandedItem = ExpandedItem.EMPTY
+    itemExpander.setItem(null)
   }
 
   override fun onPagePullStarted() {
     // List items may have changed while the page was expanded. Find the expanded item's location again.
-    expandedItem = itemExpander.captureExpandedItemInfo(this)
+    expandedItem = itemExpander.captureExpandedItemInfo()
   }
 
   override fun onPagePull(deltaY: Float) {
@@ -347,12 +337,12 @@ open class InboxRecyclerView @JvmOverloads constructor(
 
   // TODO: rename to ExpandedItemCoordinates.
   data class ExpandedItem(
-    // Index of the currently expanded item's
-    // View. This is not the adapter index.
+      // Index of the currently expanded item's
+      // View. This is not the adapter index.
     val viewIndex: Int,
 
-    // Original location of the currently expanded item.
-    // Used for restoring states after collapsing.
+      // Original location of the currently expanded item.
+      // Used for restoring states after collapsing.
     val locationOnScreen: Rect
   ) {
 

@@ -1,34 +1,68 @@
-package me.saket.inboxrecyclerview
+package me.saket.inboxrecyclerview.expander
 
 import android.graphics.Rect
 import android.os.Parcelable
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.parcel.Parcelize
-import me.saket.inboxrecyclerview.ExpandedItemFinder.FindResult
+import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
+import me.saket.inboxrecyclerview.expander.ItemExpander.IdentifiedExpandingItem
+import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
- * Identifies an expanding item's location on screen from where an [ExpandablePageLayout] can expand
- * from and collapse to. The default implementation uses adapter IDs but apps can implement
- * their own finder if using adapter IDs isn't desired because it's not 20th century anymore.
+ * Convenience function for treating [ItemExpander] like a fun interface.
  */
-abstract class ItemExpander<T: Parcelable> {
+fun <T : Parcelable> ItemExpander(identify: (parent: RecyclerView, item: T) -> IdentifiedExpandingItem?) =
+  object : ItemExpander<T>() {
+    override fun identifyExpandingItem(parent: RecyclerView, item: T) = identify(parent, item)
+  }
+
+/**
+ * Identifies expanding list items so that [InboxRecyclerView] can animate between the item
+ * and its [ExpandablePageLayout].
+ *
+ * The default implementation is [AdapterIdBasedItemExpander] that uses adapter IDs, but apps
+ * can implement their own expanders if using adapter IDs isn't desired because it's not 2020
+ * anymore.
+ */
+// TODO: rename to InboxItemExpander.
+abstract class ItemExpander<T : Parcelable> {
   private var expandedItem: T? = null
-  internal lateinit var recyclerView: InboxRecyclerView
+  lateinit var recyclerView: InboxRecyclerView
 
   /**
-   * @param item List item to expand, passed through [InboxRecyclerView.expandItem].
+   * Called when [expandItem] is called and [InboxRecyclerView] needs to find the item's
+   * corresponding View. May be called multiple times while the page is visible if
+   * [InboxRecyclerView] detects that the list item may have moved.
    *
-   * @return When null, the content will be expanded from the top of the list.
+   * @param item Item passed to [expandItem].
+   *
+   * @return When null, the [ExpandablePageLayout] will be expanded from the top of the list.
    */
-  abstract fun findExpandedItem(parent: RecyclerView, item: T): FindResult?
+  abstract fun identifyExpandingItem(parent: RecyclerView, item: T): IdentifiedExpandingItem?
 
+  /**
+   * @param itemAdapterPosition Adapter position of the expanding item.
+   * @param itemView View of the expanding item.
+   */
+  data class IdentifiedExpandingItem(
+    val itemAdapterPosition: Int,
+    val itemView: View?
+  )
+
+  /**
+   * Expand a list item. The item's View will be captured using [identifyExpandingItem].
+   */
   fun expandItem(item: T?, immediate: Boolean = false) {
     setItem(item)
     recyclerView.expandInternal(immediate = immediate)
   }
 
+  /**
+   * Expand the page from the top.
+   */
   fun expandFromTop(immediate: Boolean = false) {
     expandItem(item = null, immediate = immediate)
   }
@@ -37,19 +71,28 @@ abstract class ItemExpander<T: Parcelable> {
     recyclerView.collapse()
   }
 
-  open fun saveState(outState: Parcelable?): Parcelable {
+  /**
+   * Update the currently expanded item. It's preferred that the item is updated through
+   * [expandItem], but this may be used if the expanded item needs to be force-updated
+   * while the page is already expanded.
+   */
+  fun setItem(item: T?) {
+    expandedItem = item
+  }
+
+  internal fun saveState(outState: Parcelable?): Parcelable {
     return ExpandedItemSavedState(outState, expandedItem)
   }
 
   @Suppress("UNCHECKED_CAST")
-  open fun restoreState(inState: Parcelable): Parcelable? {
+  internal fun restoreState(inState: Parcelable): Parcelable? {
     val savedState = inState as ExpandedItemSavedState<T>
-    expandedItem = savedState.expandedItem
+    setItem(savedState.expandedItem)
     return savedState.superState
   }
 
-  internal fun captureExpandedItemInfo(recyclerView: InboxRecyclerView): ExpandedItem {
-    val findResult = expandedItem?.let { findExpandedItem(recyclerView, it) }
+  internal fun captureExpandedItemInfo(): ExpandedItem {
+    val findResult = expandedItem?.let { identifyExpandingItem(recyclerView, it) }
     val itemView = findResult?.itemView
 
     return if (itemView != null) {
@@ -68,25 +111,10 @@ abstract class ItemExpander<T: Parcelable> {
       )
     }
   }
-
-  /**
-   * InboxRecyclerView rejects duplicate calls to [expandItem] if the page is already expanded.
-   * If the expanded item still needs to be updated for some reason (for eg., if the page was
-   * immediately expanded from an arbitrary location earlier but can now collapse to an actual
-   * list item), this can be used.
-   */
-  fun forceUpdateExpandedItem(item: T?) {
-    setItem(item)
-  }
-
-  fun setItem(item: T?) {
-    expandedItem = item
-  }
 }
 
 @Parcelize
-internal data class ExpandedItemSavedState<T: Parcelable>(
+internal data class ExpandedItemSavedState<T : Parcelable>(
   val superState: Parcelable?,
   val expandedItem: T?
 ) : Parcelable
-
