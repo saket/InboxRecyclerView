@@ -9,11 +9,12 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.Window
-import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
 import me.saket.inboxrecyclerview.dimming.DimPainter
+import me.saket.inboxrecyclerview.expander.AdapterIdBasedItemExpander
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
+import kotlin.DeprecationLevel.ERROR
 
 /**
  * A RecyclerView where items can expand and collapse to and from an [ExpandablePageLayout].
@@ -48,6 +49,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
       }
     }
 
+  @Suppress("unused")
   @Deprecated("Use dimPainter instead", ReplaceWith("dimPainter"))
   var tintPainter: DimPainter
     get() = dimPainter
@@ -58,8 +60,12 @@ open class InboxRecyclerView @JvmOverloads constructor(
   /** Details about the currently expanded item. */
   var expandedItem: ExpandedItem = ExpandedItem.EMPTY
 
-  /** See [ExpandedItemFinder]. */
-  var expandedItemFinder: ExpandedItemFinder? = DefaultExpandedItemFinder(requireStableIds = true)
+  /** See [ItemExpander]. */
+  var itemExpander: ItemExpander<*> = AdapterIdBasedItemExpander(requireStableIds = true)
+    set(value) {
+      field = value
+      field.recyclerView = this
+    }
 
   /**
    * The expandable page to be used with this list.
@@ -72,10 +78,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
       }
 
       field = newPage
-
-      if (oldPage == null) {
-        restorer.restoreIfPossible()
-      }
 
       // The old page may have gotten removed midway a collapse animation,
       // causing this list's layout to be stuck as disabled. Clear it here.
@@ -99,7 +101,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
-  private val restorer = StateRestorer(this)
 
   /** Used by [DimPainter]. */
   var dimDrawable: Drawable? = null
@@ -108,6 +109,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
     // Because setters don't get called for default values.
     itemExpandAnimator = ItemExpandAnimator.split()
     dimPainter = DimPainter.listAndPage()
+    itemExpander = itemExpander
   }
 
   override fun dispatchDraw(canvas: Canvas) {
@@ -119,11 +121,11 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   override fun onSaveInstanceState(): Parcelable {
-    return restorer.save(super.onSaveInstanceState())
+    return itemExpander.saveState(super.onSaveInstanceState())
   }
 
   override fun onRestoreInstanceState(state: Parcelable) {
-    val superState = restorer.restore(state)
+    val superState = itemExpander.restoreState(state)
     super.onRestoreInstanceState(superState)
   }
 
@@ -163,16 +165,21 @@ open class InboxRecyclerView @JvmOverloads constructor(
    */
   @JvmOverloads
   fun expandItem(adapterId: Long, immediate: Boolean = false) {
-    expandInternal(itemId = DefaultExpandedItemId(adapterId = adapterId), immediate = immediate)
+    val expander = itemExpander
+    check(expander is AdapterIdBasedItemExpander) // TODO: error message.
+
+    expander.setItem(AdapterIdBasedItem(adapterId))
+    expandInternal(immediate)
   }
 
   /**
    * @param itemId Identifier of the expanding item that can be used for finding the expanding
-   * item's location on screen (across state restorations) using [expandedItemFinder].
+   * item's location on screen (across state restorations) using [itemExpander].
    */
-  @JvmOverloads
+  @Deprecated("foo", level = ERROR)
   fun expandItem(itemId: Parcelable, immediate: Boolean = false) {
-    expandInternal(itemId, immediate)
+    // todo: remove
+    error("nope")
   }
 
   /**
@@ -180,14 +187,14 @@ open class InboxRecyclerView @JvmOverloads constructor(
    */
   @JvmOverloads
   fun expandFromTop(immediate: Boolean = false) {
-    expandInternal(itemId = null, immediate = immediate)
+    itemExpander.expandItem(null, immediate)
   }
 
-  private fun expandInternal(itemId: Parcelable?, immediate: Boolean) {
+  internal fun expandInternal(immediate: Boolean) {
     val page = ensureSetup(expandablePage)
 
     if (isLaidOut.not() || page.isLaidOut.not()) {
-      post { expandInternal(itemId, immediate) }
+      post { expandInternal(immediate) }
       return
     }
 
@@ -197,12 +204,12 @@ open class InboxRecyclerView @JvmOverloads constructor(
       if (!expandedItem.isNotEmpty()) {
         // Useful if the page was expanded immediately as a result of a (manual)
         // state restoration before this RecyclerView could restore its state.
-        expandedItem = captureExpandedItemInfo(itemId)
+        expandedItem = itemExpander.captureExpandedItemInfo(this)
       }
       return
     }
 
-    expandedItem = captureExpandedItemInfo(itemId)
+    expandedItem = itemExpander.captureExpandedItemInfo(this)
     if (immediate) {
       page.expandImmediately()
     } else {
@@ -216,9 +223,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
    * immediately expanded from an arbitrary location earlier but can now collapse to an actual
    * list item), this can be used.
    */
-  fun forceUpdateExpandedItem(itemId: Parcelable) {
-    expandedItem = captureExpandedItemInfo(itemId)
-  }
+  @Deprecated(message = "Use ItemExpander instead", level = ERROR)
+  fun forceUpdateExpandedItem(itemId: Parcelable) = Unit
 
   fun collapse() {
     val page = ensureSetup(expandablePage)
@@ -226,40 +232,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
     if (page.isCollapsedOrCollapsing.not()) {
       // List items may have changed while the page was
       // expanded. Find the expanded item's location again.
-      expandedItem = captureExpandedItemInfo(itemId = expandedItem.id)
+      expandedItem = itemExpander.captureExpandedItemInfo(this)
       page.collapse(expandedItem)
-    }
-  }
-
-  private fun captureExpandedItemInfo(itemId: Parcelable?): ExpandedItem {
-    itemId?.let(::checkHasSupportingItemFinder)
-
-    val findResult = itemId?.let { expandedItemFinder?.findExpandedItem(this, it) }
-    val itemView = findResult?.itemView
-
-    return if (itemView != null) {
-      ExpandedItem(
-          id = itemId,
-          viewIndex = indexOfChild(itemView),
-          // Ignore translations done by the item expand animator.
-          locationOnScreen = itemView.locationOnScreen(ignoreTranslations = true)
-      )
-
-    } else {
-      val locationOnScreen = locationOnScreen()
-      val paddedY = locationOnScreen.top + paddingTop // This is where list items will be laid out from.
-      ExpandedItem(
-          id = itemId,
-          viewIndex = -1,
-          locationOnScreen = Rect(locationOnScreen.left, paddedY, locationOnScreen.right, paddedY)
-      )
-    }
-  }
-
-  private fun checkHasSupportingItemFinder(itemId: Parcelable) {
-    if (itemId !is DefaultExpandedItemId && expandedItemFinder is DefaultExpandedItemFinder) {
-      "A custom InboxRecyclerView#expandedItemFinder must be set that's capable of identifying expanded " +
-          "item ID of type ${itemId::class.java}."
     }
   }
 
@@ -285,7 +259,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
 
   override fun onPagePullStarted() {
     // List items may have changed while the page was expanded. Find the expanded item's location again.
-    expandedItem = captureExpandedItemInfo(itemId = expandedItem.id)
+    expandedItem = itemExpander.captureExpandedItemInfo(this)
   }
 
   override fun onPagePull(deltaY: Float) {
@@ -350,6 +324,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
    * background when the [ExpandablePageLayout] is expanded. No point in drawing
    * it when it's not visible to the user.
    **/
+  // TODO: deprecate.
   fun optimizeActivityBackgroundOverdraw(activity: Activity) {
     activityWindow = activity.window
     activityWindowOrigBackground = activity.window.decorView.background
@@ -359,8 +334,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
     val wasLayoutSuppressed = isLayoutSuppressed
     super.setAdapter(adapter)
     suppressLayout(wasLayoutSuppressed) // isLayoutSuppressed is reset when the adapter is changed.
-
-    restorer.restoreIfPossible()
   }
 
   override fun swapAdapter(
@@ -370,34 +343,28 @@ open class InboxRecyclerView @JvmOverloads constructor(
     val wasLayoutSuppressed = isLayoutSuppressed
     super.swapAdapter(adapter, removeAndRecycleExistingViews)
     suppressLayout(wasLayoutSuppressed) // isLayoutSuppressed is reset when the adapter is changed.
-
-    restorer.restoreIfPossible()
   }
 
-  @Parcelize
+  // TODO: rename to ExpandedItemCoordinates.
   data class ExpandedItem(
     // Index of the currently expanded item's
     // View. This is not the adapter index.
     val viewIndex: Int,
 
-    // Adapter ID of the currently expanded item.
-    val id: Parcelable?,
-
     // Original location of the currently expanded item.
     // Used for restoring states after collapsing.
     val locationOnScreen: Rect
-  ) : Parcelable {
+  ) {
 
     internal fun isNotEmpty(): Boolean {
       return viewIndex != -1
-          && id != null
           && locationOnScreen.width() != 0
           && locationOnScreen.height() != 0
     }
 
     companion object {
       internal val EMPTY =
-        ExpandedItem(id = null, viewIndex = -1, locationOnScreen = Rect(0, 0, 0, 0))
+        ExpandedItem(viewIndex = -1, locationOnScreen = Rect(0, 0, 0, 0))
     }
   }
 }

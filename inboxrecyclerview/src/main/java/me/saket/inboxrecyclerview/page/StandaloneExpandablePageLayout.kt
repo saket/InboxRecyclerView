@@ -89,7 +89,6 @@ open class StandaloneExpandablePageLayout(
 
     expand(
         ExpandedItem(
-            id = null,
             viewIndex = -1,
             locationOnScreen = Rect(left, top, right, top)
         )
@@ -99,7 +98,6 @@ open class StandaloneExpandablePageLayout(
   fun collapseToTop() {
     collapse(
         ExpandedItem(
-            id = null,
             viewIndex = -1,
             locationOnScreen = Rect(left, top, right, top)
         )
@@ -115,13 +113,13 @@ open class StandaloneExpandablePageLayout(
       return
     }
 
-    expand(ExpandedItem(viewIndex = -1, id = null, locationOnScreen = fromShapeRect))
+    expand(ExpandedItem(viewIndex = -1, locationOnScreen = fromShapeRect))
   }
 
   /**
    * @param toShapeRect Final dimensions of this page, when it fully collapses.
    */
   fun collapseTo(toShapeRect: Rect) {
-    collapse(ExpandedItem(viewIndex = -1, id = null, locationOnScreen = toShapeRect))
+    collapse(ExpandedItem(viewIndex = -1, locationOnScreen = toShapeRect))
   }
 }

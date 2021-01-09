@@ -30,34 +30,4 @@ fun interface ExpandedItemFinder {
 }
 
 @Parcelize
-internal data class DefaultExpandedItemId(val adapterId: Long) : Parcelable
-
-/**
- * @param requireStableIds Stable IDs are recommended for correctly collapsing an [ExpandablePageLayout]
- * back to its original list item after a state restoration (like an orientation change). Feel free to disable
- * this if your adapter overrides [RecyclerView.Adapter.getItemId] without setting
- * [RecyclerView.Adapter.setHasStableIds]=true.
- */
-class DefaultExpandedItemFinder(
-  private val requireStableIds: Boolean
-) : ExpandedItemFinder {
-  override fun findExpandedItem(parent: RecyclerView, id: Parcelable): FindResult? {
-    val adapter = parent.adapter!!
-    check(id is DefaultExpandedItemId) { "Expected the expanded item ID to be of type Long." }
-    check(requireStableIds && adapter.hasStableIds()) {
-      "$adapter needs to have stable IDs so that the expanded item can be restored across " +
-          "orientation changes. If using adapter IDs is not an option, consider setting a " +
-          "custom InboxRecyclerView#itemExpandFinder."
-    }
-
-    return parent.children.map(parent::getChildViewHolder)
-        .filter { it.itemId == id.adapterId }
-        .firstOrNull()
-        ?.let {
-          FindResult(
-              itemAdapterPosition = it.adapterPosition,
-              itemView = it.itemView
-          )
-        }
-  }
-}
+data class AdapterIdBasedItem(val adapterId: Long) : Parcelable
