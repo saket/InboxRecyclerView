@@ -6,7 +6,7 @@ import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.parcel.Parcelize
 
-class AdapterIdBasedItemExpander(private val requireStableIds: Boolean) : ItemExpander<AdapterIdBasedItem>() {
+class AdapterIdBasedItemExpander(private val requireStableIds: Boolean) : InboxItemExpander<AdapterIdBasedItem>() {
   override fun identifyExpandingView(parent: RecyclerView, item: AdapterIdBasedItem): View? {
     val adapter = parent.adapter!!
     check(requireStableIds && adapter.hasStableIds()) {

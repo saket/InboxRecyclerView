@@ -11,10 +11,10 @@ import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
- * Convenience function for treating [ItemExpander] like a fun interface.
+ * Convenience function for treating [InboxItemExpander] like a fun interface.
  */
-fun <T : Parcelable> ItemExpander(identify: (parent: RecyclerView, item: T) -> View?) =
-  object : ItemExpander<T>() {
+fun <T : Parcelable> InboxItemExpander(identify: (parent: RecyclerView, item: T) -> View?) =
+  object : InboxItemExpander<T>() {
     override fun identifyExpandingView(parent: RecyclerView, item: T) = identify(parent, item)
   }
 
@@ -26,10 +26,9 @@ fun <T : Parcelable> ItemExpander(identify: (parent: RecyclerView, item: T) -> V
  * can implement their own expanders if using adapter IDs isn't desired because it's not 2020
  * anymore.
  */
-// TODO: rename to InboxItemExpander.
-abstract class ItemExpander<T : Parcelable> {
-  private var expandedItem: T? = null
+abstract class InboxItemExpander<T : Parcelable> {
   lateinit var recyclerView: InboxRecyclerView
+  private var expandedItem: T? = null
 
   /**
    * Called when [expandItem] is called and [InboxRecyclerView] needs to find the item's

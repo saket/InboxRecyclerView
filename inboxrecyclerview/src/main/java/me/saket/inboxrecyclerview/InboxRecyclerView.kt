@@ -14,7 +14,7 @@ import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
 import me.saket.inboxrecyclerview.dimming.DimPainter
 import me.saket.inboxrecyclerview.expander.AdapterIdBasedItem
 import me.saket.inboxrecyclerview.expander.AdapterIdBasedItemExpander
-import me.saket.inboxrecyclerview.expander.ItemExpander
+import me.saket.inboxrecyclerview.expander.InboxItemExpander
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
@@ -65,8 +65,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
     get() = expandedItemLoc
     set(value) { expandedItemLoc = value }
 
-  /** See [ItemExpander]. */
-  var itemExpander: ItemExpander<*> = AdapterIdBasedItemExpander(requireStableIds = true)
+  /** See [InboxItemExpander]. */
+  var itemExpander: InboxItemExpander<*> = AdapterIdBasedItemExpander(requireStableIds = true)
     set(value) {
       field = value
       field.recyclerView = this
@@ -175,8 +175,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
   fun expandItem(adapterId: Long, immediate: Boolean = false) {
     val expander = itemExpander
     check(expander is AdapterIdBasedItemExpander) {
-      "Can't expand an item by its adapter ID if a custom ItemExpander is set. " +
-          "Call expandItem on your ItemExpander instead."
+      "Can't expand an item by its adapter ID if a custom InboxItemExpander is set. " +
+          "Call expandItem on your InboxItemExpander instead."
     }
     expander.expandItem(AdapterIdBasedItem(adapterId), immediate)
   }
