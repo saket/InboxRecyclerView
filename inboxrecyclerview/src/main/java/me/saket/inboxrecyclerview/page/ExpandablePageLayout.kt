@@ -15,11 +15,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.FloatRange
-import androidx.core.animation.addListener
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
-import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
+import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItemLocation
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.executeOnMeasure
@@ -278,7 +277,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Expands this page (with animation) so that it fills the whole screen.
    */
-  internal open fun expand(expandedItem: ExpandedItem) {
+  internal open fun expand(expandedItem: ExpandedItemLocation) {
     if (isLaidOut.not() && visibility != View.GONE) {
       throw IllegalAccessError("Width / Height not available to expand")
     }
@@ -322,7 +321,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Collapses this page, back to its original state.
    */
-  internal fun collapse(expandedItem: ExpandedItem) {
+  internal fun collapse(expandedItem: ExpandedItemLocation) {
     if (currentState == PageState.COLLAPSED || currentState == PageState.COLLAPSING) {
       return
     }
@@ -342,7 +341,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Place the expandable page exactly on top of the expanding item.
    */
-  private fun alignPageWithExpandingItem(expandedItem: ExpandedItem) {
+  private fun alignPageWithExpandingItem(expandedItem: ExpandedItemLocation) {
     // Match height and location.
     setClippedDimensions(
         expandedItem.locationOnScreen.width(),
@@ -353,19 +352,19 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   /**
-   * Calculates the distance between a [InboxRecyclerView.ExpandedItem] and this page
+   * Calculates the distance between a [InboxRecyclerView.ExpandedItemLocation] and this page
    * by using their raw coordinates on the screen. Useful when [InboxRecyclerView] and
    * [ExpandablePageLayout] do not share the same parent or same bounds. For e.g., the
    * [InboxRecyclerView] may be below a toolbar whereas the [ExpandablePageLayout]
    * in front of the toolbar.
    */
-  private fun distanceYTo(expandedItem: ExpandedItem): Float {
+  private fun distanceYTo(expandedItem: ExpandedItemLocation): Float {
     val pageYOnScreen = locationOnScreen().top
     val itemYOnScreen = expandedItem.locationOnScreen.top.toFloat()
     return itemYOnScreen - (pageYOnScreen - translationY)
   }
 
-  private fun distanceXTo(expandedItem: ExpandedItem): Float {
+  private fun distanceXTo(expandedItem: ExpandedItemLocation): Float {
     val pageXOnScreen = locationOnScreen().left
     val itemXOnScreen = expandedItem.locationOnScreen.left.toFloat()
     return itemXOnScreen - (pageXOnScreen - translationX)
@@ -386,7 +385,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     expand: Boolean,
     targetWidth: Int,
     targetHeight: Int,
-    expandedItem: ExpandedItem
+    expandedItem: ExpandedItemLocation
   ) {
     val targetPageTranslationX = if (expand) 0F else distanceXTo(expandedItem)
     var targetPageTranslationY = if (expand) 0F else distanceYTo(expandedItem)

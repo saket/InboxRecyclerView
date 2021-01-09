@@ -24,7 +24,7 @@ internal class ScaleExpandAnimator : ItemExpandAnimator() {
       return
     }
 
-    val anchorY = recyclerView.expandedItem.locationOnScreen.top
+    val anchorY = recyclerView.expandedItemLoc.locationOnScreen.top
     val pageLocationOnScreen = page.locationOnScreen()
     val pageY = pageLocationOnScreen.top
     val pageTopYBound = pageY - page.translationY

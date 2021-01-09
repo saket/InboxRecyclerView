@@ -45,11 +45,11 @@ abstract class ItemExpandAnimator {
     recyclerView: InboxRecyclerView,
     page: ExpandablePageLayout
   ): View? {
-    val expandedItem = recyclerView.expandedItem
+    val expandedItem = recyclerView.expandedItemLoc
     val expandedItemIndex = expandedItem.viewIndex
 
     // If the expanded item changed because, say, the window was resized, we want to recreate the overlay.
-    val expandedItemChanged = anchorViewOverlay?.getTag(R.id.irv_expanded_item_info) != recyclerView.expandedItem
+    val expandedItemChanged = anchorViewOverlay?.getTag(R.id.irv_expanded_item_info) != recyclerView.expandedItemLoc
 
     if (expandedItemChanged && expandedItem.isNotEmpty()) {
       recyclerView.getChildAt(expandedItemIndex)?.let { anchorView ->
@@ -116,7 +116,7 @@ abstract class ItemExpandAnimator {
    * 1.0 -> fully expanded.
    */
   protected fun ExpandablePageLayout.expandRatio(rv: InboxRecyclerView): Float {
-    val anchorHeight = rv.expandedItem.locationOnScreen.height()
+    val anchorHeight = rv.expandedItemLoc.locationOnScreen.height()
     val pageHeight = clippedDimens.height()
     return ((anchorHeight - pageHeight) / (anchorHeight - height).toFloat()).coerceIn(0.0f, 1.0f)
   }

@@ -6,7 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InboxRecyclerView
-import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
+import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItemLocation
 import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
@@ -82,11 +82,11 @@ abstract class ItemExpander<T : Parcelable> {
     return savedState.superState
   }
 
-  internal fun captureExpandedItemInfo(): ExpandedItem {
+  internal fun captureExpandedItemInfo(): ExpandedItemLocation {
     val itemView = expandedItem?.let { identifyExpandingView(recyclerView, it) }
 
     return if (itemView != null) {
-      ExpandedItem(
+      ExpandedItemLocation(
           viewIndex = recyclerView.indexOfChild(itemView),
           // Ignore translations done by the item expand animator.
           locationOnScreen = itemView.locationOnScreen(ignoreTranslations = true)
@@ -95,7 +95,7 @@ abstract class ItemExpander<T : Parcelable> {
     } else {
       val locationOnScreen = recyclerView.locationOnScreen()
       val paddedY = locationOnScreen.top + recyclerView.paddingTop // This is where list items will be laid out from.
-      ExpandedItem(
+      ExpandedItemLocation(
           viewIndex = -1,
           locationOnScreen = Rect(locationOnScreen.left, paddedY, locationOnScreen.right, paddedY)
       )

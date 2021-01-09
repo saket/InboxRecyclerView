@@ -21,8 +21,8 @@ internal class SplitExpandAnimator : ItemExpandAnimator() {
       return
     }
 
-    val anchorIndex = recyclerView.expandedItem.viewIndex
-    val anchorViewLocation = recyclerView.expandedItem.locationOnScreen
+    val anchorIndex = recyclerView.expandedItemLoc.viewIndex
+    val anchorViewLocation = recyclerView.expandedItemLoc.locationOnScreen
 
     val pageTop = page.locationOnScreen().top
     val pageBottom = pageTop + page.clippedDimens.height()

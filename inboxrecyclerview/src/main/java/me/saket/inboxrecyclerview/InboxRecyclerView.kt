@@ -54,12 +54,16 @@ open class InboxRecyclerView @JvmOverloads constructor(
   @Deprecated("Use dimPainter instead", ReplaceWith("dimPainter"))
   var tintPainter: DimPainter
     get() = dimPainter
-    set(value) {
-      dimPainter = value
-    }
+    set(value) { dimPainter = value }
 
   /** Details about the currently expanded item. */
-  var expandedItem: ExpandedItem = ExpandedItem.EMPTY
+  var expandedItemLoc: ExpandedItemLocation = ExpandedItemLocation.EMPTY
+
+  @Suppress("unused")
+  @Deprecated("Use expandedItemLoc instead", ReplaceWith("expandedItemLoc"))
+  var expandedItem: ExpandedItemLocation
+    get() = expandedItemLoc
+    set(value) { expandedItemLoc = value }
 
   /** See [ItemExpander]. */
   var itemExpander: ItemExpander<*> = AdapterIdBasedItemExpander(requireStableIds = true)
@@ -199,19 +203,19 @@ open class InboxRecyclerView @JvmOverloads constructor(
     if (!page.isCollapsed) {
       // Expanding an item while another is already
       // expanding results in unpredictable animation.
-      if (!expandedItem.isNotEmpty()) {
+      if (!expandedItemLoc.isNotEmpty()) {
         // Useful if the page was expanded immediately as a result of a (manual)
         // state restoration before this RecyclerView could restore its state.
-        expandedItem = itemExpander.captureExpandedItemInfo()
+        expandedItemLoc = itemExpander.captureExpandedItemInfo()
       }
       return
     }
 
-    expandedItem = itemExpander.captureExpandedItemInfo()
+    expandedItemLoc = itemExpander.captureExpandedItemInfo()
     if (immediate) {
       page.expandImmediately()
     } else {
-      page.expand(expandedItem)
+      page.expand(expandedItemLoc)
     }
   }
 
@@ -221,8 +225,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
     if (page.isCollapsedOrCollapsing.not()) {
       // List items may have changed while the page was
       // expanded. Find the expanded item's location again.
-      expandedItem = itemExpander.captureExpandedItemInfo()
-      page.collapse(expandedItem)
+      expandedItemLoc = itemExpander.captureExpandedItemInfo()
+      page.collapse(expandedItemLoc)
     }
   }
 
@@ -243,13 +247,13 @@ open class InboxRecyclerView @JvmOverloads constructor(
 
   override fun onPageCollapsed() {
     suppressLayout(false)
-    expandedItem = ExpandedItem.EMPTY
+    expandedItemLoc = ExpandedItemLocation.EMPTY
     itemExpander.setItem(null)
   }
 
   override fun onPagePullStarted() {
     // List items may have changed while the page was expanded. Find the expanded item's location again.
-    expandedItem = itemExpander.captureExpandedItemInfo()
+    expandedItemLoc = itemExpander.captureExpandedItemInfo()
   }
 
   override fun onPagePull(deltaY: Float) {
@@ -335,8 +339,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
     suppressLayout(wasLayoutSuppressed) // isLayoutSuppressed is reset when the adapter is changed.
   }
 
-  // TODO: rename to ExpandedItemCoordinates.
-  data class ExpandedItem(
+  data class ExpandedItemLocation(
       // Index of the currently expanded item's
       // View. This is not the adapter index.
     val viewIndex: Int,
@@ -350,7 +353,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
     internal fun isNotEmpty(): Boolean = !isEmpty()
 
     companion object {
-      internal val EMPTY = ExpandedItem(viewIndex = -1, locationOnScreen = Rect(0, 0, 0, 0))
+      internal val EMPTY = ExpandedItemLocation(viewIndex = -1, locationOnScreen = Rect(0, 0, 0, 0))
     }
   }
 }

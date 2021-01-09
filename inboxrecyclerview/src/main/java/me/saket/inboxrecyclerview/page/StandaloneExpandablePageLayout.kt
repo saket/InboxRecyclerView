@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
 import me.saket.inboxrecyclerview.InboxRecyclerView
-import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
+import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItemLocation
 import me.saket.inboxrecyclerview.PullCollapsibleActivity
 
 /**
@@ -88,7 +88,7 @@ open class StandaloneExpandablePageLayout(
     }
 
     expand(
-        ExpandedItem(
+        ExpandedItemLocation(
             viewIndex = -1,
             locationOnScreen = Rect(left, top, right, top)
         )
@@ -97,7 +97,7 @@ open class StandaloneExpandablePageLayout(
 
   fun collapseToTop() {
     collapse(
-        ExpandedItem(
+        ExpandedItemLocation(
             viewIndex = -1,
             locationOnScreen = Rect(left, top, right, top)
         )
@@ -113,13 +113,13 @@ open class StandaloneExpandablePageLayout(
       return
     }
 
-    expand(ExpandedItem(viewIndex = -1, locationOnScreen = fromShapeRect))
+    expand(ExpandedItemLocation(viewIndex = -1, locationOnScreen = fromShapeRect))
   }
 
   /**
    * @param toShapeRect Final dimensions of this page, when it fully collapses.
    */
   fun collapseTo(toShapeRect: Rect) {
-    collapse(ExpandedItem(viewIndex = -1, locationOnScreen = toShapeRect))
+    collapse(ExpandedItemLocation(viewIndex = -1, locationOnScreen = toShapeRect))
   }
 }
