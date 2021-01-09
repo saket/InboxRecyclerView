@@ -7,16 +7,15 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
-import me.saket.inboxrecyclerview.expander.ItemExpander.IdentifiedExpandingItem
 import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
  * Convenience function for treating [ItemExpander] like a fun interface.
  */
-fun <T : Parcelable> ItemExpander(identify: (parent: RecyclerView, item: T) -> IdentifiedExpandingItem?) =
+fun <T : Parcelable> ItemExpander(identify: (parent: RecyclerView, item: T) -> View?) =
   object : ItemExpander<T>() {
-    override fun identifyExpandingItem(parent: RecyclerView, item: T) = identify(parent, item)
+    override fun identifyExpandingView(parent: RecyclerView, item: T) = identify(parent, item)
   }
 
 /**
@@ -34,26 +33,18 @@ abstract class ItemExpander<T : Parcelable> {
 
   /**
    * Called when [expandItem] is called and [InboxRecyclerView] needs to find the item's
-   * corresponding View. May be called multiple times while the page is visible if
-   * [InboxRecyclerView] detects that the list item may have moved.
+   * corresponding View. The View is only used for capturing its location on screen. This
+   * may be called multiple times while the page is visible if [InboxRecyclerView] detects
+   * that the list item may have moved.
    *
    * @param item Item passed to [expandItem].
    *
    * @return When null, the [ExpandablePageLayout] will be expanded from the top of the list.
    */
-  abstract fun identifyExpandingItem(parent: RecyclerView, item: T): IdentifiedExpandingItem?
+  abstract fun identifyExpandingView(parent: RecyclerView, item: T): View?
 
   /**
-   * @param itemAdapterPosition Adapter position of the expanding item.
-   * @param itemView View of the expanding item.
-   */
-  data class IdentifiedExpandingItem(
-    val itemAdapterPosition: Int,
-    val itemView: View?
-  )
-
-  /**
-   * Expand a list item. The item's View will be captured using [identifyExpandingItem].
+   * Expand a list item. The item's View will be captured using [identifyExpandingView].
    */
   fun expandItem(item: T?, immediate: Boolean = false) {
     setItem(item)
@@ -92,8 +83,7 @@ abstract class ItemExpander<T : Parcelable> {
   }
 
   internal fun captureExpandedItemInfo(): ExpandedItem {
-    val findResult = expandedItem?.let { identifyExpandingItem(recyclerView, it) }
-    val itemView = findResult?.itemView
+    val itemView = expandedItem?.let { identifyExpandingView(recyclerView, it) }
 
     return if (itemView != null) {
       ExpandedItem(
