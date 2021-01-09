@@ -8,6 +8,7 @@ import android.graphics.Canvas
 import android.graphics.Outline
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -15,6 +16,7 @@ import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.FloatRange
 import androidx.core.animation.addListener
+import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItem
@@ -172,6 +174,22 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     internalStateCallbacksForRecyclerView = NoOp()
     stateChangeCallbacks.clear()
     super.onDetachedFromWindow()
+  }
+
+  override fun onSaveInstanceState(): Parcelable {
+    return ExpandablePageSavedState(
+        superState = super.onSaveInstanceState(),
+        state = currentState
+    )
+  }
+
+  override fun onRestoreInstanceState(state: Parcelable) {
+    require(state is ExpandablePageSavedState)
+    super.onRestoreInstanceState(state.superState)
+
+    if (state.state == EXPANDED || state.state == EXPANDING) {
+      expandImmediately()
+    }
   }
 
   private fun changeState(newPageState: PageState) {
@@ -764,7 +782,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   companion object {
-
     private var suppressLayoutMethod: Method? = null
 
     // TODO: Move to a different class.
@@ -784,3 +801,9 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     }
   }
 }
+
+@Parcelize
+private data class ExpandablePageSavedState(
+  val superState: Parcelable?,
+  val state: ExpandablePageLayout.PageState
+) : Parcelable
