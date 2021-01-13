@@ -2,7 +2,6 @@ package me.saket.inboxrecyclerview.page
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Outline
@@ -28,16 +27,18 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDING
 import me.saket.inboxrecyclerview.withEndAction
 import java.lang.reflect.Method
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.DeprecationLevel.ERROR
 import kotlin.math.abs
 import kotlin.math.max
 
 /**
  * An expandable / collapsible layout for use with a [InboxRecyclerView].
  */
+@Suppress("LeakingThis")
 open class ExpandablePageLayout @JvmOverloads constructor(
   context: Context,
   attrs: AttributeSet? = null
-) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener {
+) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener, SimpleNestedScrollingParent3 {
 
   /** See [pushParentToolbarOnExpand]. */
   private var parentToolbar: View? = null
@@ -76,19 +77,27 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * Defaults to around 56dp which is a Toolbar's height.
    */
   var pullToCollapseThresholdDistance: Int
-    get() = pullToCollapseListener.collapseDistanceThreshold
+    get() = nestedScroller.collapseDistanceThreshold
     set(value) {
-      pullToCollapseListener.collapseDistanceThreshold = value
+      nestedScroller.collapseDistanceThreshold = value
     }
 
-  var pullToCollapseEnabled = false
-  val pullToCollapseListener: PullToCollapseListener
+  /**
+   * Whether pulling/dragging this page vertically beyond [pullToCollapseThresholdDistance]
+   * will trigger a collapse.
+   * */
+  var pullToCollapseEnabled = true
+
+  @Deprecated(message = "InboxRecyclerView now uses nested scrolling.", level = ERROR)
+  val pullToCollapseListener = Unit
+
   lateinit var currentState: PageState
 
   internal var internalStateCallbacksForRecyclerView: InternalPageCallbacks = NoOp()
   private var internalStateCallbacksForNestedPage: InternalPageCallbacks = NoOp()
   private var stateChangeCallbacks = CopyOnWriteArrayList<PageStateChangeCallbacks>()
 
+  private val nestedScroller = PullToCollapseNestedScroller(this)
   private var nestedPage: ExpandablePageLayout? = null
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
   private var contentCoverAnimator: ValueAnimator = ObjectAnimator()
@@ -141,8 +150,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     changeState(PageState.COLLAPSED)
 
     pullToCollapseEnabled = true
-    pullToCollapseListener = PullToCollapseListener(this)
-    pullToCollapseListener.addOnPullListener(this)
+    nestedScroller.addOnPullListener(this)
 
     outlineProvider = object : ViewOutlineProvider() {
       override fun getOutline(view: View, outline: Outline) {
@@ -168,7 +176,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     pushParentToolbarOnExpand(toolbar = null)
     nestedPage = null
     pullToCollapseInterceptor = null
-    pullToCollapseListener.removeAllOnPullListeners()
+    nestedScroller.removeAllOnPullListeners()
     internalStateCallbacksForNestedPage = NoOp()
     internalStateCallbacksForRecyclerView = NoOp()
     stateChangeCallbacks.clear()
@@ -196,18 +204,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    nestedScroller.storeTouchEvent(ev)
     return isExpandedOrExpanding && super.dispatchTouchEvent(ev)
-  }
-
-  override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-    val intercepted = pullToCollapseEnabled && pullToCollapseListener.onTouch(event, consumeDowns = false)
-    return intercepted || super.onInterceptTouchEvent(event)
-  }
-
-  @SuppressLint("ClickableViewAccessibility")
-  override fun onTouchEvent(event: MotionEvent): Boolean {
-    val handled = pullToCollapseEnabled && pullToCollapseListener.onTouch(event, consumeDowns = true)
-    return handled || super.onTouchEvent(event)
   }
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -770,14 +768,32 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   }
 
   /**
-   * Listener that gets called when this page is being pulled.
+   * Add a listener that gets called when this page is pulled.
    */
   fun addOnPullListener(listener: PullToCollapseListener.OnPullListener) {
-    pullToCollapseListener.addOnPullListener(listener)
+    nestedScroller.addOnPullListener(listener)
   }
 
   fun removeOnPullListener(pullListener: PullToCollapseListener.OnPullListener) {
-    pullToCollapseListener.removeOnPullListener(pullListener)
+    nestedScroller.removeOnPullListener(pullListener)
+  }
+
+  override fun onStartNestedScroll(child: View, target: View, axes: Int, type: Int): Boolean {
+    return if (pullToCollapseEnabled) {
+      // Accept all nested scroll events from the child. The decision of whether
+      // or not to actually scroll is calculated inside onNestedPreScroll().
+      nestedScroller.onStartNestedScroll(axes, type)
+    } else {
+      false
+    }
+  }
+
+  override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
+    nestedScroller.onNestedPreScroll(target, dy, consumed, type)
+  }
+
+  override fun onStopNestedScroll(target: View, type: Int) {
+    nestedScroller.onStopNestedScroll(type)
   }
 
   companion object {
