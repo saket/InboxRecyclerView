@@ -17,7 +17,7 @@ class PullToCollapseNestedScroller(private val page: ExpandablePageLayout) {
   var collapseDistanceThreshold: Int = (Views.toolbarHeight(page.context))
   var elasticScrollingFactor = 3.5f
 
-  private val onPullListeners = ArrayList<OnPullListener>(3)
+  private val onPullListeners = ArrayList<OnExpandablePagePullListener>(3)
   private var isPageMoving = false
 
   private lateinit var lastTouchEvent: MotionEvent
@@ -105,11 +105,11 @@ class PullToCollapseNestedScroller(private val page: ExpandablePageLayout) {
 
 // === Pull listeners. === //
 
-  fun addOnPullListener(listener: OnPullListener) {
+  fun addOnPullListener(listener: OnExpandablePagePullListener) {
     onPullListeners.add(listener)
   }
 
-  fun removeOnPullListener(listener: OnPullListener) {
+  fun removeOnPullListener(listener: OnExpandablePagePullListener) {
     onPullListeners.remove(listener)
   }
 

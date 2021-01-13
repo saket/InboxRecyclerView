@@ -768,11 +768,11 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   /**
    * Add a listener that gets called when this page is pulled.
    */
-  fun addOnPullListener(listener: PullToCollapseListener.OnPullListener) {
+  fun addOnPullListener(listener: OnExpandablePagePullListener) {
     nestedScroller.addOnPullListener(listener)
   }
 
-  fun removeOnPullListener(pullListener: PullToCollapseListener.OnPullListener) {
+  fun removeOnPullListener(pullListener: OnExpandablePagePullListener) {
     nestedScroller.removeOnPullListener(pullListener)
   }
 
