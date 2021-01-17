@@ -10,10 +10,13 @@ import android.graphics.drawable.Drawable
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.FloatRange
+import androidx.core.view.ViewCompat
+import androidx.core.view.ViewCompat.TYPE_TOUCH
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
@@ -38,7 +41,7 @@ import kotlin.math.max
 open class ExpandablePageLayout @JvmOverloads constructor(
   context: Context,
   attrs: AttributeSet? = null
-) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener, SimpleNestedScrollingParent3 {
+) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener {
 
   /** See [pushParentToolbarOnExpand]. */
   private var parentToolbar: View? = null
@@ -98,6 +101,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var stateChangeCallbacks = CopyOnWriteArrayList<PageStateChangeCallbacks>()
 
   private val nestedScroller = PullToCollapseNestedScroller(this)
+
   private var nestedPage: ExpandablePageLayout? = null
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
   private var contentCoverAnimator: ValueAnimator = ObjectAnimator()
@@ -201,11 +205,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   private fun changeState(newPageState: PageState) {
     currentState = newPageState
-  }
-
-  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    nestedScroller.storeTouchEvent(ev)
-    return isExpandedOrExpanding && super.dispatchTouchEvent(ev)
   }
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -776,14 +775,22 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     nestedScroller.removeOnPullListener(pullListener)
   }
 
-  override fun onStartNestedScroll(child: View, target: View, axes: Int, type: Int): Boolean {
-    return if (pullToCollapseEnabled) {
-      // Accept all nested scroll events from the child. The decision of whether
-      // or not to actually scroll is calculated inside onNestedPreScroll().
-      nestedScroller.onStartNestedScroll(axes, type)
-    } else {
-      false
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    nestedScroller.storeTouchEvent(ev)
+    return isExpandedOrExpanding && super.dispatchTouchEvent(ev).also {
+      if (ev.action == ACTION_UP) {
+        // Bug workaround: onStopNestedScroll() doesn't get called if the touch
+        // ends outside this ViewGroup. This is also used for ending fake nested
+        // scrolling that was earlier started by dispatchNestedPreScroll().
+        onStopNestedScroll(getChildAt(0), TYPE_TOUCH)
+      }
     }
+  }
+
+  override fun onStartNestedScroll(child: View, target: View, axes: Int, type: Int): Boolean {
+    // Accept all nested scroll events from children. The decision of whether
+    // or not to actually scroll is calculated inside onNestedPreScroll().
+    return pullToCollapseEnabled && axes and SCROLL_AXIS_VERTICAL != 0
   }
 
   override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
@@ -792,6 +799,28 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   override fun onStopNestedScroll(target: View, type: Int) {
     nestedScroller.onStopNestedScroll(type)
+
+    // Possible bug workaround: NestedScrollView relies on onStopNestedCall()
+    // for resetting its scroll axes. Otherwise fake nested scrolling doesn't work.
+    super.onStopNestedScroll(target, type)
+  }
+
+
+  override fun dispatchNestedPreScroll(
+    dx: Int,
+    dy: Int,
+    consumed: IntArray?,
+    offsetInWindow: IntArray?,
+    type: Int
+  ): Boolean {
+    // Called when the content doesn't support nested scrolling. Send this
+    // event as a fake nested scroll event so that this page can be dragged.
+    return if (pullToCollapseEnabled) {
+      onNestedPreScroll(getChildAt(0), dx, dy, consumed!!, type)
+      true
+    } else {
+      super.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type)
+    }
   }
 
   companion object {
