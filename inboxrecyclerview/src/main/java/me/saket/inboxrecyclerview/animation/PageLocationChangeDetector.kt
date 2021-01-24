@@ -8,7 +8,7 @@ import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
 
 /**
  * Gives a callback everytime [ExpandablePageLayout]'s size or location changes.
- * Can be used for synchronizing animations with the page's expansion/collapse.
+ * Can be used for, say, synchronizing animations with the page's expansion/collapse.
  */
 class PageLocationChangeDetector(
   private val page: ExpandablePageLayout,

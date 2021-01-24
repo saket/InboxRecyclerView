@@ -11,21 +11,16 @@ import android.graphics.drawable.Drawable
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.MotionEvent.ACTION_CANCEL
-import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.FloatRange
-import androidx.core.view.ViewCompat
-import androidx.core.view.ViewCompat.TYPE_TOUCH
 import kotlinx.android.parcel.Parcelize
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItemLocation
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
-import me.saket.inboxrecyclerview.Timber
 import me.saket.inboxrecyclerview.executeOnMeasure
 import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
@@ -110,6 +105,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
   private var contentCoverAnimator: ValueAnimator = ObjectAnimator()
   private var isFullyCoveredByNestedPage = false
+  private var ignoreDrawableInvalidates: Boolean = false
   internal var dimDrawable: Drawable? = null
 
   val isExpanded: Boolean
@@ -376,7 +372,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     return locationOnScreen(intArrayBuffer, rectBuffer)
   }
 
-  internal fun alignPageToCoverScreen() {
+  private fun alignPageToCoverScreen() {
     resetClipping()
     translationY = 0F
   }
@@ -590,15 +586,24 @@ open class ExpandablePageLayout @JvmOverloads constructor(
     if (currentState != PageState.COLLAPSED) {
       super.dispatchDraw(canvas)
     }
+
+    ignoreDrawableInvalidates = true
     if (background != null) {
       val alphaBackup = background.alpha
       background.alpha = 255 - (255 * contentOpacity).toInt()
       background.draw(canvas)
       background.alpha = alphaBackup
     }
+    ignoreDrawableInvalidates = false
 
     dimDrawable?.setBounds(0, 0, width, height)
     dimDrawable?.draw(canvas)
+  }
+
+  override fun invalidateDrawable(drawable: Drawable) {
+    if (!ignoreDrawableInvalidates) {
+      super.invalidateDrawable(drawable)
+    }
   }
 
   override fun drawChild(
