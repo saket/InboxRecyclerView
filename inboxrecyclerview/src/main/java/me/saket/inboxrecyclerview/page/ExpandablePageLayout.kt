@@ -2,6 +2,7 @@ package me.saket.inboxrecyclerview.page
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Outline
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.MotionEvent.ACTION_CANCEL
 import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +25,7 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItemLocation
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
+import me.saket.inboxrecyclerview.Timber
 import me.saket.inboxrecyclerview.executeOnMeasure
 import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
@@ -41,7 +44,7 @@ import kotlin.math.max
 open class ExpandablePageLayout @JvmOverloads constructor(
   context: Context,
   attrs: AttributeSet? = null
-) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener {
+) : BaseExpandablePageLayout(context, attrs), PullToCollapseListener.OnPullListener, SimpleNestedScrollingParent3 {
 
   /** See [pushParentToolbarOnExpand]. */
   private var parentToolbar: View? = null
@@ -101,6 +104,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var stateChangeCallbacks = CopyOnWriteArrayList<PageStateChangeCallbacks>()
 
   private val nestedScroller = PullToCollapseNestedScroller(this)
+  private val touchListener = PullToCollapseTouchListener(this, nestedScroller)
 
   private var nestedPage: ExpandablePageLayout? = null
   private var toolbarAnimator: ValueAnimator = ObjectAnimator()
@@ -777,14 +781,16 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     nestedScroller.storeTouchEvent(ev)
-    return isExpandedOrExpanding && super.dispatchTouchEvent(ev).also {
-      if (ev.action == ACTION_UP) {
-        // Bug workaround: onStopNestedScroll() doesn't get called if the touch
-        // ends outside this ViewGroup. This is also used for ending fake nested
-        // scrolling that was earlier started by dispatchNestedPreScroll().
-        onStopNestedScroll(getChildAt(0), TYPE_TOUCH)
-      }
-    }
+    return isExpandedOrExpanding && super.dispatchTouchEvent(ev)
+  }
+
+  override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+    return touchListener.onInterceptTouch(ev) || super.onInterceptTouchEvent(ev)
+  }
+
+  @SuppressLint("ClickableViewAccessibility")
+  override fun onTouchEvent(ev: MotionEvent): Boolean {
+    return touchListener.onTouch(ev) || super.onTouchEvent(ev)
   }
 
   override fun onStartNestedScroll(child: View, target: View, axes: Int, type: Int): Boolean {
@@ -799,28 +805,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
 
   override fun onStopNestedScroll(target: View, type: Int) {
     nestedScroller.onStopNestedScroll(type)
-
-    // Possible bug workaround: NestedScrollView relies on onStopNestedCall()
-    // for resetting its scroll axes. Otherwise fake nested scrolling doesn't work.
-    super.onStopNestedScroll(target, type)
-  }
-
-
-  override fun dispatchNestedPreScroll(
-    dx: Int,
-    dy: Int,
-    consumed: IntArray?,
-    offsetInWindow: IntArray?,
-    type: Int
-  ): Boolean {
-    // Called when the content doesn't support nested scrolling. Send this
-    // event as a fake nested scroll event so that this page can be dragged.
-    return if (pullToCollapseEnabled) {
-      onNestedPreScroll(getChildAt(0), dx, dy, consumed!!, type)
-      true
-    } else {
-      super.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type)
-    }
   }
 
   companion object {

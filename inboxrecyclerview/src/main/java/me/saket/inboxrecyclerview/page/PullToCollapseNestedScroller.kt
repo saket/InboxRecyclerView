@@ -9,7 +9,7 @@ import me.saket.inboxrecyclerview.page.InterceptResult.INTERCEPTED
 import java.util.ArrayList
 import kotlin.math.abs
 
-class PullToCollapseNestedScroller(private val page: ExpandablePageLayout) {
+internal class PullToCollapseNestedScroller(private val page: ExpandablePageLayout) {
 
   /** Minimum Y-distance the page has to be dragged before it's eligible for collapse. */
   internal var collapseDistanceThreshold: Int = (Views.toolbarHeight(page.context))
@@ -17,7 +17,7 @@ class PullToCollapseNestedScroller(private val page: ExpandablePageLayout) {
 
   private val onPullListeners = ArrayList<OnExpandablePagePullListener>(3)
 
-  private var isNestedScrolling = false
+  internal var isNestedScrolling = false
   private var interceptedUntilNextScroll = false
   private lateinit var lastTouchEvent: MotionEvent
 
@@ -50,7 +50,7 @@ class PullToCollapseNestedScroller(private val page: ExpandablePageLayout) {
    * It is recommended to handle both onPreScroll() and onScroll(), but the
    * latter doesn't hide overscroll glow if a nested scroll was consumed.
    */
-  fun onNestedPreScroll(target: View, dy: Int, consumed: IntArray, type: Int) {
+  fun onNestedPreScroll(target: View?, dy: Int, consumed: IntArray, type: Int) {
     if (!isNestedScrolling) {
       onStartNestedScroll(dy, type)
       isNestedScrolling = true
@@ -74,7 +74,7 @@ class PullToCollapseNestedScroller(private val page: ExpandablePageLayout) {
       else -> page.translationY < 0f
     }
     val canContentScroll = {
-      target.canScrollVertically(if (deltaDraggingDown) +1 else -1)
+      target != null && target.canScrollVertically(if (deltaDraggingDown) +1 else -1)
     }
 
     if (canPageScroll || !canContentScroll()) {

@@ -9,8 +9,7 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
-import android.widget.RelativeLayout
-import androidx.core.widget.NestedScrollView
+import android.widget.FrameLayout
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 
@@ -21,7 +20,7 @@ import me.saket.inboxrecyclerview.ANIMATION_START_DELAY
 abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : NestedScrollView(context, attrs) {
+) : FrameLayout(context, attrs) {
 
   /** The visible portion of this layout. Warning: this is mutable. Use wisely! */
   internal val clippedDimens: Rect = Rect()
@@ -34,8 +33,6 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
 
   init {
     clipBounds = clippedDimens
-    isFillViewport = true
-    overScrollMode = OVER_SCROLL_ALWAYS
 
     outlineProvider = object : ViewOutlineProvider() {
       override fun getOutline(view: View, outline: Outline) {
