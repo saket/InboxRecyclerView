@@ -51,20 +51,22 @@ internal class PullToCollapseNestedScroller(private val page: ExpandablePageLayo
    * latter doesn't hide overscroll glow if a nested scroll was consumed.
    */
   fun onNestedPreScroll(target: View?, dy: Int, consumed: IntArray, type: Int) {
-    if (!isNestedScrolling) {
-      onStartNestedScroll(dy, type)
-      isNestedScrolling = true
-    }
-
-    if (interceptedUntilNextScroll) {
-      return
-    }
-
     // Ignore flings.
     if (type == TYPE_NON_TOUCH) {
       // Avoid letting the content fling if the page is
       // collapsing, preventing overscroll glows to show up.
       consumed[1] = if (page.isCollapsing) dy else 0
+      return
+    }
+
+    if (!isNestedScrolling) {
+      // This must happen only for scrolls (not flings) otherwise
+      // isNestedScrolling will become true when a fling is started.
+      onStartNestedScroll(dy, type)
+      isNestedScrolling = true
+    }
+
+    if (interceptedUntilNextScroll) {
       return
     }
 
