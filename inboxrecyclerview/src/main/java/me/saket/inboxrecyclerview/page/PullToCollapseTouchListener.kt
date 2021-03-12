@@ -18,19 +18,25 @@ import kotlin.math.abs
  * content isn't nested-scrollable.
  */
 internal class PullToCollapseTouchListener(
-  val page: ExpandablePageLayout,
+  val page: ViewGroup,
   val nestedScroller: PullToCollapseNestedScroller
 ) : SimpleOnGestureListener() {
 
   private var canNestedScroll = true
-  private val fooArray = intArrayOf(0, 0)
+  private val fakeIntArray = intArrayOf(0, 0)
 
-  private val touchDetector = GestureDetector(page.context, object : SimpleOnGestureListener() {
+  private val interceptDetector = GestureDetector(page.context, object : SimpleOnGestureListener() {
+    override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+      return abs(distanceY) > abs(distanceX)
+    }
+  })
+
+  private val scrollDetector = GestureDetector(page.context, object : SimpleOnGestureListener() {
     override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
       nestedScroller.onNestedPreScroll(
           target = null,
           dy = distanceY.toInt(),
-          consumed = fooArray,
+          consumed = fakeIntArray,
           type = TYPE_TOUCH
       )
       return nestedScroller.isNestedScrolling || abs(distanceY) > abs(distanceX)
@@ -40,12 +46,13 @@ internal class PullToCollapseTouchListener(
   fun onInterceptTouch(event: MotionEvent): Boolean {
     if (event.action == ACTION_DOWN) {
       canNestedScroll = page.findChildUnderTouch(event)?.isNestedScrollingEnabled == true
+      scrollDetector.onTouchEvent(event)
     }
-    return if (canNestedScroll) false else touchDetector.onTouchEvent(event)
+    return if (canNestedScroll) false else interceptDetector.onTouchEvent(event)
   }
 
   fun onTouch(event: MotionEvent): Boolean {
-    touchDetector.onTouchEvent(event)
+    scrollDetector.onTouchEvent(event)
     if (event.action == ACTION_UP || event.action == ACTION_CANCEL) {
       nestedScroller.onStopNestedScroll(TYPE_TOUCH)
     }
