@@ -46,7 +46,7 @@ abstract class InboxItemExpander<T : Parcelable> : ExpandingViewIdentifier<T> {
    */
   fun expandItem(item: T?, immediate: Boolean = false) {
     setItem(item)
-    recyclerView.expandInternal(immediate = immediate)
+    recyclerView.expandOnceLaidOut(immediate = immediate)
   }
 
   /**

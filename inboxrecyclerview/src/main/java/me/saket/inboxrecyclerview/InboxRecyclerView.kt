@@ -9,6 +9,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.Window
+import androidx.core.view.doOnLayout
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
 import me.saket.inboxrecyclerview.dimming.DimPainter
@@ -192,14 +193,17 @@ open class InboxRecyclerView @JvmOverloads constructor(
     itemExpander.expandItem(null, immediate)
   }
 
-  internal fun expandInternal(immediate: Boolean) {
+  internal fun expandOnceLaidOut(immediate: Boolean) {
     val page = ensureSetup(expandablePage)
-
-    if (isLaidOut.not() || page.isLaidOut.not()) {
-      post { expandInternal(immediate) }
-      return
+    doOnLayout {
+      page.doOnLayout {
+        expandInternal(immediate)
+      }
     }
+  }
 
+  private fun expandInternal(immediate: Boolean) {
+    val page = expandablePage!!
     if (!page.isCollapsed) {
       // Expanding an item while another is already
       // expanding results in unpredictable animation.
