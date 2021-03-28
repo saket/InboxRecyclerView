@@ -22,6 +22,7 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.InboxRecyclerView.ExpandedItemLocation
 import me.saket.inboxrecyclerview.InternalPageCallbacks
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
+import me.saket.inboxrecyclerview.dimming.AnimatedVisibilityColorDrawable
 import me.saket.inboxrecyclerview.locationOnScreen
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDED
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout.PageState.EXPANDING
@@ -106,7 +107,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   private var contentCoverAnimator: ValueAnimator = ObjectAnimator()
   private var isFullyCoveredByNestedPage = false
   private var ignoreDrawableInvalidates: Boolean = false
-  internal var dimDrawable: Drawable? = null
+  internal var dimDrawable: AnimatedVisibilityColorDrawable? = null
 
   val isExpanded: Boolean
     get() = currentState == PageState.EXPANDED

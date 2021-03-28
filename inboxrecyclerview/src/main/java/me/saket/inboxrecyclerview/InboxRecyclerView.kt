@@ -12,6 +12,7 @@ import android.view.Window
 import androidx.core.view.doOnLayout
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
+import me.saket.inboxrecyclerview.dimming.AnimatedVisibilityColorDrawable
 import me.saket.inboxrecyclerview.dimming.DimPainter
 import me.saket.inboxrecyclerview.expander.AdapterIdBasedItem
 import me.saket.inboxrecyclerview.expander.AdapterIdBasedItemExpander
@@ -46,7 +47,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
       field = value
 
       expandablePage?.let { page ->
-        old.onDetachRecyclerView()
+        old.onDetachRecyclerView(resetDim = false)
         field.onAttachRecyclerView(this, page)
       }
     }
@@ -92,7 +93,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
       }
 
       if (oldPage != null) {
-        dimPainter.onDetachRecyclerView()
+        dimPainter.onDetachRecyclerView(resetDim = true)
         itemExpandAnimator.onDetachRecyclerView()
         oldPage.internalStateCallbacksForRecyclerView = NoOp()
       }
@@ -109,7 +110,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
   private var isFullyCoveredByPage: Boolean = false
 
   /** Used by [DimPainter]. */
-  var dimDrawable: Drawable? = null
+  var dimDrawable: AnimatedVisibilityColorDrawable? = null
+    internal set
 
   init {
     // Because setters don't get called for default values.

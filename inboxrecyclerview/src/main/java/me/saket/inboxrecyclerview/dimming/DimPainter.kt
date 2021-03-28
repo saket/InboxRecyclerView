@@ -6,7 +6,6 @@ import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.animation.PageLocationChangeDetector
-import me.saket.inboxrecyclerview.dimming.DimPainter.Companion
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
 
 /**
@@ -14,7 +13,7 @@ import me.saket.inboxrecyclerview.page.ExpandablePageLayout
  * See [listAndPage].
  */
 abstract class DimPainter {
-  private var onDetach: (() -> Unit)? = null
+  private var onDetach: ((resetDim: Boolean) -> Unit)? = null
 
   fun onAttachRecyclerView(
     recyclerView: InboxRecyclerView,
@@ -25,19 +24,20 @@ abstract class DimPainter {
     }
 
     changeDetector.start()
-    onDetach = {
-      cancelAnimation(recyclerView, page)
+    onDetach = { resetDim ->
+      cancelAnimation(recyclerView, page, resetDim)
       changeDetector.stop()
     }
   }
 
-  fun onDetachRecyclerView() {
-    onDetach?.invoke()
+  fun onDetachRecyclerView(resetDim: Boolean) {
+    onDetach?.invoke(/* resetDim = */ resetDim )
   }
 
   abstract fun cancelAnimation(
     rv: InboxRecyclerView,
-    page: ExpandablePageLayout
+    page: ExpandablePageLayout,
+    resetDim: Boolean
   )
 
   abstract fun onPageMove(
@@ -89,7 +89,8 @@ abstract class DimPainter {
       return object : DimPainter() {
         override fun cancelAnimation(
           rv: InboxRecyclerView,
-          page: ExpandablePageLayout
+          page: ExpandablePageLayout,
+          resetDim: Boolean
         ) = Unit
 
         override fun onPageMove(rv: InboxRecyclerView, page: ExpandablePageLayout) = Unit
