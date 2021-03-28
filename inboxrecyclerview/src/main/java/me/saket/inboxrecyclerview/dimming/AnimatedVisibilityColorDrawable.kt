@@ -4,18 +4,20 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.graphics.drawable.ColorDrawable
 import android.view.animation.DecelerateInterpolator
+import androidx.annotation.IntRange
 
 /**
- * A Drawable that toggles its alpha between 255 and 0.
+ * A Drawable that smoothly toggles its alpha between 0 and [maxAlpha].
  *
  * @param onInvalidate Useful when this drawable isn't set as the background or the foreground
- * of a View because the View will otherwise not auto-invalidate itself when Drawable's alpha is
- * updated.
+ * of a View because the View will otherwise not auto-invalidate itself when this Drawable's
+ * alpha is updated.
  */
 class AnimatedVisibilityColorDrawable(
   color: Int,
+  @IntRange(from = 0, to = 255) private val maxAlpha: Int,
   private val animDuration: Long,
-  private val onInvalidate: (() -> Unit)? = null,
+  private val onInvalidate: (() -> Unit)? = null
 ) : ColorDrawable(color) {
 
   private var alphaAnimator = ValueAnimator()
@@ -37,7 +39,7 @@ class AnimatedVisibilityColorDrawable(
     }
     isShown = show
 
-    val targetAlpha = if (show) 255 else 0
+    val targetAlpha = if (show) maxAlpha else 0
     if (immediately) {
       alpha = targetAlpha
 

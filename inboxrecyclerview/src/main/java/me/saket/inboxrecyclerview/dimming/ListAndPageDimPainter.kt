@@ -21,14 +21,16 @@ internal class ListAndPageDimPainter(
   override fun onPageMove(rv: InboxRecyclerView, page: ExpandablePageLayout) {
     if (rv.dimDrawable == null) {
       rv.dimDrawable = AnimatedVisibilityColorDrawable(
-        color = listDim.color.withAlpha(listDim.maxAlpha),
+        color = listDim.color,
+        maxAlpha = listDim.maxAlpha,
         animDuration = page.animationDurationMillis,
         onInvalidate = rv::invalidate
       )
     }
     if (page.dimDrawable == null && pageDim != null) {
       page.dimDrawable = AnimatedVisibilityColorDrawable(
-        color = pageDim.color.withAlpha(pageDim.maxAlpha),
+        color = pageDim.color,
+        maxAlpha = pageDim.maxAlpha,
         animDuration = page.animationDurationMillis,
         onInvalidate = page::invalidate
       )
@@ -61,8 +63,4 @@ internal class ListAndPageDimPainter(
     rv.dimDrawable?.cancelAnimation(setAlphaTo = if (resetDim) 0 else null)
     page.dimDrawable?.cancelAnimation(setAlphaTo = if (resetDim) 0 else null)
   }
-}
-
-private fun Int.withAlpha(alpha: Int): Int {
-  return ColorUtils.setAlphaComponent(this, alpha)
 }
