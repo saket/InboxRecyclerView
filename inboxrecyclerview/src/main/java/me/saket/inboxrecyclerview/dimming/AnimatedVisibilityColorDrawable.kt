@@ -32,14 +32,16 @@ class AnimatedVisibilityColorDrawable(
     onInvalidate?.invoke()
   }
 
+  // This name sounds a bit stupid, but I couldn't use setVisible(),
+  // whose lifecycle is managed by the host View of this drawable.
   fun setShown(show: Boolean, immediately: Boolean = false) {
-    val changed = show != isShown
-    if (!changed) {
-      return
-    }
+    val targetAlpha = if (show) maxAlpha else 0
+
+    if (this.alpha == targetAlpha) return
+    if (alphaAnimator.isRunning && isShown == show) return
+
     isShown = show
 
-    val targetAlpha = if (show) maxAlpha else 0
     if (immediately) {
       alpha = targetAlpha
 
