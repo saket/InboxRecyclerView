@@ -1,18 +1,20 @@
 package me.saket.inboxrecyclerview.sample.inbox
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnLayout
+import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.RecyclerView
 import me.saket.inboxrecyclerview.sample.Attachment
 import me.saket.inboxrecyclerview.sample.R
-import me.saket.inboxrecyclerview.sample.widgets.executeOnMeasure
 
 class ImageAttachmentAdapter(
-    private val clickListener: (MotionEvent) -> Boolean
+    private val touchListener: (MotionEvent) -> Boolean
 ) : RecyclerView.Adapter<ImageViewHolder>() {
 
   var images: List<Attachment.Image> = emptyList()
@@ -25,13 +27,13 @@ class ImageAttachmentAdapter(
   override fun getItemCount() = images.size
 
   override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-    holder.render(images[position], clickListener)
+    holder.render(images[position], touchListener)
   }
 }
 
+@SuppressLint("ClickableViewAccessibility")
 class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-  fun render(attachment: Attachment.Image, clickListener: (MotionEvent) -> Boolean) {
+  fun render(attachment: Attachment.Image, touchListener: (MotionEvent) -> Boolean) {
     val imageView = itemView as ImageView
     val image = ContextCompat.getDrawable(imageView.context, attachment.drawableRes)!!
     imageView.setImageDrawable(image)
@@ -46,6 +48,6 @@ class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
       imageView.layoutParams = params
     }
 
-    itemView.setOnTouchListener { _, event -> clickListener(event) }
+    itemView.setOnTouchListener { _, event -> touchListener(event) }
   }
 }

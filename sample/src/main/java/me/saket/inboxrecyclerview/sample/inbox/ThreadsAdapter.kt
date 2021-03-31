@@ -3,14 +3,17 @@ package me.saket.inboxrecyclerview.sample.inbox
 import android.annotation.SuppressLint
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.jakewharton.rxrelay2.PublishRelay
 import me.saket.inboxrecyclerview.sample.Attachment
 import me.saket.inboxrecyclerview.sample.EmailThread
@@ -112,17 +115,16 @@ class EmailViewHolderWithImageAttachments(
     itemView: View,
     itemClicks: PublishRelay<EmailThreadClicked>
 ) : EmailViewHolder(itemView, itemClicks) {
-
-  private val imageAttachmentsStub = itemView.findViewById<ViewStub>(R.id.emailthread_image_attachments_stub)
-  private val imageAttachmentsRecyclerView by lazy { itemView.findViewById<RecyclerView>(R.id.emailthread_image_attachments) }
-  private val adapter = ImageAttachmentAdapter(clickListener = {
-    itemView.onTouchEvent(it)
-  })
+  private val adapter = ImageAttachmentAdapter(touchListener = itemView::onTouchEvent)
 
   init {
-    imageAttachmentsStub.inflate()
-    imageAttachmentsRecyclerView.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
-    imageAttachmentsRecyclerView.adapter = adapter
+    val viewStub = itemView.findViewById<ViewStub>(R.id.emailthread_image_attachments_stub)
+    viewStub.inflate()
+
+    itemView.findViewById<RecyclerView>(R.id.emailthread_image_attachments).let {
+      it.layoutManager = LinearLayoutManager(itemView.context, HORIZONTAL, false)
+      it.adapter = adapter
+    }
   }
 
   override fun render() {
