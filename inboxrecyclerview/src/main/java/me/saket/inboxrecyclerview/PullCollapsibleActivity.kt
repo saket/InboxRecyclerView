@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.doOnLayout
 import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
 import me.saket.inboxrecyclerview.page.StandaloneExpandablePageLayout
 
@@ -115,7 +114,7 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
 
   protected fun expandFromTop() {
     expandCalled = true
-    activityPageLayout.doOnLayout {
+    activityPageLayout.doOnLayout2 {
       val pageLocation = activityPageLayout.locationOnScreen()
       val toolbarRect = Rect(pageLocation.left, standardToolbarHeight, pageLocation.right, standardToolbarHeight)
       expandFrom(toolbarRect)
@@ -131,7 +130,7 @@ abstract class PullCollapsibleActivity : AppCompatActivity() {
     expandCalled = true
 
     expandedFromRect = fromRect
-    activityPageLayout.doOnLayout {
+    activityPageLayout.doOnLayout2 {
       if (wasActivityRecreated) {
         activityPageLayout.expandFrom(fromRect)
       } else {

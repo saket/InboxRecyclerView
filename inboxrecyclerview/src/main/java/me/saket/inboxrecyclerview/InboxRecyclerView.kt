@@ -9,7 +9,6 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.Window
-import androidx.core.view.doOnLayout
 import me.saket.inboxrecyclerview.InternalPageCallbacks.NoOp
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
 import me.saket.inboxrecyclerview.dimming.AnimatedVisibilityColorDrawable
@@ -197,8 +196,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
 
   internal fun expandOnceLaidOut(immediate: Boolean) {
     val page = ensureSetup(expandablePage)
-    doOnLayout {
-      page.doOnLayout {
+    doOnLayout2 {
+      page.doOnLayout2 {
         expandInternal(immediate)
       }
     }

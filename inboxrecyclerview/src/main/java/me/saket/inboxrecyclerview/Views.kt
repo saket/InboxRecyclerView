@@ -2,13 +2,10 @@ package me.saket.inboxrecyclerview
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
-import android.util.Log
 import android.view.View
 import android.view.ViewPropertyAnimator
-import android.view.ViewTreeObserver
 
 internal object Views {
   internal fun toolbarHeight(context: Context): Int {
@@ -49,4 +46,32 @@ internal fun View.locationOnScreen(
   }
   rectBuffer.set(intBuffer[0], intBuffer[1], intBuffer[0] + width, intBuffer[1] + height)
   return rectBuffer
+}
+
+/**
+ * View#doOnLayout() has a terrible gotcha that it gets called _during_ a layout
+ * when isLaidOut resolves to true, causing nested onLayouts to possibly never execute.
+ */
+internal inline fun View.doOnLayout2(crossinline action: () -> Unit) {
+  if (isInEditMode || isLaidOut || (width > 0 || height > 0)) {
+    action()
+    return
+  }
+
+  addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+    override fun onLayoutChange(
+      view: View,
+      left: Int,
+      top: Int,
+      right: Int,
+      bottom: Int,
+      oldLeft: Int,
+      oldTop: Int,
+      oldRight: Int,
+      oldBottom: Int
+    ) {
+      view.removeOnLayoutChangeListener(this)
+      action()
+    }
+  })
 }

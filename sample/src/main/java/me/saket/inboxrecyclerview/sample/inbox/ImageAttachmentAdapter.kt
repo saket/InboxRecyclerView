@@ -39,7 +39,7 @@ class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     imageView.alpha = 0f
     imageView.animate().alpha(1f).setDuration(150)
 
-    imageView.executeOnMeasure {
+    imageView.post {
       val resizedWidth = image.intrinsicWidth / (image.intrinsicHeight.toFloat() / imageView.height)
       val params = imageView.layoutParams
       params.width = resizedWidth.toInt()
