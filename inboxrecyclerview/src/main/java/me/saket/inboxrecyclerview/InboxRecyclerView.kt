@@ -303,9 +303,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
   }
 
   private inline fun maybeHideScrollbarsAndRun(crossinline run: () -> Unit) {
-    if (expandablePage?.isCollapsed == true
-        || scrollBarStyle != SCROLLBARS_INSIDE_OVERLAY
-    ) {
+    val page = expandablePage
+    if (page == null || page.isCollapsed || scrollBarStyle != SCROLLBARS_INSIDE_OVERLAY) {
       run()
       return
     }
