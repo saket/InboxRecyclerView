@@ -3,7 +3,7 @@
 `InboxRecyclerView` is a library for building expandable descendant navigation inspired by [Google Inbox](http://androidniceties.tumblr.com/post/100872004063/inbox-by-gmail-google-play-link) and [Reply](https://material.io/design/material-studies/reply.html), and is an easy drop-in into existing projects. You can take a look at the [sample app](https://github.com/saket/InboxRecyclerView/tree/master/sample) for best practices or [download its APK](https://github.com/saket/InboxRecyclerView/releases) for trying it out on your phone. If you're interested in learning how it was created, [here's an in-depth blog post](https://saket.me/inbox-recyclerview).
 
 ```groovy
-implementation 'me.saket:inboxrecyclerview:2.3.0'
+implementation 'me.saket:inboxrecyclerview:3.0.0'
 ```
 
 ### Usage
@@ -37,6 +37,7 @@ recyclerView.apply {
 
   expandablePage = findViewById(...).also {
     it.pushParentToolbarOnExpand(toolbar)
+    it.addOnPullListener(PageCollapseEligibilityHapticFeedback(it))
   }
 }
 
@@ -52,6 +53,7 @@ recyclerViewAdapter.onItemClick = { clickedItem ->
 - [control the pull-to-collapse gesture?](docs/pull_to_collapse.md)
 - [change background dimming?](docs/background_dim.md)
 - [listen to state changes?](docs/page_callbacks.md)
+- [expand items without using `Long` based adapter IDs?](https://github.com/saket/InboxRecyclerView/wiki/Custom-expansion-keys)
 
 ### Pull collapsible activities
 
