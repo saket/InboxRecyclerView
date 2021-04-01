@@ -15,33 +15,34 @@ internal class PullToCollapseNestedScroller(private val page: ExpandablePageLayo
   internal var collapseDistanceThreshold: Int = (Views.toolbarHeight(page.context))
   private var elasticScrollingFactor = 3.5f
 
-  private val onPullListeners = ArrayList<OnExpandablePagePullListener>(3)
+  internal val isNestedScrolling get() = interceptedUntilNextScroll == false
 
-  internal var isNestedScrolling = false
-  private var interceptedUntilNextScroll = false
-  private lateinit var lastTouchEvent: MotionEvent
+  private val onPullListeners = ArrayList<OnExpandablePagePullListener>(3)
+  private var interceptedUntilNextScroll: Boolean? = null
+  private lateinit var actionDownEvent: MotionEvent
 
   fun storeTouchEvent(ev: MotionEvent) {
-    lastTouchEvent = ev
+    if (ev.action == MotionEvent.ACTION_DOWN) {
+      actionDownEvent = MotionEvent.obtainNoHistory(ev)
+    }
   }
 
-  private fun onStartNestedScroll(dy: Int, type: Int) {
-    if (type != TYPE_TOUCH) {
-      return  // A fling can start after a scroll finishes.
-    }
+  fun onStartNestedScroll(dy: Int, type: Int) {
+    check(type == TYPE_TOUCH)
+    check(interceptedUntilNextScroll == null)
 
     if (page.isExpanded) {
       page.stopAnyOngoingAnimation()
     }
 
     interceptedUntilNextScroll = INTERCEPTED == page.handleOnPullToCollapseIntercept(
-        event = lastTouchEvent,
-        downX = lastTouchEvent.x,
-        downY = lastTouchEvent.y,
-        deltaUpwardSwipe = dy >= 0f // i.e., finger is moving from top to bottom.
+      event = actionDownEvent,
+      downX = actionDownEvent.x,
+      downY = actionDownEvent.y,
+      deltaUpwardSwipe = dy >= 0f // i.e., finger is moving from top to bottom.
     )
 
-    if (!interceptedUntilNextScroll) {
+    if (interceptedUntilNextScroll == false) {
       dispatchPullStartedCallback()
     }
   }
@@ -59,14 +60,13 @@ internal class PullToCollapseNestedScroller(private val page: ExpandablePageLayo
       return
     }
 
-    if (!isNestedScrolling) {
-      // This must happen only for scrolls (not flings) otherwise
+    if (interceptedUntilNextScroll == null) {
+      // Note to self: this must happen only for scrolls (not flings) otherwise
       // isNestedScrolling will become true when a fling is started.
       onStartNestedScroll(dy, type)
-      isNestedScrolling = true
     }
 
-    if (interceptedUntilNextScroll) {
+    if (interceptedUntilNextScroll == true) {
       return
     }
 
@@ -100,15 +100,13 @@ internal class PullToCollapseNestedScroller(private val page: ExpandablePageLayo
   }
 
   fun onStopNestedScroll(type: Int) {
-    if (type == TYPE_TOUCH && isNestedScrolling) {
-      isNestedScrolling = false
-      interceptedUntilNextScroll = false
-
-      if (abs(page.translationY) > 0f) {
+    if (type == TYPE_TOUCH) {
+      if (isNestedScrolling && abs(page.translationY) > 0f) {
         // The page is responsible for animating back into position if the page
         // wasn't eligible for collapse. I no longer remember why I did this.
         dispatchReleaseCallback()
       }
+      interceptedUntilNextScroll = null
     }
   }
 
@@ -142,11 +140,11 @@ internal class PullToCollapseNestedScroller(private val page: ExpandablePageLayo
     for (i in onPullListeners.indices) {  // Avoids creating an iterator on each callback.
       val onPullListener = onPullListeners[i]
       onPullListener.onPull(
-          deltaY = deltaY,
-          currentTranslationY = page.translationY,
-          upwardPull = draggingDown,
-          deltaUpwardPull = deltaDraggingDown,
-          collapseEligible = page.isCollapseEligible
+        deltaY = deltaY,
+        currentTranslationY = page.translationY,
+        upwardPull = draggingDown,
+        deltaUpwardPull = deltaDraggingDown,
+        collapseEligible = page.isCollapseEligible
       )
     }
   }

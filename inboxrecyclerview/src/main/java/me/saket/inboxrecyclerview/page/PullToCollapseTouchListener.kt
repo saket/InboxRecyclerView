@@ -26,20 +26,27 @@ internal class PullToCollapseTouchListener(
   private val fakeIntArray = intArrayOf(0, 0)
 
   private val interceptDetector = GestureDetector(page.context, object : SimpleOnGestureListener() {
-    override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-      return abs(distanceY) > abs(distanceX)
+    override fun onScroll(down: MotionEvent, move: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+      if (abs(distanceY) > abs(distanceX)) {
+        nestedScroller.onStartNestedScroll(distanceY.toInt(), TYPE_TOUCH)
+      }
+      return nestedScroller.isNestedScrolling
     }
   })
 
   private val scrollDetector = GestureDetector(page.context, object : SimpleOnGestureListener() {
-    override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+    override fun onDown(e: MotionEvent?): Boolean {
+      return true
+    }
+
+    override fun onScroll(down: MotionEvent, move: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
       nestedScroller.onNestedPreScroll(
           target = null,
           dy = distanceY.toInt(),
           consumed = fakeIntArray,
           type = TYPE_TOUCH
       )
-      return nestedScroller.isNestedScrolling || abs(distanceY) > abs(distanceX)
+      return abs(distanceY) > abs(distanceX)
     }
   })
 
@@ -52,11 +59,10 @@ internal class PullToCollapseTouchListener(
   }
 
   fun onTouch(event: MotionEvent): Boolean {
-    scrollDetector.onTouchEvent(event)
     if (event.action == ACTION_UP || event.action == ACTION_CANCEL) {
       nestedScroller.onStopNestedScroll(TYPE_TOUCH)
     }
-    return true
+    return scrollDetector.onTouchEvent(event)
   }
 
   private fun ViewGroup.findChildUnderTouch(
