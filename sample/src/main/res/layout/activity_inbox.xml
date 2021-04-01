@@ -27,14 +27,14 @@
     android:id="@+id/inbox_bottomappbar"
     style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="56dp"
     android:layout_gravity="bottom"
     android:elevation="20dp">
 
     <ImageButton
       android:id="@+id/inbox_settings"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
       android:layout_gravity="bottom|end"
       android:background="?attr/selectableItemBackgroundBorderless"
       android:padding="16dp"
