@@ -4,8 +4,8 @@ import android.view.HapticFeedbackConstants
 import me.saket.inboxrecyclerview.dimming.DimPainter
 
 /**
- * Plays haptic feedback during the various stages of a pull-to-collapse gesture,
- * synchronized with [DimPainter].
+ * Plays haptic feedback during a pull-to-collapse gesture to indicate when the page can be
+ * released to collapse. 
  *
  * @param feedbackConstantForPull Haptic feedback played when the page is dragged enough to be
  * eligible for a collapse (if released). This is played again if the page is dragged back up.
