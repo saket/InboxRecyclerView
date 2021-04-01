@@ -107,10 +107,7 @@ open class InboxRecyclerView @JvmOverloads constructor(
   private var activityWindow: Window? = null
   private var activityWindowOrigBackground: Drawable? = null
   private var isFullyCoveredByPage: Boolean = false
-
-  /** Used by [DimPainter]. */
-  var dimDrawable: AnimatedVisibilityColorDrawable? = null
-    internal set
+  internal var dimDrawable: AnimatedVisibilityColorDrawable? = null
 
   init {
     // Because setters don't get called for default values.
