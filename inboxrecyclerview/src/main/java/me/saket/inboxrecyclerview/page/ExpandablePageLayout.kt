@@ -724,7 +724,6 @@ open class ExpandablePageLayout @JvmOverloads constructor(
    * and the touch was made on it, block it right away.
    */
   internal fun handleOnPullToCollapseIntercept(
-    event: MotionEvent,
     downX: Float,
     downY: Float,
     deltaUpwardSwipe: Boolean
@@ -740,7 +739,7 @@ open class ExpandablePageLayout @JvmOverloads constructor(
       // page's pull-listener consume this event. I should use nested scrolling
       // in the future to make this smarter.
       // TODO: 20/03/17 Do we even need to call the nested page's listener?
-      nestedPageCopy.handleOnPullToCollapseIntercept(event, downX, downY, deltaUpwardSwipe)
+      nestedPageCopy.handleOnPullToCollapseIntercept(downX, downY, deltaUpwardSwipe)
       return InterceptResult.INTERCEPTED
 
     } else {

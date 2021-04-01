@@ -1,5 +1,6 @@
 package me.saket.inboxrecyclerview.page
 
+import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.ViewCompat.TYPE_NON_TOUCH
@@ -19,11 +20,11 @@ internal class PullToCollapseNestedScroller(private val page: ExpandablePageLayo
 
   private val onPullListeners = ArrayList<OnExpandablePagePullListener>(3)
   private var interceptedUntilNextScroll: Boolean? = null
-  private lateinit var actionDownEvent: MotionEvent
+  private val scrollStartedAt = PointF(0f, 0f)
 
   fun storeTouchEvent(ev: MotionEvent) {
     if (ev.action == MotionEvent.ACTION_DOWN) {
-      actionDownEvent = MotionEvent.obtainNoHistory(ev)
+      scrollStartedAt.set(ev.x, ev.y)
     }
   }
 
@@ -36,9 +37,8 @@ internal class PullToCollapseNestedScroller(private val page: ExpandablePageLayo
     }
 
     interceptedUntilNextScroll = INTERCEPTED == page.handleOnPullToCollapseIntercept(
-      event = actionDownEvent,
-      downX = actionDownEvent.x,
-      downY = actionDownEvent.y,
+      downX = scrollStartedAt.x,
+      downY = scrollStartedAt.y,
       deltaUpwardSwipe = dy >= 0f // i.e., finger is moving from top to bottom.
     )
 
