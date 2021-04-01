@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -30,7 +29,7 @@ import me.saket.inboxrecyclerview.sample.exhaustive
 class EmailThreadFragment : Fragment() {
 
   private val emailThreadPage by lazy { view!!.parent as ExpandablePageLayout }
-  private val scrollableContainer by lazy { view!!.findViewById<ScrollView>(R.id.emailthread_scrollable_container) }
+  private val scrollableContainer by lazy { view!!.findViewById<View>(R.id.emailthread_scrollable_container) }
   private val subjectTextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_subject) }
   private val byline1TextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_byline1) }
   private val byline2TextView by lazy { view!!.findViewById<TextView>(R.id.emailthread_byline2) }
@@ -55,26 +54,12 @@ class EmailThreadFragment : Fragment() {
     }
 
     threadIds
-        .map { EmailRepository.thread(id = it) }
-        .takeUntil(onDestroys)
-        .subscribe { render(it) }
+      .map { EmailRepository.thread(id = it) }
+      .takeUntil(onDestroys)
+      .subscribe { render(it) }
 
     collapseButton.setOnClickListener {
       requireActivity().onBackPressed()
-    }
-
-    emailThreadPage.pullToCollapseInterceptor = { downX, downY, upwardPull ->
-      if (scrollableContainer.globalVisibleRect().contains(downX, downY).not()) {
-        InterceptResult.IGNORED
-
-      } else {
-        val directionInt = if (upwardPull) +1 else -1
-        val canScrollFurther = scrollableContainer.canScrollVertically(directionInt)
-        when {
-          canScrollFurther -> InterceptResult.INTERCEPTED
-          else -> InterceptResult.IGNORED
-        }
-      }
     }
 
     emailThreadPage.addStateChangeCallbacks(object : SimplePageStateChangeCallbacks() {
@@ -116,9 +101,9 @@ class EmailThreadFragment : Fragment() {
 
     val cmvRecipients = if (latestEmail.recipients.size > 1) {
       latestEmail.recipients
-          .dropLast(1)
-          .joinToString(transform = { it.name })
-          .plus(" and ${latestEmail.recipients.last().name}")
+        .dropLast(1)
+        .joinToString(transform = { it.name })
+        .plus(" and ${latestEmail.recipients.last().name}")
     } else {
       latestEmail.recipients[0].name
     }
