@@ -32,9 +32,12 @@ fun <T : Parcelable> InboxItemExpander(identifier: ExpandingViewIdentifier<T>): 
  * Example usage:
  *
  * ```
- * InboxItemExpander { expandingItem, viewHolders ->
+ * val itemExpander = InboxItemExpander { expandingItem, viewHolders ->
+ *   // Identify the expanding item's ViewHolder.
  *   viewHolders.firstOrNull { it.{some identifier} == expandingItem }
  * }
+ * inboxRecyclerView.itemExpander = itemExpander
+ * itemExpander.expandItem(...)
  * ```
  */
 abstract class InboxItemExpander<T : Parcelable> : ExpandingViewIdentifier<T> {

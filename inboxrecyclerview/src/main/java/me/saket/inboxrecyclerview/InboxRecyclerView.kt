@@ -168,7 +168,8 @@ open class InboxRecyclerView @JvmOverloads constructor(
    * Expand an item by its adapter-ID.
    *
    * InboxRecyclerView uses adapter-IDs by default for expanding/collapsing items,
-   * but you can choose to use any [Parcelable] object by using a custom item expander.
+   * but you can also use any [Parcelable] object by using a custom item expander.
+   * See [InboxItemExpander].
    */
   @JvmOverloads
   fun expandItem(adapterId: Long, immediate: Boolean = false) {
@@ -182,9 +183,6 @@ open class InboxRecyclerView @JvmOverloads constructor(
 
   /**
    * Expand the page from the top.
-   *
-   * InboxRecyclerView uses adapter-IDs by default for expanding/collapsing items,
-   * but you can choose to use any [Parcelable] object by using a custom item expander.
    */
   @JvmOverloads
   fun expandFromTop(immediate: Boolean = false) {

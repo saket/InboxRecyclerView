@@ -13,8 +13,10 @@ class AdapterIdBasedItemExpander(private val requireStableIds: Boolean) : InboxI
     val adapter = recyclerView.adapter!!
     check(requireStableIds && adapter.hasStableIds()) {
       "$adapter needs to have stable IDs so that the expanded item can be restored across " +
-          "orientation changes. If using adapter IDs is not an option, consider setting a " +
-          "custom InboxRecyclerView#itemExpander = AdapterIdBasedItemExpander(requireStableIds = false)."
+          "state restorations. If auto state restoration isn't needed, consider setting " +
+          "InboxRecyclerView#itemExpander = AdapterIdBasedItemExpander(requireStableIds = false). " +
+          "A custom InboxItemExpander can also be used for expanding items using custom " +
+          "Parcelable types instead of adapter IDs."
     }
     return childViewHolders.firstOrNull { it.itemId == expandingItem.adapterId }
   }
