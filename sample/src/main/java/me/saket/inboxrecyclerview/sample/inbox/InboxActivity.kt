@@ -18,6 +18,7 @@ import me.saket.inboxrecyclerview.InboxRecyclerView
 import me.saket.inboxrecyclerview.animation.ItemExpandAnimator
 import me.saket.inboxrecyclerview.dimming.DimPainter
 import me.saket.inboxrecyclerview.page.ExpandablePageLayout
+import me.saket.inboxrecyclerview.page.PageCollapseEligibilityHapticFeedback
 import me.saket.inboxrecyclerview.page.SimplePageStateChangeCallbacks
 import me.saket.inboxrecyclerview.sample.EmailRepository
 import me.saket.inboxrecyclerview.sample.R
@@ -72,6 +73,7 @@ class InboxActivity : AppCompatActivity() {
     )
     recyclerView.itemExpandAnimator = ItemExpandAnimator.split()
     emailPageLayout.pullToCollapseThresholdDistance = dp(90)
+    emailPageLayout.addOnPullListener(PageCollapseEligibilityHapticFeedback(emailPageLayout))
 
     threadsAdapter.submitList(EmailRepository.threads())
     recyclerView.adapter = threadsAdapter

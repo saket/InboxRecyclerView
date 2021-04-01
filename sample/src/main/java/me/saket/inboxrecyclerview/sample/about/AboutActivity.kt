@@ -11,6 +11,7 @@ import android.widget.TextView
 import kotterknife.bindView
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import me.saket.inboxrecyclerview.PullCollapsibleActivity
+import me.saket.inboxrecyclerview.page.PageCollapseEligibilityHapticFeedback
 import me.saket.inboxrecyclerview.sample.R
 
 class AboutActivity : PullCollapsibleActivity() {
@@ -29,6 +30,7 @@ class AboutActivity : PullCollapsibleActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_about)
+    activityPageLayout.addOnPullListener(PageCollapseEligibilityHapticFeedback(activityPageLayout))
 
     navigationUpButton.setOnClickListener {
       finish()
