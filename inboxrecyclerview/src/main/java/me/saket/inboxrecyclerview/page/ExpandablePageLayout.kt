@@ -211,10 +211,8 @@ open class ExpandablePageLayout @JvmOverloads constructor(
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
 
-    @Suppress("NON_EXHAUSTIVE_WHEN")
-    when (currentState) {
-      EXPANDING -> animateDimensions(toWidth = width, toHeight = height)
-      EXPANDED -> resetClipping()
+    if (currentState == EXPANDED) {
+      resetClipping()
     }
   }
 

@@ -51,8 +51,11 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
     dimensionAnimator.cancel()
   }
 
+  @Suppress("NAME_SHADOWING")
   fun animateDimensions(toWidth: Int, toHeight: Int) {
     stopDimensionAnimation()
+
+    val isResettingClipping = toWidth == width && toHeight == height
 
     dimensionAnimator = ObjectAnimator.ofFloat(0F, 1F).apply {
       duration = animationDurationMillis
@@ -63,6 +66,9 @@ abstract class BaseExpandablePageLayout @JvmOverloads constructor(
       val fromHeight = clippedDimens.height()
 
       addUpdateListener {
+        val toWidth = if (isResettingClipping) width else toWidth
+        val toHeight = if (isResettingClipping) height else toHeight
+
         val scale = it.animatedValue as Float
         val newWidth = ((toWidth - fromWidth) * scale + fromWidth).toInt()
         val newHeight = ((toHeight - fromHeight) * scale + fromHeight).toInt()
