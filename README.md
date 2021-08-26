@@ -31,14 +31,12 @@ implementation 'me.saket:inboxrecyclerview:3.0.0'
 **Expanding content**
 
 ```kotlin
-recyclerView.apply {
-  itemExpandAnimator = ItemExpandAnimator.scale() // or split() / none()
-  dimPainter = DimPainter.listAndPage(Color.WHITE, alpha = 0.65f)
+recyclerView.itemExpandAnimator = ItemExpandAnimator.scale() // or split() / none()
+recyclerView.dimPainter = DimPainter.listAndPage(Color.WHITE, alpha = 0.65f)
 
-  expandablePage = findViewById(...).also {
-    it.pushParentToolbarOnExpand(toolbar)
-    it.addOnPullListener(PageCollapseEligibilityHapticFeedback(it))
-  }
+recyclerView.expandablePage = findViewById(...).also {
+  it.pushParentToolbarOnExpand(toolbar)
+  it.addOnPullListener(PageCollapseEligibilityHapticFeedback(it))
 }
 
 recyclerViewAdapter.onItemClick = { clickedItem ->
